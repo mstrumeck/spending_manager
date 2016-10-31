@@ -1,0 +1,15 @@
+{% extends 'core_sm/base.html' %}
+
+{% load staticfiles %}
+{% block title %}
+    Wywolywanie statystyk
+{% endblock %}
+
+{% block content %}
+    <form action="{% url 'core_sm:costs_stats' %}" method="POST" role="form">
+        {{ form.as_p}}
+        {% csrf_token %}
+        <input type="submit" value="Przycisk">
+    </form>
+{% endblock %}
+

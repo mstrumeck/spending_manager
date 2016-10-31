@@ -1,0 +1,14 @@
+{% extends 'core_sm/base.html' %}
+
+{% block title %}
+    {% if datemonthyear %}{{ datemonthyear.title }}{% else %}Miesiące{% endif %}
+{% endblock %}
+
+{% block content %}
+    <div>
+        <h1>{{ cost.title }}</h1>
+        <h2><a href="{{ cost.datemonthyear.get_absolute_url }}">{{ cost.category }}</a></h2>
+        <p>{{ cost.value}}zł</p>
+    </div>
+
+{% endblock %}

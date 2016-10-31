@@ -1,0 +1,18 @@
+{% extends 'core_sm/base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+    Stats_detail
+{% endblock %}
+
+{% block content %}
+<h3>Statystyki za okres {{ year }}.{{ month }}</h3>
+    <ul>
+        <li>Suma: {{ sum_cost }}</li>
+        <li>Srednia: {{ avg_cost }}</li>
+        <li>Max: {{ max_cost }}</li>
+        <li>Min: {{ min_cost }}</li>
+        <li>Wartosc NumPy: {{ graph }}</li>
+    </ul>
+
+{% endblock %}
