@@ -3,11 +3,12 @@ from .models import Cost, DateMonthYear
 from django.db.models import Avg, Max, Min, Sum
 from .forms import data_generate_form
 from django.core.urlresolvers import reverse
-from bokeh.plotting import figure, output_file, show
+from bokeh.plotting import figure
 from bokeh.embed import components
 from django.utils.safestring import mark_safe
 from bokeh.resources import CDN
 import calendar
+import datetime
 import pprint
 
 def costs_list(request, datemonthyear_slug = None):
@@ -37,8 +38,15 @@ def costs_stats(request):
 
 def stats_detail(request, year, month):
     mr = calendar.monthrange(int(year), int(month))
-    x = [x for x in range(mr[1])]
-    y = [23.96, 17.10, 20, 15, 10]
+    x = [x for x in range(mr[1]+1)][1:]
+    y = []
+    for item in Cost.objects.values('publish'):
+        for day in x:
+            if item['publish'].date() == datetime.date(int(year), int(month), day):
+                y.append(Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day).aggregate(Sum('value'))['value__sum'])
+                
+            else:
+                y.append(0)
     p = figure(title="simple line example", x_axis_label='x', y_axis_label='y')
     p.line(x, y, legend="Temp.", line_width=2)
     script, div = components(p, CDN)
@@ -53,4 +61,5 @@ def stats_detail(request, year, month):
                                                                'max_cost': max_cost['value__max'],
                                                                'avg_cost': avg_cost['value__avg'],
                                                                'script': mark_safe(script),
-                                                               'div': mark_safe(div)})
+                                                               'div': mark_safe(div),
+                                                               'y': y})
