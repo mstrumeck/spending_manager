@@ -7,7 +7,7 @@ from bokeh.plotting import figure
 from bokeh.embed import components
 from django.utils.safestring import mark_safe
 from bokeh.resources import CDN
-from bokeh.charts import Bar, output_file, show
+from bokeh.charts import Bar, output_file, show, Histogram
 from bokeh.sampledata.autompg import autompg as df
 import calendar
 from math import pi
@@ -42,8 +42,17 @@ def stats_detail(request, year, month):
     x = [x for x in range(mr[1]+1)][1:]
     y = []
     for day in x:
-        y.append(Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day).aggregate(Sum('value'))['value__sum'])
-    p = Bar(x, y, values='mpg')
+        val = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day).aggregate(Sum('value'))['value__sum']
+        if val is not None:
+            val = float(val)
+            y.append(val)
+        else:
+            y.append(0)
+    data = {
+        'ZŁ': x,
+        'Dni': y
+    }
+    p = Bar(data, plot_width=1250,values='Dni')
     script, div = components(p, CDN)
     sum_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Sum('value'))
     min_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Min('value'))
@@ -55,5 +64,6 @@ def stats_detail(request, year, month):
                                                                'min_cost': min_cost['value__min'],
                                                                'max_cost': max_cost['value__max'],
                                                                'avg_cost': avg_cost['value__avg'],
+                                                               'y': y,
                                                                'script': mark_safe(script),
                                                                'div': mark_safe(div)})
