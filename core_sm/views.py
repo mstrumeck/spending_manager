@@ -3,7 +3,7 @@ from .models import Cost, DateMonthYear
 from django.db.models import Avg, Max, Min, Sum
 from .forms import data_generate_form
 from django.core.urlresolvers import reverse
-from bokeh.plotting import figure
+import datetime
 from bokeh.embed import components
 from django.utils.safestring import mark_safe
 from bokeh.resources import CDN
@@ -39,20 +39,23 @@ def costs_stats(request):
 
 def stats_detail(request, year, month):
     mr = calendar.monthrange(int(year), int(month))
-    x = [x for x in range(mr[1]+1)][1:]
-    y = []
-    for day in x:
+    day_numbers = [x for x in range(mr[1]+1)][1:]
+    day_sum = []
+    day_min = []
+    day_max = []
+    day_avg = []
+    for day in day_numbers:
         val = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day).aggregate(Sum('value'))['value__sum']
         if val is not None:
             val = float(val)
-            y.append(val)
+            day_sum.append(val)
         else:
-            y.append(0)
+            day_sum.append(0)
     data = {
-        'ZŁ': x,
-        'Dni': y
+        'Dni': day_numbers,
+        'ZŁ': day_sum
     }
-    p = Bar(data, plot_width=1250,values='Dni')
+    p = Bar(data, plot_width=1250, values='ZŁ', legend=False)
     script, div = components(p, CDN)
     sum_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Sum('value'))
     min_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Min('value'))
@@ -64,6 +67,6 @@ def stats_detail(request, year, month):
                                                                'min_cost': min_cost['value__min'],
                                                                'max_cost': max_cost['value__max'],
                                                                'avg_cost': avg_cost['value__avg'],
-                                                               'y': y,
+                                                               'day_numbers': day_numbers,
                                                                'script': mark_safe(script),
                                                                'div': mark_safe(div)})

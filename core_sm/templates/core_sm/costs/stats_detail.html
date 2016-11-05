@@ -7,14 +7,51 @@
 
 {% block content %}
 <h3>Statystyki za okres {{ year }}.{{ month }}</h3>
-    <ul>
-        <li>Suma: {{ sum_cost }}</li>
-        <li>Srednia: {{ avg_cost }}</li>
-        <li>Max: {{ max_cost }}</li>
-        <li>Min: {{ min_cost }}</li>
-{{ y }}
-    </ul>
-{{ div }}
-{{ script }}
+    <div>
+        <ul>
+            <li>Suma: {{ sum_cost }}</li>
+            <li>Srednia: {{ avg_cost }}</li>
+            <li>Max: {{ max_cost }}</li>
+            <li>Min: {{ min_cost }}</li>
+        </ul>
+    </div>
+    {{ div }}
+    {{ script }}
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th scope="col">Suma</th>
+                    <th scope="col">Kwota maksymalna</th>
+                    <th scope="col">Kwota minimalna</th>
+                    <th scope="col">Średnia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in day_numbers %}
+                <tr>
+                    <th scope="row">Dzień: {{ item }}</th>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>Cały miesiąc</td>
+                    <td>{{ sum_cost }}</td>
+                    <td>{{ max_cost }}</td>
+                    <td>{{ min_cost }}</td>
+                    <td>{{ avg_cost }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+
 
 {% endblock %}
