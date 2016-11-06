@@ -74,6 +74,25 @@ def month_stats_detail(request, year, month):
     max_month_day = day_numbers[day_max.index(max(day_max))]
     min_month_value = (min(day_min))
     min_month_day = day_numbers[day_min.index(min(day_min))]
+    jedzenie = []
+    domowe = []
+    kosmetyki_i_chemia = []
+    rozrywka = []
+    okazyjne = []
+    inne = []
+    for item in Cost.objects.values():
+        if item['category'] == 'Jedzenie':
+            jedzenie.append(float(item['value']))
+        elif item['category'] == 'Domowe':
+            domowe.append(float(item['value']))
+        elif item['category'] == 'Kosmetyki i Chemia':
+            kosmetyki_i_chemia.append(float(item['value']))
+        elif item['category'] == 'Rozrywka':
+            rozrywka.append(float(item['value']))
+        elif item['category'] == 'Okazyjne':
+            okazyjne.append(float(item['value']))
+        elif item['category'] == 'Inne':
+            inne.append(float(item['value']))
     sum_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Sum('value'))
     min_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Min('value'))
     max_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Max('value'))
@@ -90,11 +109,17 @@ def month_stats_detail(request, year, month):
                                                                'max_month_day': max_month_day,
                                                                'min_month_value': min_month_value,
                                                                'min_month_day': min_month_day,
+                                                               'jedzenie': sum(jedzenie),
+                                                               'domowe': sum(domowe),
+                                                               'kosmetyki_i_chemia': sum(kosmetyki_i_chemia),
+                                                               'rozrywka': sum(rozrywka),
+                                                               'okazyjne': sum(okazyjne),
+                                                               'inne': sum(inne),
                                                                'script': mark_safe(script),
                                                                'div': mark_safe(div)})
 
 def day_stats_detail(request, year, month, day):
-    
+
     return render(request, 'core_sm/costs/day_stats_detail.html',
                   {'year': year,
                    'month': month,

@@ -29,7 +29,6 @@
                     <td>{{ avg }}</td>
                 </tr>
                 {% endfor %}
-
             </tbody>
             <tfoot>
                 <tr>
@@ -45,6 +44,42 @@
     <div>
         <p>Najwięcej wydano {{ max_month_value }} w dniu {{ max_month_day }}</p>
         <p>Najmniej wydano {{ min_month_value }} w dniu {{ min_month_day }}</p>
+    </div>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th scope="col">Suma wydatków</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">Jedzenie</th>
+                    <th>{{ jedzenie }}</th>
+                </tr>
+                <tr>
+                    <th scope="row">Domowe</th>
+                    <th>{{ domowe }}</th>
+                </tr>
+                <tr>
+                    <th scope="row">Kosmetyki i chemia</th>
+                    <th>{{ kosmetyki_i_chemia }}</th>
+                </tr>
+                <tr>
+                    <th scope="row">Rozrywka</th>
+                    <th>{{ rozrywka }}</th>
+                </tr>
+                <tr>
+                    <th scope="row">Okazyjne</th>
+                    <th>{{ okazyjne }}</th>
+                </tr>
+                <tr>
+                    <th scope="row">Inne</th>
+                    <th>{{ inne }}</th>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <div>
         {{ div }}
