@@ -2,21 +2,12 @@
 {% load staticfiles %}
 
 {% block title %}
-    Stats_detail
+    {{ year }}{{ month }}
 {% endblock %}
 
 {% block content %}
 <h3>Statystyki za okres {{ year }}.{{ month }}</h3>
-    <div>
-        <ul>
-            <li>Suma: {{ sum_cost }}</li>
-            <li>Srednia: {{ avg_cost }}</li>
-            <li>Max: {{ max_cost }}</li>
-            <li>Min: {{ min_cost }}</li>
-        </ul>
-    </div>
-    {{ div }}
-    {{ script }}
+
     <div>
         <table>
             <thead>
@@ -29,20 +20,20 @@
                 </tr>
             </thead>
             <tbody>
-                {% for item in day_numbers %}
+                {% for day, sum, max, min, avg in day_data %}
                 <tr>
-                    <th scope="row">Dzień: {{ item }}</th>
-                    <td>1</td>
-                    <td>2</td>
-                    <td>3</td>
-                    <td>4</td>
+                    <th scope="row">Dzień: {{ day }}</th>
+                    <td>{{ sum }}</td>
+                    <td>{{ max }}</td>
+                    <td>{{ min }}</td>
+                    <td>{{ avg }}</td>
                 </tr>
                 {% endfor %}
 
             </tbody>
             <tfoot>
                 <tr>
-                    <td>Cały miesiąc</td>
+                    <th>Cały miesiąc</th>
                     <td>{{ sum_cost }}</td>
                     <td>{{ max_cost }}</td>
                     <td>{{ min_cost }}</td>
@@ -50,6 +41,14 @@
                 </tr>
             </tfoot>
         </table>
+    </div>
+    <div>
+        <p>Najwięcej wydano {{ max_month_value }} w dniu {{ max_month_day }}</p>
+        <p>Najmniej wydano {{ min_month_value }} w dniu {{ min_month_day }}</p>
+    </div>
+    <div>
+        {{ div }}
+        {{ script }}
     </div>
 
 

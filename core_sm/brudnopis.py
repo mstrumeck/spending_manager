@@ -9,6 +9,12 @@ dd = []
 for item in mr:
     dd.append('2016-10-{}'.format(item))
 
-print(dd[0])
+b = [23,23,23,23]
+c = [24,24,24,24]
+d = [25,25,25,25]
+e = [26,26,26,26]
 
-
+master_data = zip(b,c,d,e)
+print(master_data)
+for data_1, data_2, data_3, data_4 in master_data:
+    print(data_1,data_2,data_3,data_4)

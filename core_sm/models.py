@@ -42,7 +42,8 @@ class Cost(models.Model):
 
     def get_absolute_url(self):
         return reverse('core_sm:stats_detail', args=[self.publish.year,
-                                            self.publish.strftime('%m')])
+                                            self.publish.strftime('%m'),
+                                            self.publish.strftime('%d')])
 
     def __str__(self):
         return self.title
