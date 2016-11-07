@@ -6,7 +6,7 @@ class CostsAdmin(admin.ModelAdmin):
     list_display = ['title', 'value', 'category', 'date', 'publish', 'updated']
     list_filter = ['title', 'category', 'created']
     list_editable = ['value', 'date', 'category']
-    prepopulated_fields = {'slug': ('title', )}
+    prepopulated_fields = {'slug': ('publish', )}
     search_fields = ['title', 'category', 'publish']
     date_hierarchy = 'publish'
     ordering = ['category', 'publish']

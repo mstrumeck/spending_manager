@@ -39,7 +39,7 @@ def costs_stats(request):
 
 def month_stats_detail(request, year, month):
     mr = calendar.monthrange(int(year), int(month))
-    day_numbers = [x for x in range(mr[1]+1)][1:]
+    day_numbers = [str(x).zfill(2) for x in range(mr[1]+1)][1:]
     day_sum = []
     day_min = []
     day_max = []
@@ -93,34 +93,92 @@ def month_stats_detail(request, year, month):
             okazyjne.append(float(item['value']))
         elif item['category'] == 'Inne':
             inne.append(float(item['value']))
+    data1 = {
+        'money': [sum(jedzenie), sum(domowe), sum(kosmetyki_i_chemia), sum(rozrywka), sum(okazyjne), sum(inne)],
+        'labels': ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
+    }
+    p1 = Bar(data1, values='money', label='labels')
+    script1, div1 = components(p1, CDN)
     sum_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Sum('value'))
     min_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Min('value'))
     max_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Max('value'))
     avg_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Avg('value'))
     return render(request, 'core_sm/costs/month_stats_detail.html', {'year': year,
-                                                               'month': month,
-                                                               'sum_cost': sum_cost['value__sum'],
-                                                               'min_cost': min_cost['value__min'],
-                                                               'max_cost': max_cost['value__max'],
-                                                               'avg_cost': avg_cost['value__avg'],
-                                                               'day_numbers': day_numbers,
-                                                               'day_data': day_data,
-                                                               'max_month_value': max_month_value,
-                                                               'max_month_day': max_month_day,
-                                                               'min_month_value': min_month_value,
-                                                               'min_month_day': min_month_day,
-                                                               'jedzenie': sum(jedzenie),
-                                                               'domowe': sum(domowe),
-                                                               'kosmetyki_i_chemia': sum(kosmetyki_i_chemia),
-                                                               'rozrywka': sum(rozrywka),
-                                                               'okazyjne': sum(okazyjne),
-                                                               'inne': sum(inne),
-                                                               'script': mark_safe(script),
-                                                               'div': mark_safe(div)})
+                                                                     'month': month,
+                                                                     'sum_cost': sum_cost['value__sum'],
+                                                                     'min_cost': min_cost['value__min'],
+                                                                     'max_cost': max_cost['value__max'],
+                                                                     'avg_cost': avg_cost['value__avg'],
+                                                                     'day_numbers': day_numbers,
+                                                                     'day_data': day_data,
+                                                                     'max_month_value': max_month_value,
+                                                                     'max_month_day': max_month_day,
+                                                                     'min_month_value': min_month_value,
+                                                                     'min_month_day': min_month_day,
+                                                                     'jedzenie': sum(jedzenie),
+                                                                     'domowe': sum(domowe),
+                                                                     'kosmetyki_i_chemia': sum(kosmetyki_i_chemia),
+                                                                     'rozrywka': sum(rozrywka),
+                                                                     'okazyjne': sum(okazyjne),
+                                                                     'inne': sum(inne),
+                                                                     'script': mark_safe(script),
+                                                                     'div': mark_safe(div),
+                                                                     'script1': mark_safe(script1),
+                                                                     'div1': mark_safe(div1)})
 
 def day_stats_detail(request, year, month, day):
-
+    day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day)
+    title = []
+    value = []
+    category = []
+    id = []
+    for item in day_data.values('title'):
+        title.append(item['title'])
+    for item in day_data.values('value'):
+        value.append(float(item['value']))
+    for item in day_data.values('category'):
+        category.append(item['category'])
+    for item in day_data.values('id'):
+        id.append(item['id'])
+    all_data = zip(title, value, category, id)
+    day_max = [title[value.index(max(value))], max(value), category[value.index(max(value))]]
+    day_min = [title[value.index(min(value))], min(value), category[value.index(min(value))]]
+    day_sum = day_data.aggregate(Sum('value'))
+    day_avg = day_data.aggregate(Avg('value'))
+    jedzenie = []
+    domowe = []
+    kosmetyki_i_chemia = []
+    rozrywka = []
+    okazyjne = []
+    inne = []
+    for item in day_data.values():
+        if item['category'] == 'Jedzenie':
+            jedzenie.append(float(item['value']))
+        elif item['category'] == 'Domowe':
+            domowe.append(float(item['value']))
+        elif item['category'] == 'Kosmetyki i Chemia':
+            kosmetyki_i_chemia.append(float(item['value']))
+        elif item['category'] == 'Rozrywka':
+            rozrywka.append(float(item['value']))
+        elif item['category'] == 'Okazyjne':
+            okazyjne.append(float(item['value']))
+        elif item['category'] == 'Inne':
+            inne.append(float(item['value']))
+    data = {
+        'money': [sum(jedzenie), sum(domowe), sum(kosmetyki_i_chemia), sum(rozrywka), sum(okazyjne), sum(inne)],
+        'labels': ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
+    }
+    p = Bar(data, values='money', label='labels')
+    script, div = components(p, CDN)
     return render(request, 'core_sm/costs/day_stats_detail.html',
                   {'year': year,
                    'month': month,
-                   'day': day})
+                   'day': day,
+                   'day_data': day_data,
+                   'all_data': all_data,
+                   'day_sum': day_sum['value__sum'],
+                   'day_avg': day_avg['value__avg'],
+                   'day_max': day_max,
+                   'day_min': day_min,
+                   'script': mark_safe(script),
+                   'div': mark_safe(div)})

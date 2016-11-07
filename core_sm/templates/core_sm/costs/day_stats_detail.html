@@ -2,11 +2,51 @@
 {% load staticfiles %}
 
 {% block title %}
-    Day stats detail
+    {{ year }}/{{ month }}/{{ day }}
 {% endblock %}
 
 {% block content %}
-
-
-
+<h3>Statystyki za {{ year }}.{{ month }}.{{ day }}</h3>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th scope="col">Wartość</th>
+                    <th scope="col">Kategoria</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for title, value, category, id in all_data %}
+                <tr>
+                    <th scope="row">{{ title }}</th>
+                    <td>{{ value }}</td>
+                    <td>{{ category }}</td>
+                    <td>{{ id }}</td>
+                </tr>
+            </tbody>
+            {% endfor %}
+            <tfoot>
+                <tr>
+                    <th>Podsumowanie</th>
+                    <td>{{ day_sum }}</td>
+                </tr>
+            </tfoot>
+        </table>
+        </div>
+        <div>
+            <p>Średnia {{ day_avg }}</p>
+            <p>Najwięcej zapłaciłeś za:</p>
+            {% for item in day_max %}
+            <p>{{ item }}</p>
+            {% endfor %}
+            <p>Najmnie zapłaciłeś za:</p>
+            {% for item in day_min %}
+            <p>{{ item }}</p>
+            {% endfor %}
+        </div>
+        <div>
+            {{ div }}
+            {{ script }}
+        </div>
 {% endblock %}

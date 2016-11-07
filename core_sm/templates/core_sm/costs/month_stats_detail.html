@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block title %}
-    {{ year }}{{ month }}
+    {{ year }}/{{ month }}
 {% endblock %}
 
 {% block content %}
@@ -22,7 +22,7 @@
             <tbody>
                 {% for day, sum, max, min, avg in day_data %}
                 <tr>
-                    <th scope="row">Dzień: {{ day }}</th>
+                    <th scope="row"><a href="/{{ year }}/{{ month }}/{{ day }}">Dzień {{ day }}</a></th>
                     <td>{{ sum }}</td>
                     <td>{{ max }}</td>
                     <td>{{ min }}</td>
@@ -44,6 +44,14 @@
     <div>
         <p>Najwięcej wydano {{ max_month_value }} w dniu {{ max_month_day }}</p>
         <p>Najmniej wydano {{ min_month_value }} w dniu {{ min_month_day }}</p>
+</div>
+    <div>
+        {{ div }}
+        {{ script }}
+    </div>
+    <div>
+        {{ div1 }}
+        {{ script1 }}
     </div>
     <div>
         <table>
@@ -81,11 +89,5 @@
             </tbody>
         </table>
     </div>
-    <div>
-        {{ div }}
-        {{ script }}
-    </div>
-
-
 
 {% endblock %}
