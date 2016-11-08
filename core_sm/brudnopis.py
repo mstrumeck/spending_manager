@@ -1,5 +1,6 @@
 import datetime
 import calendar
+import decimal
 a = calendar.monthrange(2016,10)
 mr = [x for x in range(a[1]+1)][1:]
 print(mr)
@@ -20,6 +21,5 @@ for data_1, data_2, data_3, data_4 in master_data:
     print(data_1,data_2,data_3,data_4)
 day_numbers = [x for x in range(mr[1] + 1)][1:]
 
-day_numbers = [str(x).zfill(2) for x in range(a[1]+1)][1:]
-print(day_numbers)
-day_numbers2 = []
+
+
