@@ -3,21 +3,6 @@ from django.db import models
 from django.utils import timezone
 from django.core.urlresolvers import reverse
 
-class DateMonthYear(models.Model):
-    title = models.CharField(max_length=200, db_index=True)
-    slug = models.SlugField(max_length=200, db_index=True, unique=True)
-
-    class Meta:
-        ordering = ('title',)
-        verbose_name = 'DateMonthYear'
-        verbose_name_plural = 'DatesMonthsYears'
-
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse('core_sm:cost_list_by_datemonthyear', args=[self.slug])
-
 
 class Cost(models.Model):
     STATUS_CHOICES = (
@@ -28,7 +13,6 @@ class Cost(models.Model):
         ('Okazyjne', 'Okazyjne'),
         ('Inne', 'Inne')
     )
-    date = models.ForeignKey(DateMonthYear, related_name='costs')
     title = models.CharField(max_length=200, db_index=True)
     slug = models.SlugField(max_length=200, unique_for_date='publish', db_index=True)
     publish = models.DateTimeField(default=timezone.now)
@@ -42,6 +26,7 @@ class Cost(models.Model):
 
     def get_absolute_url(self):
         return reverse('core_sm:stats_detail', args=[self.publish.year,
+                                            self.publish.strftime('%y'),
                                             self.publish.strftime('%m'),
                                             self.publish.strftime('%d')])
 

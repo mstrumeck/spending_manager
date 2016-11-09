@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
-from .models import Cost, DateMonthYear
+from .models import Cost
 from django.db.models import Avg, Max, Min, Sum
 from .forms import data_generate_form
 from django.core.urlresolvers import reverse
@@ -11,22 +11,9 @@ from bokeh.charts import Bar, output_file, show, Histogram
 from bokeh.sampledata.autompg import autompg as df
 import calendar
 from math import pi
-from core_sm.functions import month_day_calculations, month_category_calculation, day_day_calculation, day_category_calculation
+from core_sm.functions import month_day_calculations, month_category_calculation, \
+    day_day_calculation, day_category_calculation, year_month_calculation, year_data_calculation
 
-def costs_list(request, datemonthyear_slug = None):
-    datemonthyear = None
-    datesmonthsyears = DateMonthYear.objects.all()
-    costs = Cost.objects.all()
-    if datemonthyear_slug:
-        datemonthyear = get_object_or_404(DateMonthYear, slug=datemonthyear_slug)
-        costs = costs.filter(datemonthyear=datemonthyear)
-    return render(request, 'core_sm/costs/list.html', {'costs': costs,
-                                                 'datemonthyear': datemonthyear,
-                                                 'datesmonthsyears': datesmonthsyears},)
-
-def costs_month_detail(request, id, slug):
-    cost = get_object_or_404(Cost, id=id, slug=slug)
-    return render(request, 'core_sm/costs/detail.html', {'cost': cost})
 
 def costs_stats(request):
     if request.method == "GET":
@@ -37,6 +24,16 @@ def costs_stats(request):
             cd = form.cleaned_data
             return HttpResponseRedirect(reverse('core_sm:month_stats_detail', args=(cd['year'], cd['month'])))
     return render(request, 'core_sm/costs/stats.html', {'form': form})
+
+def year_stats_detail(request, year):
+    Months = []
+    Months_data = []
+    year_month_calculation(Months)
+    year_data_calculation(Months_data, year)
+    return render(request, 'core_sm/costs/year_stats_detail.html', {'year': year,
+                                                                    'Months': Months,
+                                                                    'Months_data': Months_data})
+
 
 def month_stats_detail(request, year, month):
     mr = calendar.monthrange(int(year), int(month))

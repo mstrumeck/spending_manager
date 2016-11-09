@@ -1,5 +1,6 @@
 from core_sm.models import Cost
 from django.db.models import Avg, Max, Sum, Min
+import calendar
 
 
 def month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg):
@@ -70,3 +71,13 @@ def day_category_calculation(day_data, jedzenie, domowe, kosmetyki_i_chemia, roz
         elif item['category'] == 'Inne':
             inne.append(float(item['value']))
     return jedzenie, domowe, kosmetyki_i_chemia, rozrywka, okazyjne, inne
+
+def year_month_calculation(Months):
+    for item in range(13):
+        Months.append(calendar.month_name[item])
+    return Months
+
+def year_data_calculation(Months_data, year):
+    for item in range(12):
+        Months_data.append(Cost.objects.filter(publish__year=year, publish__month=item).aggregate(Sum('value'))['value__sum'])
+    return Months_data
