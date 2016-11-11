@@ -7,10 +7,13 @@ import datetime
 from bokeh.embed import components
 from django.utils.safestring import mark_safe
 from bokeh.resources import CDN
+from bokeh.plotting import figure
 from bokeh.charts import Bar, output_file, show, Histogram
 from bokeh.sampledata.autompg import autompg as df
+from collections import OrderedDict
 import calendar
 from math import pi
+from bokeh.models import DatetimeTickFormatter
 from core_sm.functions import month_day_calculations, month_category_calculation, \
     day_day_calculation, day_category_calculation, year_month_calculation, year_data_calculation
 
@@ -25,14 +28,26 @@ def costs_stats(request):
             return HttpResponseRedirect(reverse('core_sm:month_stats_detail', args=(cd['year'], cd['month'])))
     return render(request, 'core_sm/costs/stats.html', {'form': form})
 
+
 def year_stats_detail(request, year):
     Months = []
     Months_data = []
-    year_month_calculation(Months)
     year_data_calculation(Months_data, year)
+    year_month_calculation(Months, year)
+    all_data = zip(Months, Months_data)
+    data = {
+        'Miesiące': Months,
+        'ZŁ': Months_data
+    }
+    p = Bar(all_data)
+    script, div = components(p, CDN)
+
     return render(request, 'core_sm/costs/year_stats_detail.html', {'year': year,
                                                                     'Months': Months,
-                                                                    'Months_data': Months_data})
+                                                                    'Months_data': Months_data,
+                                                                    'script': mark_safe(script),
+                                                                    'div': mark_safe(div),
+                                                                    'all_data': all_data})
 
 
 def month_stats_detail(request, year, month):
