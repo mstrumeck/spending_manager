@@ -13,4 +13,4 @@ b = range(13)[1:]
 b = [datetime.date(2016, x, 1) for x in b]
 
 c = [x for x in range(13)[1:]]
-print(c)
+print(decimal.Decimal(2.45))

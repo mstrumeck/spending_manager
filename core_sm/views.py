@@ -73,8 +73,8 @@ def month_stats_detail(request, year, month):
     day_min = []
     day_max = []
     day_avg = []
-    day_data = zip(day_numbers, day_sum, day_max, day_min, day_avg)
     month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg)
+    day_data = zip(day_numbers, day_sum, day_max, day_min, day_avg)
     data = {
         'Dni': day_numbers,
         'ZŁ': [float(x) for x in day_sum]

@@ -18,7 +18,7 @@ def month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, 
             day_sum.append(val_1)
             day_min.append(val_2)
             day_max.append(val_3)
-            day_avg.append(val_4)
+            day_avg.append("%.2f" % val_4)
         else:
             day_sum.append(0)
             day_min.append(0)
