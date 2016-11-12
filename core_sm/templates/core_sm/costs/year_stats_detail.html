@@ -6,15 +6,58 @@
 {% endblock %}
 
 {% block content %}
-    {{ year }}
-    {{ Months }}
-    {{ Months_data }}
+    <div>
     {{ div }}
     {{ script }}
-    <ul>
-    {% for item, item_1 in all_data %}
-        <li>{{ item }}/{{ item_1 }}</li>
+    </div>
+
+    <div>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>ZŁ</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for month, data, month_url in all_data %}
+            <tr>
+                <th scope="row"><a href="/{{ year }}/{{ month_url }}/">{{ month }}</a></th>
+                <th>{{ data }}</th>
+            </tr>
         {% endfor %}
-    </ul>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th scope="row">Suma</th>
+                <th>{{ year_sum }}</th>
+            </tr>
+        </tfoot>
+    </table>
+    </div>
+
+    <div>
+    {{ div1 }}
+    {{ script1 }}
+    </div>
+
+    <div>
+    <table>
+        <thead>
+            <tr>
+                <th>Kategoria</th>
+                <th>ZŁ</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for cat, data in categories_res %}
+            <tr>
+                <th scope="row">{{ cat }}</th>
+                <th>{{ data }}</th>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
 
 {% endblock %}

@@ -15,10 +15,6 @@ def month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, 
         val_4 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day).aggregate(Avg('value'))[
             'value__avg']
         if val_1 and val_2 and val_3 and val_4 is not None:
-            val_1 = float(val_1)
-            val_2 = float(val_2)
-            val_3 = float(val_3)
-            val_4 = float(val_4)
             day_sum.append(val_1)
             day_min.append(val_2)
             day_max.append(val_3)
@@ -30,21 +26,13 @@ def month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, 
             day_avg.append(0)
     return day_sum, day_min, day_max, day_avg
 
-def month_category_calculation(jedzenie, domowe, kosmetyki_i_chemia, rozrywka, okazyjne, inne):
-    for item in Cost.objects.values():
-        if item['category'] == 'Jedzenie':
-            jedzenie.append(float(item['value']))
-        elif item['category'] == 'Domowe':
-            domowe.append(float(item['value']))
-        elif item['category'] == 'Kosmetyki i Chemia':
-            kosmetyki_i_chemia.append(float(item['value']))
-        elif item['category'] == 'Rozrywka':
-            rozrywka.append(float(item['value']))
-        elif item['category'] == 'Okazyjne':
-            okazyjne.append(float(item['value']))
-        elif item['category'] == 'Inne':
-            inne.append(float(item['value']))
-    return jedzenie, domowe, kosmetyki_i_chemia, rozrywka, okazyjne, inne
+def month_category_calculation(year, month, categories, categories_data):
+    for item in categories:
+        val = Cost.objects.filter(publish__year=year, publish__month=month, category=item).aggregate(Sum('value'))['value__sum']
+        if val is not None:
+            categories_data.append(val)
+        else:
+            categories_data.append(0)
 
 def day_day_calculation(day_data, title, value, category, id):
         for item in day_data.values('title'):
@@ -73,16 +61,26 @@ def day_category_calculation(day_data, jedzenie, domowe, kosmetyki_i_chemia, roz
             inne.append(float(item['value']))
     return jedzenie, domowe, kosmetyki_i_chemia, rozrywka, okazyjne, inne
 
-def year_month_calculation(Months, year):
+def year_month_calculation(Months):
     for item in range(13)[1:]:
-        Months.append('{}-{}'.format(item, year))
+        Months.append(calendar.month_name[item])
     return Months
 
+
 def year_data_calculation(Months_data, year):
-    for item in range(12):
+    for item in range(13)[1:]:
         val = Cost.objects.filter(publish__year=year, publish__month=item).aggregate(Sum('value'))['value__sum']
         if val is not None:
             Months_data.append(float(val))
         else:
             Months_data.append(0)
     return Months_data
+
+def year_categories_calculation(year, categories, categories_data):
+    for data in categories:
+        val = Cost.objects.filter(publish__year=year, category=data).aggregate(Sum('value'))['value__sum']
+        if val is not None:
+            categories_data.append(val)
+        else:
+            categories_data.append(0)
+    return categories_data

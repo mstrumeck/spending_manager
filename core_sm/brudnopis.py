@@ -12,5 +12,5 @@ print(calendar.month_name[3])
 b = range(13)[1:]
 b = [datetime.date(2016, x, 1) for x in b]
 
-for item in b:
-    print(type(int(item)))
+c = [x for x in range(13)[1:]]
+print(c)

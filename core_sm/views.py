@@ -15,7 +15,8 @@ import calendar
 from math import pi
 from bokeh.models import DatetimeTickFormatter
 from core_sm.functions import month_day_calculations, month_category_calculation, \
-    day_day_calculation, day_category_calculation, year_month_calculation, year_data_calculation
+    day_day_calculation, day_category_calculation, year_data_calculation, year_month_calculation, \
+    year_categories_calculation
 
 
 def costs_stats(request):
@@ -32,22 +33,37 @@ def costs_stats(request):
 def year_stats_detail(request, year):
     Months = []
     Months_data = []
+    Months_url = [str(x).zfill(2) for x in range(13)[1:]]
+    year_month_calculation(Months)
     year_data_calculation(Months_data, year)
-    year_month_calculation(Months, year)
-    all_data = zip(Months, Months_data)
     data = {
         'Miesiące': Months,
         'ZŁ': Months_data
     }
-    p = Bar(all_data)
+    p = Bar(data, values='ZŁ', label='Miesiące')
     script, div = components(p, CDN)
-
+    all_data = zip(Months, Months_data, Months_url)
+    year_sum = Cost.objects.filter(publish__year=year).aggregate(Sum('value'))['value__sum']
+    categories = ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
+    categories_data = []
+    year_categories_calculation(year, categories, categories_data)
+    data1 = {
+        'money': [float(x) for x in categories_data],
+        'labels': categories
+    }
+    p1 = Bar(data1, values='money', label='labels')
+    script1, div1 = components(p1, CDN)
+    categories_res = zip(categories, categories_data)
     return render(request, 'core_sm/costs/year_stats_detail.html', {'year': year,
                                                                     'Months': Months,
                                                                     'Months_data': Months_data,
                                                                     'script': mark_safe(script),
                                                                     'div': mark_safe(div),
-                                                                    'all_data': all_data})
+                                                                    'all_data': all_data,
+                                                                    'year_sum': year_sum,
+                                                                    'script1': mark_safe(script1),
+                                                                    'div1': mark_safe(div1),
+                                                                    'categories_res': categories_res})
 
 
 def month_stats_detail(request, year, month):
@@ -61,7 +77,7 @@ def month_stats_detail(request, year, month):
     month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg)
     data = {
         'Dni': day_numbers,
-        'ZŁ': day_sum
+        'ZŁ': [float(x) for x in day_sum]
     }
     p = Bar(data, plot_width=1250, values='ZŁ', legend=False)
     script, div = components(p, CDN)
@@ -69,19 +85,16 @@ def month_stats_detail(request, year, month):
     max_month_day = day_numbers[day_max.index(max(day_max))]
     min_month_value = (min(day_min))
     min_month_day = day_numbers[day_min.index(min(day_min))]
-    jedzenie = []
-    domowe = []
-    kosmetyki_i_chemia = []
-    rozrywka = []
-    okazyjne = []
-    inne = []
-    month_category_calculation(jedzenie, domowe, kosmetyki_i_chemia, rozrywka, okazyjne, inne)
+    categories = ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
+    categories_data = []
+    month_category_calculation(year, month, categories, categories_data)
     data1 = {
-        'money': [sum(jedzenie), sum(domowe), sum(kosmetyki_i_chemia), sum(rozrywka), sum(okazyjne), sum(inne)],
-        'labels': ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
+        'money': [float(x) for x in categories_data],
+        'labels': categories
     }
     p1 = Bar(data1, values='money', label='labels')
     script1, div1 = components(p1, CDN)
+    categories_res = zip(categories, categories_data)
     sum_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Sum('value'))
     min_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Min('value'))
     max_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Max('value'))
@@ -98,16 +111,12 @@ def month_stats_detail(request, year, month):
                                                                      'max_month_day': max_month_day,
                                                                      'min_month_value': min_month_value,
                                                                      'min_month_day': min_month_day,
-                                                                     'jedzenie': sum(jedzenie),
-                                                                     'domowe': sum(domowe),
-                                                                     'kosmetyki_i_chemia': sum(kosmetyki_i_chemia),
-                                                                     'rozrywka': sum(rozrywka),
-                                                                     'okazyjne': sum(okazyjne),
-                                                                     'inne': sum(inne),
                                                                      'script': mark_safe(script),
                                                                      'div': mark_safe(div),
                                                                      'script1': mark_safe(script1),
-                                                                     'div1': mark_safe(div1)})
+                                                                     'div1': mark_safe(div1),
+                                                                     'categories_res': categories_res,
+                                                                     'day_sum': day_avg})
 
 def day_stats_detail(request, year, month, day):
     day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day)
