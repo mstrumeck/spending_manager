@@ -26,9 +26,11 @@ def month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, 
             day_avg.append(0)
     return day_sum, day_min, day_max, day_avg
 
+
 def month_category_calculation(year, month, categories, categories_data):
     for item in categories:
-        val = Cost.objects.filter(publish__year=year, publish__month=month, category=item).aggregate(Sum('value'))['value__sum']
+        val = Cost.objects.filter(publish__year=year, publish__month=month, category=item).aggregate(Sum('value')
+                                                                                                     )['value__sum']
         if val is not None:
             categories_data.append(val)
         else:
@@ -45,21 +47,16 @@ def day_day_calculation(day_data, title, value, category, id):
             id.append(item['id'])
         return title, value, category, id
 
-def day_category_calculation(day_data, jedzenie, domowe, kosmetyki_i_chemia, rozrywka, okazyjne, inne):
-    for item in day_data.values():
-        if item['category'] == 'Jedzenie':
-            jedzenie.append(float(item['value']))
-        elif item['category'] == 'Domowe':
-            domowe.append(float(item['value']))
-        elif item['category'] == 'Kosmetyki i Chemia':
-            kosmetyki_i_chemia.append(float(item['value']))
-        elif item['category'] == 'Rozrywka':
-            rozrywka.append(float(item['value']))
-        elif item['category'] == 'Okazyjne':
-            okazyjne.append(float(item['value']))
-        elif item['category'] == 'Inne':
-            inne.append(float(item['value']))
-    return jedzenie, domowe, kosmetyki_i_chemia, rozrywka, okazyjne, inne
+
+def day_category_calculation(year, month, day, categories, categories_data):
+    for data in categories:
+        val = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, category=data).aggregate(Sum('value'))['value__sum']
+        if val is not None:
+            categories_data.append(val)
+        else:
+            categories_data.append(0)
+    return categories_data
+
 
 def year_month_calculation(Months):
     for item in range(13)[1:]:
@@ -75,6 +72,7 @@ def year_data_calculation(Months_data, year):
         else:
             Months_data.append(0)
     return Months_data
+
 
 def year_categories_calculation(year, categories, categories_data):
     for data in categories:

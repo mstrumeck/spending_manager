@@ -12,8 +12,6 @@ from bokeh.charts import Bar, output_file, show, Histogram
 from bokeh.sampledata.autompg import autompg as df
 from collections import OrderedDict
 import calendar
-from math import pi
-from bokeh.models import DatetimeTickFormatter
 from core_sm.functions import month_day_calculations, month_category_calculation, \
     day_day_calculation, day_category_calculation, year_data_calculation, year_month_calculation, \
     year_categories_calculation
@@ -98,13 +96,13 @@ def month_stats_detail(request, year, month):
     sum_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Sum('value'))
     min_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Min('value'))
     max_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Max('value'))
-    avg_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Avg('value'))
+    avg_cost = "%.2f" % Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Avg('value'))['value__avg']
     return render(request, 'core_sm/costs/month_stats_detail.html', {'year': year,
                                                                      'month': month,
                                                                      'sum_cost': sum_cost['value__sum'],
                                                                      'min_cost': min_cost['value__min'],
                                                                      'max_cost': max_cost['value__max'],
-                                                                     'avg_cost': avg_cost['value__avg'],
+                                                                     'avg_cost': avg_cost,
                                                                      'day_numbers': day_numbers,
                                                                      'day_data': day_data,
                                                                      'max_month_value': max_month_value,
@@ -130,16 +128,12 @@ def day_stats_detail(request, year, month, day):
     day_min = [title[value.index(min(value))], min(value), category[value.index(min(value))]]
     day_sum = day_data.aggregate(Sum('value'))
     day_avg = day_data.aggregate(Avg('value'))
-    jedzenie = []
-    domowe = []
-    kosmetyki_i_chemia = []
-    rozrywka = []
-    okazyjne = []
-    inne = []
-    day_category_calculation(day_data, jedzenie, domowe, kosmetyki_i_chemia, rozrywka, okazyjne, inne)
+    categories = ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
+    categories_data = []
+    day_category_calculation(year, month, day, categories, categories_data)
     data = {
-        'money': [sum(jedzenie), sum(domowe), sum(kosmetyki_i_chemia), sum(rozrywka), sum(okazyjne), sum(inne)],
-        'labels': ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
+        'money': [float(x) for x in categories_data],
+        'labels': categories
     }
     p = Bar(data, values='money', label='labels')
     script, div = components(p, CDN)
@@ -151,7 +145,7 @@ def day_stats_detail(request, year, month, day):
                    'all_data': all_data,
                    'day_sum': day_sum['value__sum'],
                    'day_avg': day_avg['value__avg'],
-                   'day_max': day_max,
-                   'day_min': day_min,
                    'script': mark_safe(script),
-                   'div': mark_safe(div)})
+                   'div': mark_safe(div),
+                   'day_max': day_max,
+                   'day_min': day_min})

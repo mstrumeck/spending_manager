@@ -37,27 +37,29 @@
     </div>
 
     <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kategoria</th>
+                    <th>ZŁ</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for cat, data in categories_res %}
+                <tr>
+                    <th scope="row">{{ cat }}</th>
+                    <th>{{ data }}</th>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div>
     {{ div1 }}
     {{ script1 }}
     </div>
 
-    <div>
-    <table>
-        <thead>
-            <tr>
-                <th>Kategoria</th>
-                <th>ZŁ</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for cat, data in categories_res %}
-            <tr>
-                <th scope="row">{{ cat }}</th>
-                <th>{{ data }}</th>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    </div>
+
 
 {% endblock %}
