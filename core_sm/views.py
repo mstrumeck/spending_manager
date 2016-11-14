@@ -16,6 +16,11 @@ from core_sm.functions import month_day_calculations, month_category_calculation
     day_day_calculation, day_category_calculation, year_data_calculation, year_month_calculation, \
     year_categories_calculation
 
+def day_data_delete(request, id):
+    Message = 'Zapis {} został poprawnie usunięty'.format(Cost.objects.filter(id=id).values('title', 'value'))
+    Cost.objects.filter(id=id).delete()
+    return render(request, 'core_sm/cost/day_delete.html', {'Message', Message})
+
 
 def costs_stats(request):
     if request.method == "GET":

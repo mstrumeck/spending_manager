@@ -22,10 +22,10 @@
                     <th scope="row">{{ title }}</th>
                     <td>{{ value }}</td>
                     <td>{{ category }}</td>
-                    <td>{{ id }}</td>
+                    <td><a href="/delete/{{ id }}">Usuń</a></td>
                 </tr>
-            </tbody>
             {% endfor %}
+            </tbody>
             <tfoot>
                 <tr>
                     <th>Podsumowanie</th>
