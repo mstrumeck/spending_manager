@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
 from .models import Cost
 from django.db.models import Avg, Max, Min, Sum
-from .forms import data_generate_form
+from .forms import data_generate_form, data_add_form
 from django.core.urlresolvers import reverse
 import datetime
 from bokeh.embed import components
@@ -16,10 +16,25 @@ from core_sm.functions import month_day_calculations, month_category_calculation
     day_day_calculation, day_category_calculation, year_data_calculation, year_month_calculation, \
     year_categories_calculation
 
+
+def data_add(request):
+    sent = False
+
+    if request.method == 'POST':
+        form = data_add_form(request.POST)
+        if form.is_valid():
+            sent = True
+
+    else:
+        form = data_add_form(instance=Cost)
+    return render(request, 'core_sm/costs/data_add.html', {'form': form,
+                                                           'sent': sent})
+
+
 def day_data_delete(request, id):
-    Message = 'Zapis {} został poprawnie usunięty'.format(Cost.objects.filter(id=id).values('title', 'value'))
+    Message = "Rekord '{}' został usunięty z bazy danych".format(Cost.objects.filter(id=id).values('title')[0]['title'])
     Cost.objects.filter(id=id).delete()
-    return render(request, 'core_sm/cost/day_delete.html', {'Message', Message})
+    return render(request, 'core_sm/costs/day_delete.html', {'Message': Message})
 
 
 def costs_stats(request):
@@ -121,6 +136,7 @@ def month_stats_detail(request, year, month):
                                                                      'categories_res': categories_res,
                                                                      'day_sum': day_avg})
 
+
 def day_stats_detail(request, year, month, day):
     day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day)
     title = []
@@ -132,7 +148,7 @@ def day_stats_detail(request, year, month, day):
     day_max = [title[value.index(max(value))], max(value), category[value.index(max(value))]]
     day_min = [title[value.index(min(value))], min(value), category[value.index(min(value))]]
     day_sum = day_data.aggregate(Sum('value'))
-    day_avg = day_data.aggregate(Avg('value'))
+    day_avg = "%.2f" % day_data.aggregate(Avg('value'))['value__avg']
     categories = ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
     categories_data = []
     day_category_calculation(year, month, day, categories, categories_data)
@@ -149,7 +165,7 @@ def day_stats_detail(request, year, month, day):
                    'day_data': day_data,
                    'all_data': all_data,
                    'day_sum': day_sum['value__sum'],
-                   'day_avg': day_avg['value__avg'],
+                   'day_avg': day_avg,
                    'script': mark_safe(script),
                    'div': mark_safe(div),
                    'day_max': day_max,
