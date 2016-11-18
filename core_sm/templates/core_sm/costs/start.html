@@ -1,0 +1,12 @@
+{% extends 'core_sm/base.html' %}
+{% load staticfiles %}
+
+{% block title%}
+    Strona startowa
+{% endblock %}
+
+{% block content %}
+<h3>Witaj w programie 'Spending Manager'</h3>
+<a href="/{{ year }}/{{ month }}/">Wybierz aktualny miesiąc</a>
+<a href="/{{ year }}/{{ month }}/{{ day }}">Wybierz aktualny dzień</a>
+{% endblock %}

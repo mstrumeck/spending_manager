@@ -14,10 +14,9 @@ class Cost(models.Model):
         ('Inne', 'Inne')
     )
     title = models.CharField(max_length=200, db_index=True)
-    slug = models.SlugField(max_length=200, unique_for_date='publish', db_index=True)
-    publish = models.DateTimeField(default=timezone.now)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    publish = models.DateField(default=timezone.now)
+    created = models.DateField(auto_now_add=True)
+    updated = models.DateField(auto_now=True)
     value = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.CharField(max_length=20, choices=STATUS_CHOICES)
 

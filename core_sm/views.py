@@ -19,14 +19,13 @@ from core_sm.functions import month_day_calculations, month_category_calculation
 
 def data_add(request):
     sent = False
-
     if request.method == 'POST':
         form = data_add_form(request.POST)
         if form.is_valid():
+            form.save()
             sent = True
-
     else:
-        form = data_add_form(instance=Cost)
+        form = data_add_form()
     return render(request, 'core_sm/costs/data_add.html', {'form': form,
                                                            'sent': sent})
 
@@ -47,6 +46,14 @@ def costs_stats(request):
             return HttpResponseRedirect(reverse('core_sm:month_stats_detail', args=(cd['year'], cd['month'])))
     return render(request, 'core_sm/costs/stats.html', {'form': form})
 
+
+def current_detail(request):
+    year = datetime.date.today().year
+    month = datetime.date.today().month
+    day = datetime.date.today().day
+    return render(request, 'core_sm/costs/start.html', {'year': year,
+                                                        'month': month,
+                                                        'day': day})
 
 def year_stats_detail(request, year):
     Months = []
