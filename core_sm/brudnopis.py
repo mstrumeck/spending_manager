@@ -15,3 +15,4 @@ b = [datetime.date(2016, x, 1) for x in b]
 
 c = [x for x in range(13)[1:]]
 print(datetime.date.today().year)
+

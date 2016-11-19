@@ -123,7 +123,7 @@ def month_stats_detail(request, year, month):
     sum_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Sum('value'))
     min_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Min('value'))
     max_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Max('value'))
-    avg_cost = "%.2f" % Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Avg('value'))['value__avg']
+    avg_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Avg('value'))['value__avg']
     return render(request, 'core_sm/costs/month_stats_detail.html', {'year': year,
                                                                      'month': month,
                                                                      'sum_cost': sum_cost['value__sum'],
