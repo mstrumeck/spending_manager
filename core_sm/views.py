@@ -12,6 +12,7 @@ from bokeh.charts import Bar, output_file, show, Histogram
 from bokeh.sampledata.autompg import autompg as df
 from collections import OrderedDict
 import calendar
+from django.forms import modelformset_factory
 from core_sm.functions import month_day_calculations, month_category_calculation, \
     day_day_calculation, day_category_calculation, year_data_calculation, year_month_calculation, \
     year_categories_calculation
@@ -28,6 +29,16 @@ def data_add(request):
         form = data_add_form()
     return render(request, 'core_sm/costs/data_add.html', {'form': form,
                                                            'sent': sent})
+
+def day_data_multiadd(request):
+    CostFormSet = modelformset_factory(Cost, form=data_add_form, extra=1)
+    if request.method == 'POST':
+        formset = CostFormSet(request.POST, request.FILES)
+        if formset.is_valid():
+            formset.save()
+    else:
+        formset = CostFormSet()
+    return render(request, 'core_sm/costs/multi_add.html', {'formset': formset})
 
 
 def day_data_delete(request, id):
