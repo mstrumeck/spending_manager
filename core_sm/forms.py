@@ -1,7 +1,6 @@
 from django import forms
 from .models import Cost
 import datetime
-from django.forms import BaseModelFormSet
 
 
 YEARS_CHOICES = [(datetime.date.today() - datetime.timedelta(days=x*365)).year for x in range(10)]
@@ -20,6 +19,9 @@ class data_add_form(forms.ModelForm):
     class Meta:
         model = Cost
         fields = ['title', 'value', 'publish', 'category']
+
+class multiadd_generate_form(forms.Form):
+    formy = forms.IntegerField(max_value=30, min_value=1)
 
 
 

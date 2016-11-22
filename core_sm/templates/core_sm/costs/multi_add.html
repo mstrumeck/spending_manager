@@ -7,7 +7,14 @@
 
 {% block content %}
     <h3>Multi dodawanie</h3>
-    <form method="POST" action="">
-    {{ formset }}
+    <form method="POST" action="{% url 'core_sm:day_data_multiadd' %}">
+        {{ formset }}
+        {% csrf_token %}
+        <input type="submit" value="Dodaj" name="formset">
+    </form>
+    <form method="POST" action="{% url 'core_sm:day_data_multiadd_create' %}">
+        {{form.as_p }}
+        {% csrf_token %}
+        <input type="submit" value="Wygeneruj" name="formset_num">
     </form>
 {% endblock %}

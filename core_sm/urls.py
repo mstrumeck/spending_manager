@@ -9,5 +9,5 @@ urlpatterns = [
     url(r'^delete/(?P<id>\d+)/$', views.day_data_delete, name='day_data_delete'),
     url(r'^add$', views.data_add, name='data_add'),
     url(r'^$', views.current_detail, name='current_detail'),
-    url(r'^multi-add$', views.day_data_multiadd, name='day_data_multiadd')
+    url(r'^multi-add/$', views.day_data_multiadd, name='day_data_multiadd')
 ]

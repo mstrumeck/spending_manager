@@ -1,16 +1,13 @@
-from django.shortcuts import render, get_object_or_404, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect
 from .models import Cost
 from django.db.models import Avg, Max, Min, Sum
-from .forms import data_generate_form, data_add_form
+from .forms import data_generate_form, data_add_form, multiadd_generate_form
 from django.core.urlresolvers import reverse
 import datetime
 from bokeh.embed import components
 from django.utils.safestring import mark_safe
 from bokeh.resources import CDN
-from bokeh.plotting import figure
-from bokeh.charts import Bar, output_file, show, Histogram
-from bokeh.sampledata.autompg import autompg as df
-from collections import OrderedDict
+from bokeh.charts import Bar
 import calendar
 from django.forms import modelformset_factory
 from core_sm.functions import month_day_calculations, month_category_calculation, \
@@ -30,15 +27,23 @@ def data_add(request):
     return render(request, 'core_sm/costs/data_add.html', {'form': form,
                                                            'sent': sent})
 
-def day_data_multiadd(request):
-    CostFormSet = modelformset_factory(Cost, form=data_add_form, extra=1)
-    if request.method == 'POST':
-        formset = CostFormSet(request.POST, request.FILES)
+def day_data_multiadd(request, num=1):
+    CostFormSet = modelformset_factory(Cost, form=data_add_form, extra=num)
+    if request.method == 'POST' and 'formset' in request.POST:
+        formset = CostFormSet(request.POST)
         if formset.is_valid():
             formset.save()
+
+    elif request.method == 'POST' and 'formset_value' in request.POST:
+        form = multiadd_generate_form(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            return HttpResponseRedirect(reverse('core_sm:day_data_multiadd', args=cd['num']))
     else:
-        formset = CostFormSet()
-    return render(request, 'core_sm/costs/multi_add.html', {'formset': formset})
+        formset = CostFormSet(queryset=Cost.objects.none())
+        form = multiadd_generate_form()
+    return render(request, 'core_sm/costs/multi_add.html', {'formset': formset,
+                                                            'form': form})
 
 
 def day_data_delete(request, id):
