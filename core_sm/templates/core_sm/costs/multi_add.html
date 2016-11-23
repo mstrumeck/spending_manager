@@ -1,5 +1,7 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
+{% url 'day_data_multiadd' argument %}
+{% url 'day_data_multiadd' extra=argument %}
 
 {% block title %}
     Multi dodawanie
@@ -12,9 +14,9 @@
         {% csrf_token %}
         <input type="submit" value="Dodaj" name="formset">
     </form>
-    <form method="POST" action="{% url 'core_sm:day_data_multiadd_create' %}">
+    <form method="POST" action="{% url 'core_sm:day_data_multiadd' %}">
         {{form.as_p }}
         {% csrf_token %}
-        <input type="submit" value="Wygeneruj" name="formset_num">
+        <input type="submit" value="Wygeneruj" name="formset_value">
     </form>
 {% endblock %}

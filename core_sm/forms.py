@@ -11,8 +11,8 @@ MONTH_CHOICES = zip(MONTHS_CHOICES, MONTHS_CHOICES)
 
 
 class data_generate_form(forms.Form):
-    miesiąc = forms.ChoiceField(choices=MONTH_CHOICES)
-    rok = forms.ChoiceField(choices=YEAR_CHOICES)
+    month = forms.ChoiceField(choices=MONTH_CHOICES)
+    year = forms.ChoiceField(choices=YEAR_CHOICES)
 
 
 class data_add_form(forms.ModelForm):

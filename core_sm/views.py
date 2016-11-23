@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from .models import Cost
 from django.db.models import Avg, Max, Min, Sum
 from .forms import data_generate_form, data_add_form, multiadd_generate_form
@@ -27,23 +27,26 @@ def data_add(request):
     return render(request, 'core_sm/costs/data_add.html', {'form': form,
                                                            'sent': sent})
 
-def day_data_multiadd(request, num=1):
-    CostFormSet = modelformset_factory(Cost, form=data_add_form, extra=num)
+
+def day_data_multiadd(request, extra=1):
+    CostFormSet = modelformset_factory(Cost, form=data_add_form, extra=extra)
     if request.method == 'POST' and 'formset' in request.POST:
         formset = CostFormSet(request.POST)
         if formset.is_valid():
             formset.save()
-
-    elif request.method == 'POST' and 'formset_value' in request.POST:
-        form = multiadd_generate_form(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            return HttpResponseRedirect(reverse('core_sm:day_data_multiadd', args=cd['num']))
     else:
         formset = CostFormSet(queryset=Cost.objects.none())
+
+    if request.method == 'POST' and 'formset_value' in request.POST:
+        form = multiadd_generate_form(request.POST)
+        if form.is_valid():
+            extra = form.cleaned_data
+            return HttpResponseRedirect
+    else:
         form = multiadd_generate_form()
     return render(request, 'core_sm/costs/multi_add.html', {'formset': formset,
-                                                            'form': form})
+                                                            'form': form,
+                                                            'extra': extra})
 
 
 def day_data_delete(request, id):
