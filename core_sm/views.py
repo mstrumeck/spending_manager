@@ -1,4 +1,5 @@
-from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
+from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, render_to_response
+from django.template import RequestContext
 from .models import Cost
 from django.db.models import Avg, Max, Min, Sum
 from .forms import data_generate_form, data_add_form, multiadd_generate_form
@@ -27,26 +28,30 @@ def data_add(request):
     return render(request, 'core_sm/costs/data_add.html', {'form': form,
                                                            'sent': sent})
 
+def get_number_of_lines(request):
+    if request.method == 'POST':
+        generate_form = multiadd_generate_form(request.POST)
+        if generate_form.is_valid():
+            no_of_lines = generate_form.cleaned_data['no_of_lines']
+            return HttpResponseRedirect(reverse('multi_add', kwargs={'no_of_lines': no_of_lines}))
+    else:
+        generate_form = multiadd_generate_form()
+        c = RequestContext(request, {'generate_form': generate_form})
+        return render_to_response('no_lines.html', c)
 
-def day_data_multiadd(request, extra=1):
-    CostFormSet = modelformset_factory(Cost, form=data_add_form, extra=extra)
-    if request.method == 'POST' and 'formset' in request.POST:
-        formset = CostFormSet(request.POST)
+
+
+def day_data_multiadd(request, no_of_lines):
+    no_of_lines = int(no_of_lines)
+    CostFormSet = modelformset_factory(Cost, form=data_add_form, extra=no_of_lines)
+    if request.method == 'POST':
+        formset = CostFormSet(request.POST, request.FILES)
         if formset.is_valid():
             formset.save()
     else:
-        formset = CostFormSet(queryset=Cost.objects.none())
-
-    if request.method == 'POST' and 'formset_value' in request.POST:
-        form = multiadd_generate_form(request.POST)
-        if form.is_valid():
-            extra = form.cleaned_data
-            return HttpResponseRedirect
-    else:
-        form = multiadd_generate_form()
-    return render(request, 'core_sm/costs/multi_add.html', {'formset': formset,
-                                                            'form': form,
-                                                            'extra': extra})
+        formset = CostFormSet()
+        c = RequestContext(request, {'formset': formset})
+    return render_to_response('multi_add.html', c)
 
 
 def day_data_delete(request, id):

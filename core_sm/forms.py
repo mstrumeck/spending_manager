@@ -1,6 +1,7 @@
 from django import forms
 from .models import Cost
 import datetime
+from django.forms.formsets import BaseFormSet
 
 
 YEARS_CHOICES = [(datetime.date.today() - datetime.timedelta(days=x*365)).year for x in range(10)]
@@ -23,5 +24,11 @@ class data_add_form(forms.ModelForm):
 class multiadd_generate_form(forms.Form):
     formy = forms.IntegerField(max_value=30, min_value=1)
 
+class BaseLineFormSet(BaseFormSet):
+    def __init__(self, *args, **kwargs):
+        super(BaseLineFormSet, self).__init__(*args, **kwargs)
+        no_of_forms = len(self)
+        for i in range(0, no_of_forms):
+            self[i].fields['formy'].label += "-%d" % (i + 1)
 
 

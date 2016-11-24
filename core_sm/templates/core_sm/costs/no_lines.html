@@ -1,16 +1,13 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
-
 {% block title %}
-    Multi dodawanie
+
 {% endblock %}
 
 {% block content %}
-    <h3>Multi dodawanie</h3>
     <form method="POST">
-        {{ formset }}
         {% csrf_token %}
-        <input type="submit" value="Dodaj">
+        {{ generate_form }}
     </form>
 {% endblock %}
