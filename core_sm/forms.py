@@ -29,6 +29,6 @@ class BaseLineFormSet(BaseFormSet):
         super(BaseLineFormSet, self).__init__(*args, **kwargs)
         no_of_forms = len(self)
         for i in range(0, no_of_forms):
-            self[i].fields['formy'].label += "-%d" % (i + 1)
+            self[i].fields['title', 'value', 'publish', 'category'].label += "-%d" % (i + 1)
 
 

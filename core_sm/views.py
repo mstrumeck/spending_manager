@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, re
 from django.template import RequestContext
 from .models import Cost
 from django.db.models import Avg, Max, Min, Sum
-from .forms import data_generate_form, data_add_form, multiadd_generate_form
+from .forms import data_generate_form, data_add_form, multiadd_generate_form, BaseLineFormSet
 from django.core.urlresolvers import reverse
 import datetime
 from bokeh.embed import components
@@ -32,16 +32,15 @@ def get_number_of_lines(request):
     if request.method == 'POST':
         generate_form = multiadd_generate_form(request.POST)
         if generate_form.is_valid():
-            no_of_lines = generate_form.cleaned_data['no_of_lines']
-            return HttpResponseRedirect(reverse('multi_add', kwargs={'no_of_lines': no_of_lines}))
+            no_of_lines = generate_form.cleaned_data['formy']
+            return render(request, 'core_sm/costs/multi_add.html', {'no_of_line': no_of_lines})
     else:
         generate_form = multiadd_generate_form()
-        c = RequestContext(request, {'generate_form': generate_form})
-        return render_to_response('no_lines.html', c)
+    return render(request, 'core_sm/costs/no_lines.html', {'generate_form': generate_form})
 
 
 
-def day_data_multiadd(request, no_of_lines):
+def day_data_multiadd(request, no_of_lines = 0):
     no_of_lines = int(no_of_lines)
     CostFormSet = modelformset_factory(Cost, form=data_add_form, extra=no_of_lines)
     if request.method == 'POST':
@@ -49,9 +48,9 @@ def day_data_multiadd(request, no_of_lines):
         if formset.is_valid():
             formset.save()
     else:
-        formset = CostFormSet()
+        formset = CostFormSet(queryset=Cost.objects.none())
         c = RequestContext(request, {'formset': formset})
-    return render_to_response('multi_add.html', c)
+    return render(request, 'core_sm/costs/multi_add.html', {'formset': formset})
 
 
 def day_data_delete(request, id):
