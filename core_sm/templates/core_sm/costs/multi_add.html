@@ -11,6 +11,12 @@
     <form method="POST">
         {{ formset }}
         {% csrf_token %}
-        <input type="submit" value="Dodaj">
+        <input type="submit" name="form" value="Dodaj">
+    </form>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ generate_form }}
+        <input type="submit" name="no_line" value="Generuj">
     </form>
 {% endblock %}

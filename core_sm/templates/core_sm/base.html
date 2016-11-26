@@ -15,8 +15,23 @@
             <li><a href="{% url 'core_sm:costs_stats' %}">Znajdz statystyke</a></li>
             <li><a href="{% url 'core_sm:data_add' %}">Dodaj wydatek</a> </li>
             <li><a href="{% url 'core_sm:day_data_multiadd' %}">Multi-dodaj</a></li>
-            <li><a href="{% url 'core_sm:get_number_of_lines' %}">Linie</a></li>
         </ul>
+    </div>
+    <div>
+        <h3>Szybkie dodawanie</h3>
+        <form method="POST">
+            {{ add_form.as_p}}
+            {% csrf_token %}
+            <input type="submit" value="Dodaj">
+        </form>
+    </div>
+    <div>
+        <h3>Szybkie szukanie</h3>
+        <form method="POST">
+            {{ find_form.as_p }}
+            {% csrf_token %}
+            <input type="submit" value="Idź">
+        </form>
     </div>
     <div>
         {% block content %}

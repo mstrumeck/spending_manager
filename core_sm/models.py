@@ -13,6 +13,8 @@ class Cost(models.Model):
         ('Okazyjne', 'Okazyjne'),
         ('Inne', 'Inne')
     )
+    global STATUS_CHOICES
+
     title = models.CharField(max_length=200, db_index=True)
     publish = models.DateField(default=timezone.now)
     created = models.DateField(auto_now_add=True)

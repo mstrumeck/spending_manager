@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, re
 from django.template import RequestContext
 from .models import Cost
 from django.db.models import Avg, Max, Min, Sum
-from .forms import data_generate_form, data_add_form, multiadd_generate_form, BaseLineFormSet
+from .forms import data_generate_form, data_add_form, multiadd_generate_form, comp_form
 from django.core.urlresolvers import reverse
 import datetime
 from bokeh.embed import components
@@ -13,7 +13,7 @@ import calendar
 from django.forms import modelformset_factory
 from core_sm.functions import month_day_calculations, month_category_calculation, \
     day_day_calculation, day_category_calculation, year_data_calculation, year_month_calculation, \
-    year_categories_calculation
+    year_categories_calculation, comp_categories_calculation
 
 
 def data_add(request):
@@ -25,32 +25,30 @@ def data_add(request):
             sent = True
     else:
         form = data_add_form()
-    return render(request, 'core_sm/costs/data_add.html', {'form': form,
-                                                           'sent': sent})
-
-def get_number_of_lines(request):
-    if request.method == 'POST':
-        generate_form = multiadd_generate_form(request.POST)
-        if generate_form.is_valid():
-            no_of_lines = generate_form.cleaned_data['formy']
-            return render(request, 'core_sm/costs/multi_add.html', {'no_of_line': no_of_lines})
-    else:
-        generate_form = multiadd_generate_form()
-    return render(request, 'core_sm/costs/no_lines.html', {'generate_form': generate_form})
+    return render(request, 'core_sm/base.html', {'form': form})
 
 
-
-def day_data_multiadd(request, no_of_lines = 0):
+def day_data_multiadd(request, no_of_lines=0):
     no_of_lines = int(no_of_lines)
     CostFormSet = modelformset_factory(Cost, form=data_add_form, extra=no_of_lines)
-    if request.method == 'POST':
+    if request.method == 'POST' and 'form' in request.POST:
         formset = CostFormSet(request.POST, request.FILES)
         if formset.is_valid():
             formset.save()
     else:
         formset = CostFormSet(queryset=Cost.objects.none())
-        c = RequestContext(request, {'formset': formset})
-    return render(request, 'core_sm/costs/multi_add.html', {'formset': formset})
+
+    if request.method == 'POST' and 'no_line' in request.POST:
+        generate_form = multiadd_generate_form(request.POST)
+        if generate_form.is_valid():
+            cd = generate_form.cleaned_data
+            return HttpResponseRedirect(reverse('core_sm:day_data_multiadd', args=(str(cd['formy']))))
+    else:
+        generate_form = multiadd_generate_form()
+
+    return render(request, 'core_sm/costs/multi_add.html', {'formset': formset,
+                                                            'no_of_lines': no_of_lines,
+                                                            'generate_form': generate_form})
 
 
 def day_data_delete(request, id):
@@ -77,6 +75,42 @@ def current_detail(request):
     return render(request, 'core_sm/costs/start.html', {'year': year,
                                                         'month': month,
                                                         'day': day})
+
+
+def stats_comp(request, year_x, year_y, month_x, month_y, day_x, day_y):
+    start_date = datetime.date(int(year_x), int(month_x), int(day_x))
+    end_date = datetime.date(int(year_y), int(month_y), int(day_y))
+    data = Cost.objects.filter(publish__range=(start_date, end_date))
+    categories = ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
+    categories_data = []
+    comp_categories_calculation(categories, categories_data, start_date, end_date)
+    vis_data = {
+        'money': [float(x) for x in categories_data],
+        'labels': categories
+    }
+    p = Bar(vis_data, values='money', label='labels')
+    script, div = components(p, CDN)
+    categories_res = zip(categories, categories_data)
+    data_sum = Cost.objects.filter(publish__range=(start_date, end_date)).aggregate(Sum('value'))['value__sum']
+    data_avg = Cost.objects.filter(publish__range=(start_date, end_date)).aggregate(Avg('value'))['value__avg']
+    data_min = Cost.objects.filter(publish__range=(start_date, end_date)).aggregate(Min('value'))['value__min']
+    data_max = Cost.objects.filter(publish__range=(start_date, end_date)).aggregate(Max('value'))['value__max']
+    if request.method == 'POST':
+        form = comp_form(request.POST)
+        cd = form.cleaned_data
+        return HttpResponseRedirect(reverse('core_sm:stats_comp', args=(cd['data_x'], cd['data_y'])))
+    else:
+        form = comp_form()
+    return render(request, 'core_sm/costs/stats_comp.html', {'data': data,
+                                                             'data_sum': data_sum,
+                                                             'data_avg': data_avg,
+                                                             'data_min': data_min,
+                                                             'data_max': data_max,
+                                                             'script': mark_safe(script),
+                                                             'div': mark_safe(div),
+                                                             'categories_res': categories_res,
+                                                             'form': form})
+
 
 def year_stats_detail(request, year):
     Months = []

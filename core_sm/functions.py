@@ -4,6 +4,17 @@ import calendar
 import datetime
 
 
+def comp_categories_calculation(categories, categories_data, start_date, end_date):
+    for item in categories:
+        val = Cost.objects.filter(publish__range=(start_date, end_date), category=item).aggregate(Sum('value'))['value__sum']
+        if val is not None:
+            categories_data.append(val)
+        else:
+            categories_data.append(0)
+    return categories_data
+
+
+
 def month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg):
     for day in day_numbers:
         val_1 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day).aggregate(Sum('value'))[
