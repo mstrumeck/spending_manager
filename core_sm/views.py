@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, render_to_response
+from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, render_to_response, redirect
 from django.template import RequestContext
 from .models import Cost
 from django.db.models import Avg, Max, Min, Sum
@@ -16,16 +16,9 @@ from core_sm.functions import month_day_calculations, month_category_calculation
     year_categories_calculation, comp_categories_calculation
 
 
-def data_add(request):
-    sent = False
-    if request.method == 'POST':
-        form = data_add_form(request.POST)
-        if form.is_valid():
-            form.save()
-            sent = True
-    else:
-        form = data_add_form()
-    return render(request, 'core_sm/base.html', {'form': form})
+def edit_status(request):
+    data = Cost.STATUS_CHOICES
+    return render(request, 'core_sm/costs/status_edit.html', {'data': data})
 
 
 def day_data_multiadd(request, no_of_lines=0):
@@ -77,9 +70,9 @@ def current_detail(request):
                                                         'day': day})
 
 
-def stats_comp(request, year_x, year_y, month_x, month_y, day_x, day_y):
-    start_date = datetime.date(int(year_x), int(month_x), int(day_x))
-    end_date = datetime.date(int(year_y), int(month_y), int(day_y))
+def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today()):
+    start_date = date_x
+    end_date = date_y
     data = Cost.objects.filter(publish__range=(start_date, end_date))
     categories = ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
     categories_data = []
@@ -95,10 +88,12 @@ def stats_comp(request, year_x, year_y, month_x, month_y, day_x, day_y):
     data_avg = Cost.objects.filter(publish__range=(start_date, end_date)).aggregate(Avg('value'))['value__avg']
     data_min = Cost.objects.filter(publish__range=(start_date, end_date)).aggregate(Min('value'))['value__min']
     data_max = Cost.objects.filter(publish__range=(start_date, end_date)).aggregate(Max('value'))['value__max']
+
     if request.method == 'POST':
         form = comp_form(request.POST)
-        cd = form.cleaned_data
-        return HttpResponseRedirect(reverse('core_sm:stats_comp', args=(cd['data_x'], cd['data_y'])))
+        if form.is_valid():
+            cd = form.cleaned_data
+            return HttpResponseRedirect(reverse('core_sm:stats_comp', args=(cd['date_x'], cd['date_y'])))
     else:
         form = comp_form()
     return render(request, 'core_sm/costs/stats_comp.html', {'data': data,
@@ -109,7 +104,9 @@ def stats_comp(request, year_x, year_y, month_x, month_y, day_x, day_y):
                                                              'script': mark_safe(script),
                                                              'div': mark_safe(div),
                                                              'categories_res': categories_res,
-                                                             'form': form})
+                                                             'form': form,
+                                                             'date_x': date_x,
+                                                             'date_y': date_y})
 
 
 def year_stats_detail(request, year):

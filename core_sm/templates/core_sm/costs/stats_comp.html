@@ -1,11 +1,11 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
-{% block title %}{{ year_x }}.{{ month_x }}.{{ day_x }} - {{ year_y }}.{{ month_y }}.{{ day_y }}{% endblock %}
+{% block title %}{{ date_x }} - {{ date_y }}{% endblock %}
 
 {% block content%}
 
-    <h3>Zestawienie od {{ year_x }}.{{ month_x }}.{{ day_x }} do {{ year_y }}.{{ month_y }}.{{ day_y }}</h3>
+    <h3>Zestawienie od {{ date_x }} do {{ date_y }}</h3>
     <table>
         <thead>
             <tr>
@@ -61,8 +61,11 @@
     </tbody>
 </table>
 
-<form>
-    
+<form action="" method="POST">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <input type="submit" value="Dodaj">
 </form>
+{{ message }}
 
 {% endblock %}

@@ -65,7 +65,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'core_sm.context_processor.add_data',
-                'core_sm.context_processor.day_find',
             ],
         },
     },

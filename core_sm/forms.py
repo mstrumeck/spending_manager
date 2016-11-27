@@ -24,9 +24,10 @@ class data_add_form(forms.ModelForm):
 class multiadd_generate_form(forms.Form):
     formy = forms.IntegerField(max_value=30, min_value=1)
 
+
 class comp_form(forms.Form):
-    data_x = forms.DateField()
-    data_y = forms.DateField()
+    date_x = forms.DateField(initial=datetime.date.today())
+    date_y = forms.DateField(initial=datetime.date.today())
 
 
 

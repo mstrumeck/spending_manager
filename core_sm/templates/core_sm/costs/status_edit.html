@@ -1,0 +1,15 @@
+{% extends 'core_sm/base.html' %}
+{% load staticfiles %}
+
+{% block title %}Edycja statusów{% endblock %}
+
+{% block content %}
+
+<h3>Lista dostępnych kategorii </h3>
+<ul>
+    {% for item in data %}
+        <li>{{ item.0 }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

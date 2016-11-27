@@ -10,8 +10,7 @@ urlpatterns = [
     url(r'^day_data_multiadd/$', views.day_data_multiadd, name='day_data_multiadd'),
     url(r'^day_data_multiadd/(?P<no_of_lines>\d+)/$', views.day_data_multiadd, name='day_data_multiadd'),
     url(r'^delete/(?P<id>\d+)/$', views.day_data_delete, name='day_data_delete'),
-    url(r'^add$', views.data_add, name='data_add'),
     url(r'^compare/$', views.stats_comp, name='stats_comp'),
-    url(r'^compare/(?P<year_x>\d{4})/(?P<month_x>\d{2})/(?P<day_x>\d{2})/'
-        r'(?P<year_y>\d{4})/(?P<month_y>\d{2})/(?P<day_y>\d{2})/$', views.stats_comp, name='stats_comp')
+    url(r'^compare/(?P<date_x>\d{4}-\d{2}-\d{2})/(?P<date_y>\d{4}-\d{2}-\d{2})/$', views.stats_comp, name='stats_comp'),
+    url(r'^status_edit', views.edit_status, name='status_edit')
 ]
