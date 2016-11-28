@@ -30,4 +30,9 @@ class comp_form(forms.Form):
     date_y = forms.DateField(initial=datetime.date.today())
 
 
+class StatusFormEdit(forms.Form):
+    status = forms.CharField(max_length=20)
+
+
+
 

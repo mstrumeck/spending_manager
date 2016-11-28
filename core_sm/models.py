@@ -4,15 +4,22 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 
 
+class Budget(models.Model):
+    title = models.CharField(max_length=200)
+    budget = models.DecimalField(decimal_places=2, max_digits=10)
+    start_date = models.DateField(default=timezone.now)
+    year = models.IntegerField(max_length=4)
+
+
 class Cost(models.Model):
-    STATUS_CHOICES = (
-        ('Domowe', 'Domowe'),
-        ('Jedzenie', 'Jedzenie'),
-        ('Kosmetyki i Chemia', 'Kosmetyki i Chemia'),
-        ('Rozrywka', 'Rozrywka'),
-        ('Okazyjne', 'Okazyjne'),
-        ('Inne', 'Inne')
-    )
+    STATUS_CHOICES = [
+        ['Domowe', 'Domowe'],
+        ['Jedzenie', 'Jedzenie'],
+        ['Kosmetyki i Chemia', 'Kosmetyki i Chemia'],
+        ['Rozrywka', 'Rozrywka'],
+        ['Okazyjne', 'Okazyjne'],
+        ['Inne', 'Inne']
+    ]
 
     title = models.CharField(max_length=200, db_index=True)
     publish = models.DateField(default=timezone.now)

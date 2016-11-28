@@ -11,5 +11,21 @@
         <li>{{ item.0 }}</li>
     {% endfor %}
 </ul>
+{% if add %}
+<h3>Kategoria dodana</h3>
+{% endif %}
+<form method='POST'>
+    {{ form_add.as_p }}
+    {% csrf_token %}
+    <input type="submit" name='add' value="Dodaj">
+</form>
+{% if delete %}
+<h3>Kategoria usunięta</h3>
+{% endif %}
+<form method="POST">
+    {{ form_delete.as_p }}
+    {% csrf_token %}
+    <input type="submit" name="delete" value="Usuń">
+</form>
 
 {% endblock %}

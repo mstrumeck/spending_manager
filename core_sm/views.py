@@ -1,8 +1,7 @@
-from django.shortcuts import render, HttpResponseRedirect, get_object_or_404, render_to_response, redirect
-from django.template import RequestContext
+from django.shortcuts import render, HttpResponseRedirect
 from .models import Cost
 from django.db.models import Avg, Max, Min, Sum
-from .forms import data_generate_form, data_add_form, multiadd_generate_form, comp_form
+from .forms import data_generate_form, data_add_form, multiadd_generate_form, comp_form, StatusFormEdit
 from django.core.urlresolvers import reverse
 import datetime
 from bokeh.embed import components
@@ -17,8 +16,33 @@ from core_sm.functions import month_day_calculations, month_category_calculation
 
 
 def edit_status(request):
+    delete = False
+    add = False
     data = Cost.STATUS_CHOICES
-    return render(request, 'core_sm/costs/status_edit.html', {'data': data})
+    if request.method == 'POST' and 'add' in request.POST:
+        form_add = StatusFormEdit(request.POST)
+        if form_add.is_valid():
+            add = True
+            cd = form_add.cleaned_data
+            Cost.STATUS_CHOICES.append([cd['status'], cd['status']])
+            Cost.STATUS_CHOICES.sort()
+    else:
+        form_add = StatusFormEdit()
+
+    if request.method == 'POST' and 'delete' in request.POST:
+        form_delete = StatusFormEdit(request.POST)
+        if form_delete.is_valid():
+            delete = True
+            cd = form_delete.cleaned_data
+            Cost.STATUS_CHOICES.remove(cd['status'])
+            Cost.STATUS_CHOICES.sort()
+    else:
+        form_delete = StatusFormEdit()
+    return render(request, 'core_sm/costs/status_edit.html', {'data': data,
+                                                              'add': add,
+                                                              'form_add': form_add,
+                                                              'form_delete': form_delete,
+                                                              'delete': delete})
 
 
 def day_data_multiadd(request, no_of_lines=0):
@@ -74,7 +98,9 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
     start_date = date_x
     end_date = date_y
     data = Cost.objects.filter(publish__range=(start_date, end_date))
-    categories = ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
+    categories = []
+    for item in Cost.STATUS_CHOICES:
+        categories.append(item[0])
     categories_data = []
     comp_categories_calculation(categories, categories_data, start_date, end_date)
     vis_data = {
@@ -123,7 +149,9 @@ def year_stats_detail(request, year):
     script, div = components(p, CDN)
     all_data = zip(Months, Months_data, Months_url)
     year_sum = Cost.objects.filter(publish__year=year).aggregate(Sum('value'))['value__sum']
-    categories = ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
+    categories = []
+    for item in Cost.STATUS_CHOICES:
+        categories.append(item[0])
     categories_data = []
     year_categories_calculation(year, categories, categories_data)
     data1 = {
@@ -164,7 +192,9 @@ def month_stats_detail(request, year, month):
     max_month_day = day_numbers[day_max.index(max(day_max))]
     min_month_value = (min(day_min))
     min_month_day = day_numbers[day_min.index(min(day_min))]
-    categories = ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
+    categories = []
+    for item in Cost.STATUS_CHOICES:
+        categories.append(item[0])
     categories_data = []
     month_category_calculation(year, month, categories, categories_data)
     data1 = {
@@ -206,11 +236,19 @@ def day_stats_detail(request, year, month, day):
     id = []
     day_day_calculation(day_data, title, value, category, id)
     all_data = zip(title, value, category, id)
-    day_max = [title[value.index(max(value))], max(value), category[value.index(max(value))]]
-    day_min = [title[value.index(min(value))], min(value), category[value.index(min(value))]]
+    try:
+        day_max = [title[value.index(max(value))], max(value), category[value.index(max(value))]]
+    except(ValueError, TypeError):
+        day_max = 0
+    try:
+        day_min = [title[value.index(min(value))], min(value), category[value.index(min(value))]]
+    except(ValueError, TypeError):
+        day_min = 0
     day_sum = day_data.aggregate(Sum('value'))
-    day_avg = "%.2f" % day_data.aggregate(Avg('value'))['value__avg']
-    categories = ['Jedzenie', 'Domowe', 'Kosmetyki i Chemia', 'Rozrywka', 'Okazyjne', 'Inne']
+    day_avg = day_data.aggregate(Avg('value'))['value__avg']
+    categories = []
+    for item in Cost.STATUS_CHOICES:
+        categories.append(item[0])
     categories_data = []
     day_category_calculation(year, month, day, categories, categories_data)
     data = {

@@ -48,15 +48,19 @@
                 <tbody>
                     <tr>
                         <th scope="row">Największy wydatek</th>
-                        {% for item in day_max %}
-                        <th>{{ item }}</th>
-                        {% endfor %}
+                        {% if day_max != 0 %}
+                            {% for item in day_max %}
+                            <th>{{ item }}</th>
+                            {% endfor %}
+                        {% endif %}
                     </tr>
                     <tr>
                         <th scope="row">Najmniejszy wydatek</th>
-                        {% for item in day_min %}
-                        <th>{{ item }}</th>
-                        {% endfor %}
+                        {% if day_min != 0 %}
+                            {% for item in day_min %}
+                            <th>{{ item }}</th>
+                            {% endfor %}
+                        {% endif %}
                     </tr>
                     <tr>
                         <th scope="row">Średnia</th>

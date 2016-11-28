@@ -21,14 +21,14 @@ d = str([(datetime.date.today() - datetime.timedelta(days=x*365)).year for x in 
 print(d)
 print(type(datetime.date(2016, 10, 2)))
 
-STATUS_CHOICES = (
-        ('Domowe', 'Domowe'),
-        ('Jedzenie', 'Jedzenie'),
-        ('Kosmetyki i Chemia', 'Kosmetyki i Chemia'),
-        ('Rozrywka', 'Rozrywka'),
-        ('Okazyjne', 'Okazyjne'),
-        ('Inne', 'Inne')
-    )
+STATUS_CHOICES = [
+        ['Domowe', 'Domowe'],
+        ['Jedzenie', 'Jedzenie'],
+        ['Kosmetyki i Chemia', 'Kosmetyki i Chemia'],
+        ['Rozrywka', 'Rozrywka'],
+        ['Okazyjne', 'Okazyjne'],
+        ['Inne', 'Inne']
+    ]
 
 STATUS_CHOICES += (('Kino', 'Kino'),)
 categories = []
@@ -36,4 +36,5 @@ for item in STATUS_CHOICES:
     print(item[0])
     categories.append(item[0])
 
+categories.remove('Jedzenie')
 print(categories)
