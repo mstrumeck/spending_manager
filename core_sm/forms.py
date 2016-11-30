@@ -1,5 +1,5 @@
 from django import forms
-from .models import Cost
+from .models import Cost, Budget
 import datetime
 
 
@@ -32,6 +32,13 @@ class comp_form(forms.Form):
 
 class StatusFormEdit(forms.Form):
     status = forms.CharField(max_length=20)
+
+
+class BudgetForm(forms.ModelForm):
+    class Meta:
+        model = Budget
+        fields = ['title', 'start_date', 'end_date', 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september',
+              'october', 'november', 'december']
 
 
 

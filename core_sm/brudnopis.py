@@ -36,5 +36,6 @@ for item in STATUS_CHOICES:
     print(item[0])
     categories.append(item[0])
 
-categories.remove('Jedzenie')
-print(categories)
+xyz = datetime.datetime.now()
+print(datetime.datetime.now().year)
+print(datetime.date(xyz.year, 1, 1))

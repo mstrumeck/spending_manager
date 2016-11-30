@@ -2,13 +2,36 @@ from __future__ import unicode_literals
 from django.db import models
 from django.utils import timezone
 from django.core.urlresolvers import reverse
+import datetime
 
 
 class Budget(models.Model):
     title = models.CharField(max_length=200)
-    budget = models.DecimalField(decimal_places=2, max_digits=10)
-    start_date = models.DateField(default=timezone.now)
-    year = models.IntegerField(max_length=4)
+    start_date = models.DateField(default=datetime.date(datetime.datetime.now().year, 1, 1), unique=True)
+    end_date = models.DateField(default=datetime.date(datetime.datetime.now().year, 12, 31), unique=True)
+    january = models.DecimalField(decimal_places=2, max_digits=10)
+    february = models.DecimalField(decimal_places=2, max_digits=10)
+    march = models.DecimalField(decimal_places=2, max_digits=10)
+    april = models.DecimalField(decimal_places=2, max_digits=10)
+    may = models.DecimalField(decimal_places=2, max_digits=10)
+    june = models.DecimalField(decimal_places=2, max_digits=10)
+    july = models.DecimalField(decimal_places=2, max_digits=10)
+    august = models.DecimalField(decimal_places=2, max_digits=10)
+    september = models.DecimalField(decimal_places=2, max_digits=10)
+    october = models.DecimalField(decimal_places=2, max_digits=10)
+    november = models.DecimalField(decimal_places=2, max_digits=10)
+    december = models.DecimalField(decimal_places=2, max_digits=10)
+
+    class Meta:
+        ordering = ('-start_date',)
+
+    def budget_year(self):
+        total += (self.january + self.february + self.march + self.april + self.may + self.june + self.july + self.august +
+                   self.september + self.october + self.november + self.december)
+        return total
+
+    def __str__(self):
+        return self.title
 
 
 class Cost(models.Model):

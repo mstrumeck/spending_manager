@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponseRedirect
-from .models import Cost
+from .models import Cost, Budget
 from django.db.models import Avg, Max, Min, Sum
-from .forms import data_generate_form, data_add_form, multiadd_generate_form, comp_form, StatusFormEdit
+from .forms import data_generate_form, data_add_form, multiadd_generate_form, comp_form, StatusFormEdit, BudgetForm
 from django.core.urlresolvers import reverse
 import datetime
 from bokeh.embed import components
@@ -15,10 +15,28 @@ from core_sm.functions import month_day_calculations, month_category_calculation
     year_categories_calculation, comp_categories_calculation
 
 
+def budget_setup(request):
+    add = False
+
+    if request.method == 'POST':
+        form = BudgetForm(request.POST)
+        if form.is_valid():
+            add = True
+            form.save()
+    else:
+        form = BudgetForm()
+
+    summary = Budget.budget_year
+    return render(request, 'core_sm/costs/budget.html', {'add': add,
+                                                         'form': form,
+                                                         'summary': summary})
+
+
 def edit_status(request):
     delete = False
     add = False
     data = Cost.STATUS_CHOICES
+
     if request.method == 'POST' and 'add' in request.POST:
         form_add = StatusFormEdit(request.POST)
         if form_add.is_valid():
@@ -38,6 +56,7 @@ def edit_status(request):
             Cost.STATUS_CHOICES.sort()
     else:
         form_delete = StatusFormEdit()
+
     return render(request, 'core_sm/costs/status_edit.html', {'data': data,
                                                               'add': add,
                                                               'form_add': form_add,
@@ -48,6 +67,7 @@ def edit_status(request):
 def day_data_multiadd(request, no_of_lines=0):
     no_of_lines = int(no_of_lines)
     CostFormSet = modelformset_factory(Cost, form=data_add_form, extra=no_of_lines)
+
     if request.method == 'POST' and 'form' in request.POST:
         formset = CostFormSet(request.POST, request.FILES)
         if formset.is_valid():

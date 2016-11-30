@@ -1,0 +1,16 @@
+{% extends 'core_sm/base.html' %}
+{% load staticfiles %}
+
+{% block title %}Budżet{% endblock %}
+
+{% block content %}
+
+{{ summary }}
+
+<form action="POST">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <input type="submit" value="Dodaj">
+</form>
+
+{% endblock %}
