@@ -6,29 +6,15 @@ import datetime
 
 
 class Budget(models.Model):
-    title = models.CharField(max_length=200)
-    start_date = models.DateField(default=datetime.date(datetime.datetime.now().year, 1, 1), unique=True)
-    end_date = models.DateField(default=datetime.date(datetime.datetime.now().year, 12, 31), unique=True)
-    january = models.DecimalField(decimal_places=2, max_digits=10)
-    february = models.DecimalField(decimal_places=2, max_digits=10)
-    march = models.DecimalField(decimal_places=2, max_digits=10)
-    april = models.DecimalField(decimal_places=2, max_digits=10)
-    may = models.DecimalField(decimal_places=2, max_digits=10)
-    june = models.DecimalField(decimal_places=2, max_digits=10)
-    july = models.DecimalField(decimal_places=2, max_digits=10)
-    august = models.DecimalField(decimal_places=2, max_digits=10)
-    september = models.DecimalField(decimal_places=2, max_digits=10)
-    october = models.DecimalField(decimal_places=2, max_digits=10)
-    november = models.DecimalField(decimal_places=2, max_digits=10)
-    december = models.DecimalField(decimal_places=2, max_digits=10)
+    title = models.CharField(max_length=200, db_index=True)
+    slug = models.SlugField(max_length=200, db_index=True, unique=True)
+    value = models.DecimalField(decimal_places=2, max_digits=10)
+    year = models.IntegerField(default=datetime.datetime.now().year)
+    month = models.IntegerField(default=datetime.datetime.now().month)
+    created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ('-start_date',)
-
-    def budget_year(self):
-        total += (self.january + self.february + self.march + self.april + self.may + self.june + self.july + self.august +
-                   self.september + self.october + self.november + self.december)
-        return total
+        ordering = ('-year',)
 
     def __str__(self):
         return self.title
@@ -43,7 +29,7 @@ class Cost(models.Model):
         ['Okazyjne', 'Okazyjne'],
         ['Inne', 'Inne']
     ]
-
+    budget = models.ForeignKey(Budget, related_name='cost')
     title = models.CharField(max_length=200, db_index=True)
     publish = models.DateField(default=timezone.now)
     created = models.DateField(auto_now_add=True)

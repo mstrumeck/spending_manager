@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponseRedirect
 from .models import Cost, Budget
 from django.db.models import Avg, Max, Min, Sum
-from .forms import data_generate_form, data_add_form, multiadd_generate_form, comp_form, StatusFormEdit, BudgetForm
+from .forms import DataGenerateForm, DataAddForm, MultiaddGenerateForm, comp_form, StatusFormEdit, BudgetForm
 from django.core.urlresolvers import reverse
 import datetime
 from bokeh.embed import components
@@ -17,6 +17,7 @@ from core_sm.functions import month_day_calculations, month_category_calculation
 
 def budget_setup(request):
     add = False
+    info = Budget.objects.all().values()
 
     if request.method == 'POST':
         form = BudgetForm(request.POST)
@@ -25,11 +26,12 @@ def budget_setup(request):
             form.save()
     else:
         form = BudgetForm()
-
-    summary = Budget.budget_year
+    #Cost.objects.filter(budget_id=1).aggregate(Sum('value'))['value__sum']
+    #Budget.objects.get(id=1).value
+    #a - b
     return render(request, 'core_sm/costs/budget.html', {'add': add,
                                                          'form': form,
-                                                         'summary': summary})
+                                                         'info': info})
 
 
 def edit_status(request):
@@ -66,7 +68,7 @@ def edit_status(request):
 
 def day_data_multiadd(request, no_of_lines=0):
     no_of_lines = int(no_of_lines)
-    CostFormSet = modelformset_factory(Cost, form=data_add_form, extra=no_of_lines)
+    CostFormSet = modelformset_factory(Cost, form=DataAddForm, extra=no_of_lines)
 
     if request.method == 'POST' and 'form' in request.POST:
         formset = CostFormSet(request.POST, request.FILES)
@@ -76,12 +78,12 @@ def day_data_multiadd(request, no_of_lines=0):
         formset = CostFormSet(queryset=Cost.objects.none())
 
     if request.method == 'POST' and 'no_line' in request.POST:
-        generate_form = multiadd_generate_form(request.POST)
+        generate_form = MultiaddGenerateForm(request.POST)
         if generate_form.is_valid():
             cd = generate_form.cleaned_data
             return HttpResponseRedirect(reverse('core_sm:day_data_multiadd', args=(str(cd['formy']))))
     else:
-        generate_form = multiadd_generate_form()
+        generate_form = MultiaddGenerateForm()
 
     return render(request, 'core_sm/costs/multi_add.html', {'formset': formset,
                                                             'no_of_lines': no_of_lines,
@@ -96,9 +98,9 @@ def day_data_delete(request, id):
 
 def costs_stats(request):
     if request.method == "GET":
-        form = data_generate_form()
+        form = DataGenerateForm()
     else:
-        form = data_generate_form(request.POST)
+        form = DataGenerateForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
             return HttpResponseRedirect(reverse('core_sm:month_stats_detail', args=(cd['year'], cd['month'])))
@@ -108,7 +110,7 @@ def costs_stats(request):
 def current_detail(request):
     year = datetime.date.today().year
     month = datetime.date.today().month
-    day = datetime.date.today().day
+    day = str(datetime.date.today().day).zfill(2)
     return render(request, 'core_sm/costs/start.html', {'year': year,
                                                         'month': month,
                                                         'day': day})

@@ -5,9 +5,9 @@
 
 {% block content %}
 
-{{ summary }}
+{{ info }}
 
-<form action="POST">
+<form method="POST">
     {{ form.as_p }}
     {% csrf_token %}
     <input type="submit" value="Dodaj">

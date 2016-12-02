@@ -10,18 +10,18 @@ MONTHS_CHOICES = [str(x).zfill(2) for x in range(13)[1:]]
 MONTH_CHOICES = zip(MONTHS_CHOICES, MONTHS_CHOICES)
 
 
-class data_generate_form(forms.Form):
+class DataGenerateForm(forms.Form):
     month = forms.ChoiceField(choices=MONTH_CHOICES)
     year = forms.ChoiceField(choices=YEAR_CHOICES)
 
 
-class data_add_form(forms.ModelForm):
+class DataAddForm(forms.ModelForm):
     class Meta:
         model = Cost
-        fields = ['title', 'value', 'publish', 'category']
+        fields = ['title', 'value', 'publish', 'category', 'budget']
 
 
-class multiadd_generate_form(forms.Form):
+class MultiaddGenerateForm(forms.Form):
     formy = forms.IntegerField(max_value=30, min_value=1)
 
 
@@ -37,8 +37,7 @@ class StatusFormEdit(forms.Form):
 class BudgetForm(forms.ModelForm):
     class Meta:
         model = Budget
-        fields = ['title', 'start_date', 'end_date', 'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september',
-              'october', 'november', 'december']
+        fields = ['title', 'value', 'year', 'month']
 
 
 

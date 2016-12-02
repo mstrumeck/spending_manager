@@ -12,10 +12,9 @@ class CostsAdmin(admin.ModelAdmin):
 admin.site.register(Cost, CostsAdmin)
 
 class BudgetAdmin(admin.ModelAdmin):
-    list_display = ['title','january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september',
-              'october', 'november', 'december']
-    list_filter = ['title']
-    list_editable = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september',
-              'october', 'november', 'december']
+    list_display = ['title', 'value', 'year', 'month']
+    list_filter = ['title', 'year', 'month']
+    list_editable = ['value', 'year', 'month']
+    prepopulated_fields = {'slug': ('title',)}
 admin.site.register(Budget, BudgetAdmin)
 
