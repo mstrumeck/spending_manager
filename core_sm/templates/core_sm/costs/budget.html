@@ -5,12 +5,32 @@
 
 {% block content %}
 
-{{ info }}
+    <table>
+        <thead>
+        <tr>
+            <th scope="col">Nazwa budżetu</th>
+            <th scope="col">Kwota</th>
+            <th scope="col">Saldo</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for title, value, balance, id in all_data %}
+            <tr>
+                <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
+                <td>{{ value }}</td>
+                <td>{{ balance }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-<form method="POST">
-    {{ form.as_p }}
-    {% csrf_token %}
-    <input type="submit" value="Dodaj">
-</form>
+    {% if add %}
+        <h3>Budżet dodany</h3>
+    {% endif %}
+    <form method="POST">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <input type="submit" value="Dodaj">
+    </form>
 
 {% endblock %}

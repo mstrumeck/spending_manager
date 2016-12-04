@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^compare/$', views.stats_comp, name='stats_comp'),
     url(r'^compare/(?P<date_x>\d{4}-\d{2}-\d{2})/(?P<date_y>\d{4}-\d{2}-\d{2})/$', views.stats_comp, name='stats_comp'),
     url(r'^status_edit', views.edit_status, name='edit_status'),
-    url(r'^budget$', views.budget_setup, name='budget_setup')
+    url(r'^budget$', views.budget_setup, name='budget_setup'),
+    url(r'^budget/(?P<id>\d+)/$', views.budget_detail, name='budget_detail')
 ]

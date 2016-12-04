@@ -14,10 +14,13 @@ from core_sm.functions import month_day_calculations, month_category_calculation
     day_day_calculation, day_category_calculation, year_data_calculation, year_month_calculation, \
     year_categories_calculation, comp_categories_calculation
 
+def budget_detail(request, id):
+    info = Budget.objects.filter(id=id).values()
+    return render(request, 'core_sm/costs/budget_detail.html', {'info': info})
+
 
 def budget_setup(request):
     add = False
-    info = Budget.objects.all().values()
 
     if request.method == 'POST':
         form = BudgetForm(request.POST)
@@ -26,12 +29,28 @@ def budget_setup(request):
             form.save()
     else:
         form = BudgetForm()
-    #Cost.objects.filter(budget_id=1).aggregate(Sum('value'))['value__sum']
-    #Budget.objects.get(id=1).value
-    #a - b
+
+    budget_titles = []
+    budget_values = []
+    spendings_values = []
+    budget_id = []
+
+    for item in Budget.objects.all().values('title'):
+        budget_titles.append(item['title'])
+
+    for item in Budget.objects.all().values('value'):
+        budget_values.append(item['value'])
+
+    for id in Budget.objects.all().values('id'):
+        for total in budget_values:
+            spendings_values.append(total - Cost.objects.filter(budget_id=id['id']).aggregate(Sum('value'))['value__sum'])
+            budget_id.append(id['id'])
+
+    all_data = zip(budget_titles, budget_values, spendings_values, budget_id)
+
     return render(request, 'core_sm/costs/budget.html', {'add': add,
                                                          'form': form,
-                                                         'info': info})
+                                                         'all_data': all_data})
 
 
 def edit_status(request):

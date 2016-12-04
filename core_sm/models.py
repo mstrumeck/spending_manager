@@ -19,6 +19,9 @@ class Budget(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return reverse('core_sm:budget_detail', args=[self.id])
+
 
 class Cost(models.Model):
     STATUS_CHOICES = [
