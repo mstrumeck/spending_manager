@@ -4,7 +4,39 @@
 {% block title %}{% endblock %}
 
 {% block content %}
+<h3>Kwota twojego budżetu wynosi: {{ budget }} zł</h3>
 
-{{ info }}
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">Nazwa</th>
+                <th scope="col">Cena</th>
+                <th scope="col">Data dodania</th>
+                <th scope="col">Kategoria</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in info %}
+            <tr>
+                <td>{{ item.title }}</td>
+                <td>{{ item.value }}</td>
+                <td>{{ item.publish }}</td>
+                <td>{{ item.category }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>Suma wydatków</td>
+                <td>{{ total }}</td>
+            </tr>
+            <tr>
+                <td>Saldo</td>
+                <td>{{ total_budget }}</td>
+            </tr>
+        </tfoot>
+    </table>
+    {{ div }}
+    {{ script }}
 
 {% endblock %}

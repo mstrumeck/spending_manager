@@ -93,3 +93,13 @@ def year_categories_calculation(year, categories, categories_data):
         else:
             categories_data.append(0)
     return categories_data
+
+
+def budget_categories_calculation(id, categories, categories_data):
+    for data in categories:
+        val = Cost.objects.filter(budget_id=id, category=data).aggregate(Sum('value'))['value__sum']
+        if val is not None:
+            categories_data.append(val)
+        else:
+            categories_data.append(0)
+    return categories_data

@@ -12,11 +12,30 @@ import calendar
 from django.forms import modelformset_factory
 from core_sm.functions import month_day_calculations, month_category_calculation, \
     day_day_calculation, day_category_calculation, year_data_calculation, year_month_calculation, \
-    year_categories_calculation, comp_categories_calculation
+    year_categories_calculation, comp_categories_calculation, budget_categories_calculation
 
 def budget_detail(request, id):
-    info = Budget.objects.filter(id=id).values()
-    return render(request, 'core_sm/costs/budget_detail.html', {'info': info})
+    info = Cost.objects.filter(budget_id=id).values()
+    total = Cost.objects.filter(budget_id=id).aggregate(Sum('value'))['value__sum']
+    budget = Budget.objects.get(id=id).value
+    total_budget = budget - total
+    categories = []
+    for item in Cost.STATUS_CHOICES:
+        categories.append(item[0])
+    categories_data = []
+    budget_categories_calculation(id, categories, categories_data)
+    data = {
+        'money': [float(x) for x in categories_data],
+        'labels': categories
+    }
+    p1 = Bar(data, values='money', label='labels')
+    script, div = components(p1, CDN)
+    return render(request, 'core_sm/costs/budget_detail.html', {'info': info,
+                                                                'total': total,
+                                                                'budget': budget,
+                                                                'total_budget': total_budget,
+                                                                'script': mark_safe(script),
+                                                                'div': mark_safe(div)})
 
 
 def budget_setup(request):
