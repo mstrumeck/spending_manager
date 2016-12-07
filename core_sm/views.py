@@ -12,7 +12,51 @@ import calendar
 from django.forms import modelformset_factory
 from core_sm.functions import month_day_calculations, month_category_calculation, \
     day_day_calculation, day_category_calculation, year_data_calculation, year_month_calculation, \
-    year_categories_calculation, comp_categories_calculation, budget_categories_calculation
+    year_categories_calculation, comp_categories_calculation, budget_categories_calculation, year_budget_calculation, \
+    year_budget_categories_calculation
+
+
+def budget_month_stats_detail(request, id, year, month):
+    data = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id).values()
+    return render(request, 'core_sm/costs/budget/budget_month_detail.html', {'data': data})
+
+
+def budget_year_stats_detail(request, id, year):
+    Months = []
+    Months_data = []
+    Months_url = [str(x).zfill(2) for x in range(13)[1:]]
+    year_month_calculation(Months)
+    year_budget_calculation(Months_data, year, id)
+    data = {
+        'Miesiące': Months,
+        'ZŁ': Months_data
+    }
+    p = Bar(data, values='ZŁ', label='Miesiące')
+    script, div = components(p, CDN)
+    all_data = zip(Months, Months_data)
+    year_sum = Cost.objects.filter(publish__year=year, budget_id=id).aggregate(Sum('value'))['value__sum']
+    categories = []
+
+    for item in Cost.STATUS_CHOICES:
+        categories.append(item[0])
+
+    categories_data = []
+    year_budget_categories_calculation(year, categories, categories_data, id)
+    data1 = {
+        'money': [float(x) for x in categories_data],
+        'labels': categories
+    }
+    p1 = Bar(data1, values='money', label='labels')
+    script1, div1 = components(p1, CDN)
+    categories_res = zip(categories, categories_data)
+    return render(request, 'core_sm/costs/budget/budget_year_detail.html', {'year_sum': year_sum,
+                                                                            'script': mark_safe(script),
+                                                                            'div': mark_safe(div),
+                                                                            'all_data': all_data,
+                                                                            'script1': mark_safe(script1),
+                                                                            'div1': mark_safe(div1),
+                                                                            'categories_res': categories_res})
+
 
 def budget_detail(request, id):
     info = Cost.objects.filter(budget_id=id).values()
@@ -30,7 +74,7 @@ def budget_detail(request, id):
     }
     p1 = Bar(data, values='money', label='labels')
     script, div = components(p1, CDN)
-    return render(request, 'core_sm/costs/budget_detail.html', {'info': info,
+    return render(request, 'core_sm/costs/budget/budget_detail.html', {'info': info,
                                                                 'total': total,
                                                                 'budget': budget,
                                                                 'total_budget': total_budget,
@@ -67,7 +111,7 @@ def budget_setup(request):
 
     all_data = zip(budget_titles, budget_values, spendings_values, budget_id)
 
-    return render(request, 'core_sm/costs/budget.html', {'add': add,
+    return render(request, 'core_sm/costs/budget/budget_setup.html', {'add': add,
                                                          'form': form,
                                                          'all_data': all_data})
 
@@ -210,8 +254,10 @@ def year_stats_detail(request, year):
     all_data = zip(Months, Months_data, Months_url)
     year_sum = Cost.objects.filter(publish__year=year).aggregate(Sum('value'))['value__sum']
     categories = []
+
     for item in Cost.STATUS_CHOICES:
         categories.append(item[0])
+
     categories_data = []
     year_categories_calculation(year, categories, categories_data)
     data1 = {

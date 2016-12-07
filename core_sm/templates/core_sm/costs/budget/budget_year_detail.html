@@ -1,0 +1,60 @@
+{% extends 'core_sm/base.html' %}
+{% load staticfiles %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+
+{{ div }}
+{{ script }}
+
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>ZŁ</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for month, data in all_data %}
+                <tr>
+                    <th scope="row">{{ month }}</th>
+                    <th>{{ data }}</th>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="row">Suma</th>
+                    <th>{{ year_sum }}</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kategoria</th>
+                    <th>ZŁ</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for cat, data in categories_res %}
+                <tr>
+                    <th scope="row">{{ cat }}</th>
+                    <th>{{ data }}</th>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div>
+    {{ div1 }}
+    {{ script1 }}
+    </div>
+
+{% endblock %}

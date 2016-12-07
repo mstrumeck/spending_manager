@@ -38,7 +38,3 @@ class BudgetForm(forms.ModelForm):
     class Meta:
         model = Budget
         fields = ['title', 'value', 'year', 'month']
-
-
-
-

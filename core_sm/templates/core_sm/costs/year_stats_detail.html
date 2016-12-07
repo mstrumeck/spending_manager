@@ -22,7 +22,7 @@
         <tbody>
         {% for month, data, month_url in all_data %}
             <tr>
-                <th scope="row"><a href="/{{ year }}/{{ month_url }}/">{{ month }}</a></th>
+                <th scope="row"><a href="/costs/{{ year }}/{{ month_url }}/">{{ month }}</a></th>
                 <th>{{ data }}</th>
             </tr>
         {% endfor %}
@@ -59,7 +59,5 @@
     {{ div1 }}
     {{ script1 }}
     </div>
-
-
 
 {% endblock %}
