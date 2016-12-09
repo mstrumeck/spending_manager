@@ -5,6 +5,70 @@
 
 {% block content %}
 
-{{ data }}
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th scope="col">Suma</th>
+                    <th scope="col">Kwota maksymalna</th>
+                    <th scope="col">Kwota minimalna</th>
+                    <th scope="col">Średnia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for day, sum, max, min, avg in day_data %}
+                <tr>
+                    <th scope="row"><a href="/{{ year }}/{{ month }}/{{ day }}">Dzień {{ day }}</a></th>
+                    <td>{{ sum }}</td>
+                    <td>{{ max }}</td>
+                    <td>{{ min }}</td>
+                    <td>{{ avg }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Cały miesiąc</th>
+                    <td>{{ sum_cost }}</td>
+                    <td>{{ max_cost }}</td>
+                    <td>{{ min_cost }}</td>
+                    <td>{{ avg_cost }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div>
+        <p>Najwięcej wydano {{ max_month_value }} w dniu {{ max_month_day }}</p>
+        <p>Najmniej wydano {{ min_month_value }} w dniu {{ min_month_day }}</p>
+</div>
+    <div>
+        {{ div }}
+        {{ script }}
+    </div>
+    <div>
+        {{ div1 }}
+        {{ script1 }}
+    </div>
+
+    <div>
+    <table>
+        <thead>
+            <tr>
+                <th>Kategoria</th>
+                <th>ZŁ</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for cat, data in categories_res %}
+            <tr>
+                <th scope="row">{{ cat }}</th>
+                <th>{{ data }}</th>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
 
 {% endblock %}

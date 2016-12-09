@@ -17,9 +17,9 @@
                 </tr>
             </thead>
             <tbody>
-            {% for month, data in all_data %}
+            {% for month, data, month_url in all_data %}
                 <tr>
-                    <th scope="row">{{ month }}</th>
+                    <th scope="row"><a href="/budget/{{ id }}/{{ year }}/{{ month_url }}">{{ month }}</a></th>
                     <th>{{ data }}</th>
                 </tr>
             {% endfor %}
