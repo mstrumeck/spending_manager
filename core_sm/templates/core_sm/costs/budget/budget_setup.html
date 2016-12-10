@@ -16,9 +16,11 @@
         <tbody>
             {% for title, value, balance, id in all_data %}
             <tr>
-                <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
+                <td>{{ title }}</td>
                 <td>{{ value }}</td>
                 <td>{{ balance }}</td>
+                <td><a href="/budget_edit/{{ id }}/">Edytuj</a></td>
+                <td><a href="/budget_delete/{{ id }}/">Usuń</a></td>
             </tr>
             {% endfor %}
         </tbody>

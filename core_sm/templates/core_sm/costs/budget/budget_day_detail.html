@@ -1,0 +1,77 @@
+{% extends 'core_sm/base.html' %}
+{% load staticfiles %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+
+<h3>Saldo {{ total_budget }}</h3>
+
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th scope="col">Wartość</th>
+                    <th scope="col">Kategoria</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for title, value, category, id in all_data %}
+                <tr>
+                    <th scope="row">{{ title }}</th>
+                    <td>{{ value }}</td>
+                    <td>{{ category }}</td>
+                    <td><a href="/delete/{{ id }}/">Usuń</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Podsumowanie</th>
+                    <td>{{ day_sum }}</td>
+                </tr>
+            </tfoot>
+        </table>
+        </div>
+
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th scope="col">Nazwa</th>
+                        <th scope="col">Cena</th>
+                        <th scope="col">Kategoria</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Największy wydatek</th>
+                        {% if day_max != 0 %}
+                            {% for item in day_max %}
+                            <th>{{ item }}</th>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th scope="row">Najmniejszy wydatek</th>
+                        {% if day_min != 0 %}
+                            {% for item in day_min %}
+                            <th>{{ item }}</th>
+                            {% endfor %}
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th scope="row">Średnia</th>
+                        <th>{{ day_avg }}</th>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            {{ div }}
+            {{ script }}
+        </div>
+
+{% endblock %}

@@ -14,7 +14,6 @@ def comp_categories_calculation(categories, categories_data, start_date, end_dat
     return categories_data
 
 
-
 def month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg):
     for day in day_numbers:
         val_1 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day).aggregate(Sum('value'))[
@@ -157,3 +156,15 @@ def budget_month_category_calculation(year, month, id, categories, categories_da
             categories_data.append(val)
         else:
             categories_data.append(0)
+
+
+def budget_day_calculation(day_data, title, value, category, product_id):
+    for item in day_data.values('title'):
+        title.append(item['title'])
+    for item in day_data.values('value'):
+        value.append(float(item['value']))
+    for item in day_data.values('category'):
+        category.append(item['category'])
+    for item in day_data.values('id'):
+        product_id.append(item['id'])
+    return title, value, category, product_id

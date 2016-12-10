@@ -15,7 +15,11 @@ urlpatterns = [
     url(r'^status_edit', views.edit_status, name='edit_status'),
     url(r'^budget_setup$', views.budget_setup, name='budget_setup'),
     url(r'^budget/(?P<id>\d+)/$', views.budget_detail, name='budget_detail'),
-    url(r'budget/(?P<id>\d+)/(?P<year>\d{4})/$', views.budget_year_stats_detail, name='budget_year_stats_detail'),
-    url(r'budget/(?P<id>\d+)/(?P<year>\d{4})/(?P<month>\d{2})/$', views.budget_month_stats_detail,
-        name='budget_month_stats_detail')
+    url(r'^budget/(?P<id>\d+)/(?P<year>\d{4})/$', views.budget_year_stats_detail, name='budget_year_stats_detail'),
+    url(r'^budget/(?P<id>\d+)/(?P<year>\d{4})/(?P<month>\d{2})/$', views.budget_month_stats_detail,
+        name='budget_month_stats_detail'),
+    url(r'budget/(?P<id>\d+)/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$',
+        views.budget_day_stats_detail, name='budget_day_stats_detail'),
+    url(r'^budget_edit/(?P<id>\d+)/$', views.budget_edit, name='budget_edit'),
+    url(r'^budget_delete/(?P<id>\d+)/$', views.budget_delete, name='budget_delete')
 ]
