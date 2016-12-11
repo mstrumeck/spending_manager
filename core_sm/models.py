@@ -7,7 +7,6 @@ import datetime
 
 class Budget(models.Model):
     title = models.CharField(max_length=200, db_index=True)
-    slug = models.SlugField(max_length=200, db_index=True, unique=True)
     value = models.DecimalField(decimal_places=2, max_digits=10)
     year = models.IntegerField(default=datetime.datetime.now().year)
     month = models.IntegerField(default=datetime.datetime.now().month)

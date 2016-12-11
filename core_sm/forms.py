@@ -22,7 +22,8 @@ class DataAddForm(forms.ModelForm):
 
 
 class MultiaddGenerateForm(forms.Form):
-    formy = forms.IntegerField(max_value=30, min_value=1)
+    formy = forms.IntegerField(max_value=20, min_value=1)
+
 
 
 class comp_form(forms.Form):
@@ -38,3 +39,7 @@ class BudgetForm(forms.ModelForm):
     class Meta:
         model = Budget
         fields = ['title', 'value', 'year', 'month']
+
+
+class BudgetDelete(forms.Form):
+    delete = forms.BooleanField()

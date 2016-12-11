@@ -4,12 +4,9 @@
 {% block title %}Lista budżetów{% endblock %}
 
 {% block content %}
-{{ budget }}
-
     <form method="POST">
         {{ form }}
         {% csrf_token %}
         <input type="submit" value="Edytuj">
     </form>
-
 {% endblock %}

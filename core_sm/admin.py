@@ -15,6 +15,5 @@ class BudgetAdmin(admin.ModelAdmin):
     list_display = ['title', 'value', 'year', 'month']
     list_filter = ['title', 'year', 'month']
     list_editable = ['value', 'year', 'month']
-    prepopulated_fields = {'slug': ('title',)}
 admin.site.register(Budget, BudgetAdmin)
 

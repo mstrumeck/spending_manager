@@ -5,10 +5,6 @@
 
 {% block content %}
 
-    {% if delete %}
-    <p>{{ budget }} został pomyślnie usunięty</p>
-    {% else %}
-    <p>Usunięcie budżetu spowoduje równiez usunięcie wszysykich wydatków z nim powiązanych</p>
-    <p>Czy na pewno chcesz usunąć {{ budget }}?</p>
-    {% endif %}
+    <p>{{ message }}</p>
+
 {% endblock %}

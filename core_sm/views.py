@@ -1,9 +1,11 @@
 from django.shortcuts import render, HttpResponseRedirect
 from .models import Cost, Budget
 from django.db.models import Avg, Max, Min, Sum
-from .forms import DataGenerateForm, DataAddForm, MultiaddGenerateForm, comp_form, StatusFormEdit, BudgetForm
+from .forms import DataGenerateForm, DataAddForm, MultiaddGenerateForm, comp_form, StatusFormEdit, BudgetForm, \
+    BudgetDelete
 from django.core.urlresolvers import reverse
 import datetime
+from django.db import IntegrityError
 from bokeh.embed import components
 from django.utils.safestring import mark_safe
 from bokeh.resources import CDN
@@ -17,12 +19,10 @@ from core_sm.functions import month_day_calculations, month_category_calculation
     budget_day_calculation
 
 
-def budget_delete(request, id, delete=False):
-    budget = Budget.objects.get(id=id)
-    if delete == True:
-        budget = Budget.objects.get(id=id).delete()
-    return render(request, 'core_sm/costs/budget/budget_delete.html', {'budget': budget,
-                                                                       'delete': delete})
+def budget_delete(request, id):
+    message = "{} został pomyślnie usuniety".format(Budget.objects.get(id=id).title)
+    Budget.objects.get(id=id).delete()
+    return render(request, 'core_sm/costs/budget/budget_delete.html', {'message': message})
 
 
 def budget_edit(request, id):
@@ -221,6 +221,7 @@ def budget_setup(request):
         if form.is_valid():
             add = True
             form.save()
+
     else:
         form = BudgetForm()
 
@@ -237,8 +238,13 @@ def budget_setup(request):
 
     for id in Budget.objects.all().values('id'):
         for total in budget_values:
-            spendings_values.append(total - Cost.objects.filter(budget_id=id['id']).aggregate(Sum('value'))['value__sum'])
             budget_id.append(id['id'])
+            try:
+                spendings_values.append(total - Cost.objects.filter(budget_id=id['id']).aggregate(Sum('value'))['value__sum'])
+            except(TypeError):
+                spendings_values.append(0)
+
+
 
     all_data = zip(budget_titles, budget_values, spendings_values, budget_id)
 
@@ -294,7 +300,7 @@ def day_data_multiadd(request, no_of_lines=0):
         generate_form = MultiaddGenerateForm(request.POST)
         if generate_form.is_valid():
             cd = generate_form.cleaned_data
-            return HttpResponseRedirect(reverse('core_sm:day_data_multiadd', args=(str(cd['formy']))))
+            return HttpResponseRedirect(reverse('core_sm:day_data_multiadd', args=(cd['formy'], )))
     else:
         generate_form = MultiaddGenerateForm()
 
