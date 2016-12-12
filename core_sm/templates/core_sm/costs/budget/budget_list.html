@@ -1,0 +1,24 @@
+{% extends 'core_sm/base.html' %}
+{% load staticfiles %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+    <table>
+        <thead>
+            <tr>
+                <td></td>
+                <th scope="col">Saldo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in budget_items %}
+            <tr>
+                <th scope="row">{{ item.title }}</th>
+                <td>{{ item.value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

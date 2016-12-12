@@ -38,3 +38,5 @@ for item in STATUS_CHOICES:
 
 print(datetime.datetime.now().month)
 print(datetime.datetime.now().year)
+mr = calendar.monthrange(int(2016), int(5))
+print(mr[1])

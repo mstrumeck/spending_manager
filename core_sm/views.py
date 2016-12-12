@@ -5,7 +5,6 @@ from .forms import DataGenerateForm, DataAddForm, MultiaddGenerateForm, comp_for
     BudgetDelete
 from django.core.urlresolvers import reverse
 import datetime
-from django.db import IntegrityError
 from bokeh.embed import components
 from django.utils.safestring import mark_safe
 from bokeh.resources import CDN
@@ -17,6 +16,11 @@ from core_sm.functions import month_day_calculations, month_category_calculation
     year_categories_calculation, comp_categories_calculation, budget_categories_calculation, year_budget_calculation, \
     year_budget_categories_calculation, budget_month_day_calculations, budget_month_category_calculation, \
     budget_day_calculation
+
+
+def budget_list(request):
+    budget_items = Budget.objects.all()
+    return render(request, 'core_sm/costs/budget/budget_list.html', {'budget_items': budget_items})
 
 
 def budget_delete(request, id):
@@ -404,6 +408,8 @@ def year_stats_detail(request, year):
     p1 = Bar(data1, values='money', label='labels')
     script1, div1 = components(p1, CDN)
     categories_res = zip(categories, categories_data)
+    another = "/costs/{}/".format(int(year)+1)
+    back = "/costs/{}".format(int(year)-1)
     return render(request, 'core_sm/costs/year_stats_detail.html', {'year': year,
                                                                     'Months': Months,
                                                                     'Months_data': Months_data,
@@ -413,7 +419,9 @@ def year_stats_detail(request, year):
                                                                     'year_sum': year_sum,
                                                                     'script1': mark_safe(script1),
                                                                     'div1': mark_safe(div1),
-                                                                    'categories_res': categories_res})
+                                                                    'categories_res': categories_res,
+                                                                    'another': another,
+                                                                    'back': back})
 
 
 def month_stats_detail(request, year, month):
@@ -451,6 +459,22 @@ def month_stats_detail(request, year, month):
     min_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Min('value'))
     max_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Max('value'))
     avg_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Avg('value'))['value__avg']
+    next_month = int(month)+1
+    next_year = int(year)
+
+    if next_month > 12:
+        next_month = str(1).zfill(2)
+        next_year = int(year)+1
+    another = "/costs/{}/{}/".format(next_year, next_month)
+
+    back_month = int(month)-1
+    back_year = int(year)
+
+    if back_month < 1:
+        back_month = 12
+        back_year = int(year)-1
+    back = "/costs/{}/{}/".format(back_year, back_month)
+
     return render(request, 'core_sm/costs/month_stats_detail.html', {'year': year,
                                                                      'month': month,
                                                                      'sum_cost': sum_cost['value__sum'],
@@ -468,7 +492,9 @@ def month_stats_detail(request, year, month):
                                                                      'script1': mark_safe(script1),
                                                                      'div1': mark_safe(div1),
                                                                      'categories_res': categories_res,
-                                                                     'day_sum': day_avg})
+                                                                     'day_sum': day_avg,
+                                                                     'another': another,
+                                                                     'back': back})
 
 
 def day_stats_detail(request, year, month, day):
@@ -479,19 +505,24 @@ def day_stats_detail(request, year, month, day):
     id = []
     day_day_calculation(day_data, title, value, category, id)
     all_data = zip(title, value, category, id)
+
     try:
         day_max = [title[value.index(max(value))], max(value), category[value.index(max(value))]]
     except(ValueError, TypeError):
         day_max = 0
+
     try:
         day_min = [title[value.index(min(value))], min(value), category[value.index(min(value))]]
     except(ValueError, TypeError):
         day_min = 0
+
     day_sum = day_data.aggregate(Sum('value'))
     day_avg = day_data.aggregate(Avg('value'))['value__avg']
     categories = []
+
     for item in Cost.STATUS_CHOICES:
         categories.append(item[0])
+
     categories_data = []
     day_category_calculation(year, month, day, categories, categories_data)
     data = {
@@ -500,6 +531,27 @@ def day_stats_detail(request, year, month, day):
     }
     p = Bar(data, values='money', label='labels')
     script, div = components(p, CDN)
+
+    mr = calendar.monthrange(int(year), int(month))
+
+    next_year = int(year)
+    next_month = int(month)
+    next_day = int(day)+1
+    if next_day > mr[1]:
+        next_day = "%.2f" % 1
+        next_month = "%.2f" % (next_month +1)
+    if next_month > 12:
+        next_month = "%.2f" % 1
+        next_year += 1
+    another = "/costs/{}/{}/{}/".format(next_year, next_month, next_day)
+
+    back_year = int(year)
+    back_month = int(month)
+    back_day = int(day)-1
+    if back_day < 1:
+        back_day = calendar.monthrange(int(year), int(month)-1)[1]
+        back_month = "%.2f" % (back_month - 1)
+    back = "/costs/{}/{}/{}/".format(back_year, back_month, back_day)
     return render(request, 'core_sm/costs/day_stats_detail.html', {'year': year,
                                                                    'month': month,
                                                                    'day': day,
@@ -510,4 +562,6 @@ def day_stats_detail(request, year, month, day):
                                                                    'script': mark_safe(script),
                                                                    'div': mark_safe(div),
                                                                    'day_max': day_max,
-                                                                   'day_min': day_min})
+                                                                   'day_min': day_min,
+                                                                   'another': another,
+                                                                   'back': back})
