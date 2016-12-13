@@ -20,8 +20,21 @@ from core_sm.functions import month_day_calculations, month_category_calculation
 
 def budget_list(request):
     budget_items = Budget.objects.all()
-    return render(request, 'core_sm/costs/budget/budget_list.html', {'budget_items': budget_items})
+    val = []
+    for item in budget_items:
+        try:
+            val.append(Budget.objects.get(id=item.id).value - Cost.objects.filter(budget_id=item.id).aggregate(Sum('value'))['value__sum'])
+        except TypeError:
+            val.append(0)
+    budget_data = zip(budget_items, val)
+    return render(request, 'core_sm/costs/budget/budget_list.html', {'budget_data': budget_data,
+                                                                     'val': val})
 
+
+def budget_item_delete(request, id):
+    message = '{} został pomyslnie usunięty'.format(Cost.objects.get(id=id).title)
+    Cost.objects.get(id=id).delete()
+    return render(request, 'core_sm/costs/budget/budget_item_delete.html', {'message': message})
 
 def budget_delete(request, id):
     message = "{} został pomyślnie usuniety".format(Budget.objects.get(id=id).title)
@@ -197,10 +210,15 @@ def budget_detail(request, id):
     info = Cost.objects.filter(budget_id=id).values()
     total = Cost.objects.filter(budget_id=id).aggregate(Sum('value'))['value__sum']
     budget = Budget.objects.get(id=id).value
-    total_budget = budget - total
+    try:
+        total_budget = budget - total
+    except TypeError:
+        total_budget = 0
     categories = []
+
     for item in Cost.STATUS_CHOICES:
         categories.append(item[0])
+
     categories_data = []
     budget_categories_calculation(id, categories, categories_data)
     data = {
@@ -209,12 +227,14 @@ def budget_detail(request, id):
     }
     p1 = Bar(data, values='money', label='labels')
     script, div = components(p1, CDN)
+    cat_all = zip(categories, categories_data)
     return render(request, 'core_sm/costs/budget/budget_detail.html', {'info': info,
                                                                 'total': total,
                                                                 'budget': budget,
                                                                 'total_budget': total_budget,
                                                                 'script': mark_safe(script),
-                                                                'div': mark_safe(div)})
+                                                                'div': mark_safe(div),
+                                                                'cat_all': cat_all})
 
 
 def budget_setup(request):
@@ -247,8 +267,6 @@ def budget_setup(request):
                 spendings_values.append(total - Cost.objects.filter(budget_id=id['id']).aggregate(Sum('value'))['value__sum'])
             except(TypeError):
                 spendings_values.append(0)
-
-
 
     all_data = zip(budget_titles, budget_values, spendings_values, budget_id)
 
@@ -536,12 +554,12 @@ def day_stats_detail(request, year, month, day):
 
     next_year = int(year)
     next_month = int(month)
-    next_day = int(day)+1
+    next_day = int(day) + 1
     if next_day > mr[1]:
-        next_day = "%.2f" % 1
-        next_month = "%.2f" % (next_month +1)
-    if next_month > 12:
-        next_month = "%.2f" % 1
+        next_day = str(1).zfill(2)
+        next_month = str(next_month + 1).zfill(2)
+    if int(next_month) > 12:
+        next_month = str(1).zfill(2)
         next_year += 1
     another = "/costs/{}/{}/{}/".format(next_year, next_month, next_day)
 

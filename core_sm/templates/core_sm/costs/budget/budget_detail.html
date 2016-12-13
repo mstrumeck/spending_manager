@@ -22,6 +22,7 @@
                 <td>{{ item.value }}</td>
                 <td>{{ item.publish }}</td>
                 <td>{{ item.category }}</td>
+                <td><a href="/budget_item_delete/{{ item.id }}/">Usuń</a></td>
             </tr>
             {% endfor %}
         </tbody>
@@ -38,5 +39,24 @@
     </table>
     {{ div }}
     {{ script }}
+
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kategoria</th>
+                    <th>ZŁ</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for cat, data in cat_all %}
+                <tr>
+                    <th scope="row">{{ cat }}</th>
+                    <td>{{ data }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
 
 {% endblock %}

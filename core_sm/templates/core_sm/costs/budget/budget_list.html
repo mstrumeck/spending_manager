@@ -8,14 +8,19 @@
         <thead>
             <tr>
                 <td></td>
+                <th scope="col">Wartość</th>
                 <th scope="col">Saldo</th>
             </tr>
         </thead>
         <tbody>
-            {% for item in budget_items %}
+            {% for item, val in budget_data %}
             <tr>
                 <th scope="row">{{ item.title }}</th>
                 <td>{{ item.value }}</td>
+                <td>{{ val }}</td>
+                <td><a href="/budget/{{ item.id }}/">Podgląd</a></td>
+                <td><a href="/budget_edit/{{ item.id }}/">Edytuj</a></td>
+                <td><a href="/budget_delete/{{ item.id }}/">Usuń</a></td>
             </tr>
             {% endfor %}
         </tbody>
