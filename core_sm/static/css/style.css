@@ -1,0 +1,33 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: helvetica, sans-serif;
+}
+
+#menu {
+    padding: 15px;
+    float: left;
+}
+
+#bar {
+    list-style-type: none;
+    border: solid;
+}
+
+#bar > li {
+    padding: 15px;
+    border: solid;
+    display: inline;
+}
+
+#quick-add {
+    float: right;
+    border: solid;
+    float: left;
+}
+
+#content {
+    border: solid;
+    float: left;
+    position: relative;
+}

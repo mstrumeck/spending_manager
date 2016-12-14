@@ -3,14 +3,16 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
     <script type="text/javascript"></script>
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
+
     <div>
-        <ul>
+        <ul id="bar">
             <li><a href="/">Menu glowne</a></li>
             <li><a href="{% url 'core_sm:costs_stats' %}">Znajdz statystyke</a></li>
             <li><a href="{% url 'core_sm:day_data_multiadd' %}">Multi-dodaj</a></li>
@@ -20,12 +22,16 @@
             <li><a href="{% url 'core_sm:budget_setup' %}">Edycja budżetu</a></li>
         </ul>
     </div>
-    <div>
+
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <div id="quick-add">
         <h3>Szybkie dodawanie</h3>
         {% if sent %}
-            <div>
                 <h3>Wydatek dodany!</h3>
-            </div>
         {% endif %}
         <form method="POST">
             {{ add_form.as_p}}
@@ -33,9 +39,6 @@
             <input type="submit" value="Dodaj">
         </form>
     </div>
-    <div>
-        {% block content %}
-        {% endblock %}
-    </div>
+
 </body>
 </html>
