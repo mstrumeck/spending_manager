@@ -21,24 +21,19 @@
             <li><a href="{% url 'core_sm:edit_status' %}">Edycja kategorii</a></li>
             <li><a href="{% url 'core_sm:budget_setup' %}">Edycja budżetu</a></li>
         </ul>
-    </div>
-
-    <div id="content">
-        {% block content %}
-        {% endblock %}
-    </div>
-
-    <div id="quick-add">
-        <h3>Szybkie dodawanie</h3>
-        {% if sent %}
-                <h3>Wydatek dodany!</h3>
-        {% endif %}
-        <form method="POST">
-            {{ add_form.as_p}}
-            {% csrf_token %}
-            <input type="submit" value="Dodaj">
-        </form>
-    </div>
-
+        <div id="content">
+            {% block content %}
+            {% endblock %}
+        </div>
+        <div id="quick-add">
+            <h3>Szybkie dodawanie</h3>
+            {% if sent %}
+                    <h3>Wydatek dodany!</h3>
+            {% endif %}
+            <form method="POST">
+                {{ add_form.as_p}}
+                {% csrf_token %}
+                <input type="submit" value="Dodaj">
+            </form>
 </body>
 </html>

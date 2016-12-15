@@ -263,16 +263,17 @@ def budget_setup(request):
     for id in Budget.objects.all().values('id'):
         for total in budget_values:
             budget_id.append(id['id'])
-            try:
-                spendings_values.append(total - Cost.objects.filter(budget_id=id['id']).aggregate(Sum('value'))['value__sum'])
-            except(TypeError):
-                spendings_values.append(0)
+        try:
+            spendings_values.append(total - Cost.objects.filter(budget_id=id['id']).aggregate(Sum('value'))['value__sum'])
+        except(TypeError):
+            spendings_values.append(0)
 
     all_data = zip(budget_titles, budget_values, spendings_values, budget_id)
 
     return render(request, 'core_sm/costs/budget/budget_setup.html', {'add': add,
                                                          'form': form,
-                                                         'all_data': all_data})
+                                                         'all_data': all_data,
+                                                        'budget_values': spendings_values})
 
 
 def edit_status(request):
