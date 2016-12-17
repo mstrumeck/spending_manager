@@ -46,7 +46,7 @@
     <div>
         <p>Najwięcej wydano {{ max_month_value }} w dniu {{ max_month_day }}</p>
         <p>Najmniej wydano {{ min_month_value }} w dniu {{ min_month_day }}</p>
-</div>
+    </div>
 
 <div>
     <table>
@@ -57,9 +57,9 @@
             </tr>
         </thead>
         <tbody>
-            {% for title, spends in day_budget_data %}
+            {% for title, spends, id in month_budget_data %}
                 <tr>
-                    <td>{{ title }}</td>
+                    <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
                     <td>{{ spends }}</td>
                 </tr>
             {% endfor %}

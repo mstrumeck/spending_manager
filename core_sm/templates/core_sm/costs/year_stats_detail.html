@@ -9,6 +9,25 @@
     <a href={{ another }}>Kolejny rok</a>
     <a href={{ back }}>Poprzedni rok</a>
 
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Nazwa budżetu</th>
+                <th>Wydana kwota</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for title, spends, id in year_budget_data %}
+                <tr>
+                    <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
+                    <td>{{ spends }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
     <div>
     {{ div }}
     {{ script }}
@@ -40,6 +59,11 @@
     </div>
 
     <div>
+    {{ div1 }}
+    {{ script1 }}
+    </div>
+
+    <div>
         <table>
             <thead>
                 <tr>
@@ -58,9 +82,6 @@
         </table>
     </div>
 
-    <div>
-    {{ div1 }}
-    {{ script1 }}
-    </div>
+
 
 {% endblock %}

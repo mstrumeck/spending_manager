@@ -11,13 +11,19 @@
             <tr>
                 <th scope="col">Nazwa</th>
                 <th scope="col">Cena</th>
+                <th scope="col">Data dodania</th>
+                <th scope="col">Kategoria</th>
+                <th scope="col">Budżet</th>
             </tr>
         </thead>
         <tbody>
-            {% for item in data %}
+            {% for item, budget_title, dates in data %}
             <tr>
                 <td>{{ item.title }}</td>
                 <td>{{ item.value }}</td>
+                <td>{{ dates }}</td>
+                <td>{{ item.category }}</td>
+                <td><a href="/budget/{{ item.budget_id }}/">{{ budget_title }}</a></td>
             </tr>
             {% endfor %}
         </tbody>

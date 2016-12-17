@@ -84,9 +84,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for title, spends in day_budget_data %}
+                {% for title, spends, id in day_budget_data %}
                 <tr>
-                    <td>{{ title }}</td>
+                    <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
                     <td>{{ spends }}</td>
                 </tr>
                 {% endfor %}
