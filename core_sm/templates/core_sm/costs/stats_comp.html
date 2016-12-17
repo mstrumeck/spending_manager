@@ -1,11 +1,12 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
-{% block title %}{{ date_x }} - {{ date_y }}{% endblock %}
+{% block title %}Porównanie od {{ date_x }} do {{ date_y }}{% endblock %}
 
 {% block content%}
 
     <h3>Zestawienie od {{ date_x }} do {{ date_y }}</h3>
+
     <table>
         <thead>
             <tr>
@@ -17,13 +18,14 @@
             </tr>
         </thead>
         <tbody>
-            {% for item, budget_title, dates in data %}
+            {% for item, budget_title, dates, url in data %}
             <tr>
                 <td>{{ item.title }}</td>
                 <td>{{ item.value }}</td>
-                <td>{{ dates }}</td>
+                <td><a href="/costs/{{ url }}/">{{ dates }}</a></td>
                 <td>{{ item.category }}</td>
                 <td><a href="/budget/{{ item.budget_id }}/">{{ budget_title }}</a></td>
+                <td><a href="/delete/{{ item.id }}/">Usuń</a></td>
             </tr>
             {% endfor %}
         </tbody>
@@ -47,6 +49,24 @@
         </tfoot>
     </table>
 
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nazwa budżetu</th>
+                    <th>Wydana kwota</th>
+                </tr>
+            </thead>
+                <tbody>
+                {% for title, spends, id in comp_budget_data %}
+                <tr>
+                    <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
+                    <td>{{ spends }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 {{ div }}
 {{ script }}
 
@@ -72,6 +92,5 @@
     {% csrf_token %}
     <input type="submit" value="Dodaj">
 </form>
-{{ message }}
 
 {% endblock %}

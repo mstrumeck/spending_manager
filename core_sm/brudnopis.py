@@ -40,3 +40,9 @@ print(datetime.datetime.now().month)
 print(datetime.datetime.now().year)
 mr = calendar.monthrange(int(2016), int(5))
 print(mr[1])
+
+e = ['2016-12-15']
+f = []
+for item in e:
+    f.append(item.replace('-', '/'))
+print(f)

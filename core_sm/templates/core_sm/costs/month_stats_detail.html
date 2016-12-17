@@ -59,7 +59,7 @@
         <tbody>
             {% for title, spends, id in month_budget_data %}
                 <tr>
-                    <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
+                    <td><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
                     <td>{{ spends }}</td>
                 </tr>
             {% endfor %}

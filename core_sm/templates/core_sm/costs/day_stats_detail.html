@@ -22,13 +22,13 @@
                 </tr>
             </thead>
             <tbody>
-            {% for title, value, category, day_id, budget_id in all_data %}
+            {% for item, budget_title in all_data %}
                 <tr>
-                    <th scope="row">{{ title }}</th>
-                    <td>{{ value }}</td>
-                    <td>{{ category }}</td>
-                    <td>{{ budget_id }}</td>
-                    <td><a href="/delete/{{ day_id }}/">Usuń</a></td>
+                    <th scope="row">{{ item.title }}</th>
+                    <td>{{ item.value }}</td>
+                    <td>{{ item.category }}</td>
+                    <td><a href="/budget/{{ item.budget_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ budget_title }}</a></td>
+                    <td><a href="/delete/{{ item.id }}/">Usuń</a></td>
                 </tr>
             {% endfor %}
             </tbody>

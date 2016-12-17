@@ -20,7 +20,7 @@
         <tbody>
             {% for title, spends, id in year_budget_data %}
                 <tr>
-                    <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
+                    <td><a href="/budget/{{ id }}/{{ year }}/">{{ title }}</a></td>
                     <td>{{ spends }}</td>
                 </tr>
             {% endfor %}

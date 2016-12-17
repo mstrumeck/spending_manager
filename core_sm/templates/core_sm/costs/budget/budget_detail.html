@@ -1,7 +1,7 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
-{% block title %}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block content %}
 <h3>Kwota twojego budżetu wynosi: {{ budget }} zł</h3>
@@ -16,11 +16,11 @@
             </tr>
         </thead>
         <tbody>
-            {% for item in info %}
+            {% for item, date, date_url in info %}
             <tr>
                 <td>{{ item.title }}</td>
                 <td>{{ item.value }}</td>
-                <td>{{ item.publish }}</td>
+                <td><a href="/costs/{{ date_url }}/">{{ date }}</a></td>
                 <td>{{ item.category }}</td>
                 <td><a href="/budget_item_delete/{{ item.id }}/">Usuń</a></td>
             </tr>
