@@ -25,7 +25,7 @@ def budget_list(request):
         try:
             val.append(Budget.objects.get(id=item.id).value - Cost.objects.filter(budget_id=item.id).aggregate(Sum('value'))['value__sum'])
         except TypeError:
-            val.append(0)
+            val.append(Budget.objects.get(id=item.id).value)
     budget_data = zip(budget_items, val)
     return render(request, 'core_sm/costs/budget/budget_list.html', {'budget_data': budget_data,
                                                                      'val': val})
@@ -251,29 +251,23 @@ def budget_setup(request):
 
     budget_titles = []
     budget_values = []
-    spendings_values = []
     budget_id = []
+    spendings_values = []
 
-    for item in Budget.objects.all().values('title'):
+    for item in Budget.objects.values('title', 'value', 'id'):
         budget_titles.append(item['title'])
-
-    for item in Budget.objects.all().values('value'):
         budget_values.append(item['value'])
-
-    for id in Budget.objects.all().values('id'):
-        for total in budget_values:
-            budget_id.append(id['id'])
+        budget_id.append(item['id'])
         try:
-            spendings_values.append(total - Cost.objects.filter(budget_id=id['id']).aggregate(Sum('value'))['value__sum'])
+            spendings_values.append(item['value'] - Cost.objects.filter(budget_id=item['id']).aggregate(Sum('value'))['value__sum'])
         except(TypeError):
-            spendings_values.append(0)
+            spendings_values.append(item['value'])
 
     all_data = zip(budget_titles, budget_values, spendings_values, budget_id)
 
     return render(request, 'core_sm/costs/budget/budget_setup.html', {'add': add,
                                                          'form': form,
-                                                         'all_data': all_data,
-                                                        'budget_values': spendings_values})
+                                                         'all_data': all_data})
 
 
 def edit_status(request):
@@ -478,6 +472,18 @@ def month_stats_detail(request, year, month):
     min_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Min('value'))
     max_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Max('value'))
     avg_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Avg('value'))['value__avg']
+
+    day_budget_title = []
+    day_budget_spends = []
+    for item in Budget.objects.values('title', 'id'):
+        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, publish__month=month).aggregate(Sum('value'))['value__sum']
+        if val is not None:
+            day_budget_title.append(item['title'])
+            day_budget_spends.append(val)
+        else:
+            pass
+    day_budget_data = zip(day_budget_title, day_budget_spends)
+
     next_month = int(month)+1
     next_year = int(year)
 
@@ -521,9 +527,10 @@ def day_stats_detail(request, year, month, day):
     title = []
     value = []
     category = []
-    id = []
-    day_day_calculation(day_data, title, value, category, id)
-    all_data = zip(title, value, category, id)
+    day_id = []
+    budget_id = []
+    day_day_calculation(day_data, title, value, category, day_id, budget_id)
+    all_data = zip(title, value, category, day_id, budget_id)
 
     try:
         day_max = [title[value.index(max(value))], max(value), category[value.index(max(value))]]
@@ -551,8 +558,20 @@ def day_stats_detail(request, year, month, day):
     p = Bar(data, values='money', label='labels')
     script, div = components(p, CDN)
 
-    mr = calendar.monthrange(int(year), int(month))
+    categories_res = zip(categories, categories_data)
 
+    day_budget_title = []
+    day_budget_spends = []
+    for item in Budget.objects.values('title', 'id'):
+        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, publish__month=month, publish__day=day).aggregate(Sum('value'))['value__sum']
+        if val is not None:
+            day_budget_title.append(item['title'])
+            day_budget_spends.append(val)
+        else:
+            pass
+    day_budget_data = zip(day_budget_title, day_budget_spends)
+
+    mr = calendar.monthrange(int(year), int(month))
     next_year = int(year)
     next_month = int(month)
     next_day = int(day) + 1
@@ -582,5 +601,7 @@ def day_stats_detail(request, year, month, day):
                                                                    'div': mark_safe(div),
                                                                    'day_max': day_max,
                                                                    'day_min': day_min,
+                                                                   'categories_res': categories_res,
+                                                                   'day_budget_data': day_budget_data,
                                                                    'another': another,
                                                                    'back': back})

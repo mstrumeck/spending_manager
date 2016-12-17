@@ -7,6 +7,8 @@
 
 {% block content %}
 <h3>Statystyki za {{ year }}.{{ month }}.{{ day }}</h3>
+    <a href="/costs/{{ year}}/{{ month }}/">Podgląd bieżącego miesiąca </a>
+    <a href="/costs/{{ year}}/">Podgląd bieżącego roku</a>
     <a href={{ another }}>Kolejny dzień</a>
     <a href={{ back }}>Poprzedni dzień</a>
     <div>
@@ -16,15 +18,17 @@
                     <th></th>
                     <th scope="col">Wartość</th>
                     <th scope="col">Kategoria</th>
+                    <th scope="col">Budżet</th>
                 </tr>
             </thead>
             <tbody>
-            {% for title, value, category, id in all_data %}
+            {% for title, value, category, day_id, budget_id in all_data %}
                 <tr>
                     <th scope="row">{{ title }}</th>
                     <td>{{ value }}</td>
                     <td>{{ category }}</td>
-                    <td><a href="/delete/{{ id }}/">Usuń</a></td>
+                    <td>{{ budget_id }}</td>
+                    <td><a href="/delete/{{ day_id }}/">Usuń</a></td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -52,7 +56,7 @@
                         <th scope="row">Największy wydatek</th>
                         {% if day_max != 0 %}
                             {% for item in day_max %}
-                            <th>{{ item }}</th>
+                            <td>{{ item }}</td>
                             {% endfor %}
                         {% endif %}
                     </tr>
@@ -60,7 +64,7 @@
                         <th scope="row">Najmniejszy wydatek</th>
                         {% if day_min != 0 %}
                             {% for item in day_min %}
-                            <th>{{ item }}</th>
+                            <td>{{ item }}</td>
                             {% endfor %}
                         {% endif %}
                     </tr>
@@ -72,7 +76,41 @@
             </table>
         </div>
         <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nazwa budżetu</th>
+                        <th>Wydana kwota</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for title, spends in day_budget_data %}
+                <tr>
+                    <td>{{ title }}</td>
+                    <td>{{ spends }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div>
             {{ div }}
             {{ script }}
         </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Kategoria</th>
+                    <th>ZŁ</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for cat, data in categories_res %}
+                        <tr>
+                            <th scope="row">{{ cat }}</th>
+                            <th>{{ data }}</th>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 {% endblock %}

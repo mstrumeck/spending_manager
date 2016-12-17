@@ -1,4 +1,4 @@
-from core_sm.models import Cost
+from core_sm.models import Cost, Budget
 from django.db.models import Avg, Max, Sum, Min
 import calendar
 import datetime
@@ -47,16 +47,14 @@ def month_category_calculation(year, month, categories, categories_data):
             categories_data.append(0)
 
 
-def day_day_calculation(day_data, title, value, category, id):
-        for item in day_data.values('title'):
+def day_day_calculation(day_data, title, value, category, day_id, budget_id):
+        for item in day_data.values('title', 'value', 'category', 'id', 'budget_id'):
             title.append(item['title'])
-        for item in day_data.values('value'):
             value.append(float(item['value']))
-        for item in day_data.values('category'):
             category.append(item['category'])
-        for item in day_data.values('id'):
-            id.append(item['id'])
-        return title, value, category, id
+            day_id.append(item['id'])
+            budget_id.append(Budget.objects.get(id=item['budget_id']).title)
+        return title, value, category, day_id, budget_id
 
 
 def day_category_calculation(year, month, day, categories, categories_data):
