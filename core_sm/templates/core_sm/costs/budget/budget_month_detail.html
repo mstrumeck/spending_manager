@@ -1,12 +1,12 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
-{% block title %}{% endblock%}
+{% block title %}{{ budget_month_title }} {{ month }}-{{ year }}{% endblock%}
 
 {% block content %}
-
+<h3>Podsumowanie budżetu {{ budget_month_title }} za miesiąc {{ month }}.{{ year }}</h3>
 <h3>Saldo {{ total_budget }}</h3>
-
+    <a href="/budget/{{ id }}/{{ year }}/">Podgląd roczny</a>
     <div>
         <table>
             <thead>
@@ -66,7 +66,7 @@
         {% for cat, data in categories_res %}
             <tr>
                 <th scope="row">{{ cat }}</th>
-                <th>{{ data }}</th>
+                <td>{{ data }}</td>
             </tr>
         {% endfor %}
         </tbody>

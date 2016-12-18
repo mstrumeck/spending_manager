@@ -38,7 +38,7 @@ class StatusFormEdit(forms.Form):
 class BudgetForm(forms.ModelForm):
     class Meta:
         model = Budget
-        fields = ['title', 'value', 'year', 'month']
+        fields = ['title', 'value']
 
 
 class BudgetDelete(forms.Form):

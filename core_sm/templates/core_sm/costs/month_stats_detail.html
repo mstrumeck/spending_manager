@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<h3>Statystyki za okres {{ year }}.{{ month }}</h3>
+<h3>Podsumowanie miesiąca {{ month }}.{{ year }}</h3>
     <a href={{ another }}>Następny miesiąc</a>
     <a href={{ back }}>Poprzedni miesiąc</a>
     <a href="/costs/{{ year }}/">Podgląd bieżacego roku</a>
@@ -88,7 +88,7 @@
         {% for cat, data in categories_res %}
             <tr>
                 <th scope="row">{{ cat }}</th>
-                <th>{{ data }}</th>
+                <td>{{ data }}</td>
             </tr>
         {% endfor %}
         </tbody>

@@ -2,11 +2,11 @@
 {% load staticfiles %}
 
 {% block title %}
-    {{ title }} {{ year }}
+    Rok {{ year }}
 {% endblock %}
 
 {% block content %}
-    <h3>Podsumowanie kategorii {{ title }} za rok {{ year }}</h3>
+    <h3>Statystki za rok {{ year }}</h3>
     <a href={{ another }}>Kolejny rok</a>
     <a href={{ back }}>Poprzedni rok</a>
 
@@ -58,31 +58,4 @@
         </tfoot>
     </table>
     </div>
-
-    <div>
-    {{ div1 }}
-    {{ script1 }}
-    </div>
-
-    <div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Kategoria</th>
-                    <th>ZŁ</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for cat, data in categories_res %}
-                <tr>
-                    <th scope="row">{{ cat }}</th>
-                    <td>{{ data }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-
-
 {% endblock %}

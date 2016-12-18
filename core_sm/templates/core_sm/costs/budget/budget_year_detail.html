@@ -1,10 +1,10 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
-{% block title %}{% endblock %}
+{% block title %}{{ budget_year_title }} {{ year }}{% endblock %}
 
 {% block content %}
-
+<h3>Podsumowanie budżetu {{ budget_year_title }} za rok {{ year }}</h3>
 <h3>Saldo {{ total_budget }}</h3>
 
 {{ div }}
@@ -46,7 +46,7 @@
             {% for cat, data in categories_res %}
                 <tr>
                     <th scope="row">{{ cat }}</th>
-                    <th>{{ data }}</th>
+                    <td>{{ data }}</td>
                 </tr>
             {% endfor %}
             </tbody>

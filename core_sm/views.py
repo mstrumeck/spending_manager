@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponseRedirect
-from .models import Cost, Budget
+from .models import Cost, Budget, Category
 from django.db.models import Avg, Max, Min, Sum
 from .forms import DataGenerateForm, DataAddForm, MultiaddGenerateForm, comp_form, StatusFormEdit, BudgetForm, \
     BudgetDelete
@@ -15,7 +15,94 @@ from core_sm.functions import month_day_calculations, month_category_calculation
     day_day_calculation, day_category_calculation, year_data_calculation, year_month_calculation, \
     year_categories_calculation, comp_categories_calculation, budget_categories_calculation, year_budget_calculation, \
     year_budget_categories_calculation, budget_month_day_calculations, budget_month_category_calculation, \
-    budget_day_calculation
+    budget_day_calculation, category_year_data_calculation
+
+
+def category_year_stats_detail(request, category_id, year):
+    category_title = Category.objects.get(id=category_id).title
+    Months = []
+    Months_data = []
+    Months_url = [str(x).zfill(2) for x in range(13)[1:]]
+    year_month_calculation(Months)
+    category_year_data_calculation(Months_data, year, category_id)
+    data = {
+        'Miesiące': Months,
+        'ZŁ': Months_data
+    }
+    p = Bar(data, values='ZŁ', label='Miesiące', legend=False)
+    script, div = components(p, CDN)
+    all_data = zip(Months, Months_data, Months_url)
+    year_sum = Cost.objects.filter(publish__year=year, category_id=category_id).aggregate(Sum('value'))['value__sum']
+
+    year_budget_title = []
+    year_budget_spends = []
+    year_budget_id = []
+
+    for item in Budget.objects.values('title', 'id'):
+        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, category_id=category_id).aggregate(Sum('value'))['value__sum']
+        if val is not None:
+            year_budget_title.append(item['title'])
+            year_budget_spends.append(val)
+            year_budget_id.append(item['id'])
+        else:
+            pass
+
+    year_budget_data = zip(year_budget_title, year_budget_spends, year_budget_id)
+
+    another = "/costs/{}/".format(int(year) + 1)
+    back = "/costs/{}".format(int(year) - 1)
+    return render(request, 'core_sm/costs/category/category_year_detail.html', {'category_title': category_title,
+                                                                                'year': year,
+                                                                                'script': mark_safe(script),
+                                                                                'div': mark_safe(div),
+                                                                                'all_data': all_data,
+                                                                                'year_sum': year_sum,
+                                                                                'year_budget_data': year_budget_data,
+                                                                                'another': another,
+                                                                                'back': back})
+
+
+def category_detail(request, category_id):
+    category_title = Category.objects.get(id=category_id).title
+    spends = Cost.objects.filter(category_id=category_id)
+    stats = []
+    days = []
+    days_url = []
+    for item in spends:
+        stats.append(Budget.objects.get(id=item.budget_id).title)
+
+    for item in spends.values('publish'):
+        days.append(str(item['publish']))
+        days_url.append(str(item['publish']).replace('-', '/'))
+
+    data = zip(spends, stats, days, days_url)
+
+    data_sum = Cost.objects.filter(category_id=category_id).aggregate(Sum('value'))['value__sum']
+    data_avg = Cost.objects.filter(category_id=category_id).aggregate(Avg('value'))['value__avg']
+    data_min = Cost.objects.filter(category_id=category_id).aggregate(Min('value'))['value__min']
+    data_max = Cost.objects.filter(category_id=category_id).aggregate(Max('value'))['value__max']
+
+    category_budget_title = []
+    category_budget_spends = []
+    category_budget_id = []
+    for item in Budget.objects.values('title', 'id'):
+        val = Cost.objects.filter(budget_id=item['id'], category_id=category_id).aggregate(Sum('value'))[
+            'value__sum']
+        if val is not None:
+            category_budget_title.append(item['title'])
+            category_budget_spends.append(val)
+            category_budget_id.append(item['id'])
+        else:
+            pass
+    category_budget_data = zip(category_budget_title, category_budget_spends, category_budget_id)
+
+    return render(request, 'core_sm/costs/category/category_detail.html', {'data': data,
+                                                                           'data_sum': data_sum,
+                                                                           'data_avg': data_avg,
+                                                                           'data_min': data_min,
+                                                                           'data_max': data_max,
+                                                                           'category_title': category_title,
+                                                                           'category_budget_data': category_budget_data})
 
 
 def budget_list(request):
@@ -36,6 +123,7 @@ def budget_item_delete(request, id):
     Cost.objects.get(id=id).delete()
     return render(request, 'core_sm/costs/budget/budget_item_delete.html', {'message': message})
 
+
 def budget_delete(request, id):
     message = "{} został pomyślnie usuniety".format(Budget.objects.get(id=id).title)
     Budget.objects.get(id=id).delete()
@@ -55,6 +143,7 @@ def budget_edit(request, id):
 
 
 def budget_day_stats_detail(request, id, year, month, day):
+    budget_day_title = Budget.objects.get(id=id).title
     total = Cost.objects.filter(budget_id=id).aggregate(Sum('value'))['value__sum']
     budget = Budget.objects.get(id=id).value
     total_budget = budget - total
@@ -78,8 +167,9 @@ def budget_day_stats_detail(request, id, year, month, day):
     day_avg = day_data.aggregate(Avg('value'))['value__avg']
     categories = []
 
-    for item in Cost.STATUS_CHOICES:
-        categories.append(item[0])
+    for item in Category.objects.values('title'):
+        categories.append(item['title'])
+
     categories_data = []
     day_category_calculation(year, month, day, categories, categories_data)
     data = {
@@ -88,10 +178,11 @@ def budget_day_stats_detail(request, id, year, month, day):
     }
     p = Bar(data, values='money', label='labels')
     script, div = components(p, CDN)
-
+    categories_res = zip(categories, categories_data)
     return render(request, 'core_sm/costs/budget/budget_day_detail.html', {'year': year,
                                                                            'month': month,
                                                                            'day': day,
+                                                                           'id': id,
                                                                            'day_data': day_data,
                                                                            'all_data': all_data,
                                                                            'day_sum': day_sum['value__sum'],
@@ -100,10 +191,13 @@ def budget_day_stats_detail(request, id, year, month, day):
                                                                            'div': mark_safe(div),
                                                                            'day_max': day_max,
                                                                            'day_min': day_min,
-                                                                           'total_budget': total_budget})
+                                                                           'total_budget': total_budget,
+                                                                           'categories_res': categories_res,
+                                                                           'budget_day_title': budget_day_title})
 
 
 def budget_month_stats_detail(request, id, year, month):
+    budget_month_title = Budget.objects.get(id=id).title
     total = Cost.objects.filter(budget_id=id).aggregate(Sum('value'))['value__sum']
     budget = Budget.objects.get(id=id).value
     total_budget = budget - total
@@ -130,8 +224,10 @@ def budget_month_stats_detail(request, id, year, month):
     min_month_value = (min(day_min))
     min_month_day = day_numbers[day_min.index(min(day_min))]
     categories = []
-    for item in Cost.STATUS_CHOICES:
-        categories.append(item[0])
+
+    for item in Category.objects.values('title'):
+        categories.append(item['title'])
+
     categories_data = []
     budget_month_category_calculation(year, month, id, categories, categories_data)
     data1 = {
@@ -160,10 +256,12 @@ def budget_month_stats_detail(request, id, year, month):
                                                                              'year': year,
                                                                              'month': month,
                                                                              'id': id,
-                                                                             'total_budget': total_budget})
+                                                                             'total_budget': total_budget,
+                                                                             'budget_month_title': budget_month_title})
 
 
 def budget_year_stats_detail(request, id, year):
+    budget_year_title = Budget.objects.get(id=id).title
     total = Cost.objects.filter(budget_id=id).aggregate(Sum('value'))['value__sum']
     budget = Budget.objects.get(id=id).value
     total_budget = budget - total
@@ -182,8 +280,8 @@ def budget_year_stats_detail(request, id, year):
     year_sum = Cost.objects.filter(publish__year=year, budget_id=id).aggregate(Sum('value'))['value__sum']
     categories = []
 
-    for item in Cost.STATUS_CHOICES:
-        categories.append(item[0])
+    for item in Category.objects.values('title'):
+        categories.append(item['title'])
 
     categories_data = []
     year_budget_categories_calculation(year, categories, categories_data, id)
@@ -203,7 +301,8 @@ def budget_year_stats_detail(request, id, year):
                                                                             'categories_res': categories_res,
                                                                             'id': id,
                                                                             'year': year,
-                                                                            'total_budget': total_budget})
+                                                                            'total_budget': total_budget,
+                                                                            'budget_year_title' : budget_year_title})
 
 
 def budget_detail(request, id):
@@ -217,7 +316,6 @@ def budget_detail(request, id):
     for item in base:
         date.append(str(item['publish']))
         date_url.append(str(item['publish']).replace('-', '/'))
-    info = zip(base, date, date_url)
 
     try:
         total_budget = budget - total
@@ -225,9 +323,10 @@ def budget_detail(request, id):
         total_budget = 0
     categories = []
 
-    for item in Cost.STATUS_CHOICES:
-        categories.append(item[0])
+    for item in Category.objects.values('title'):
+        categories.append(item['title'])
 
+    info = zip(base, date, date_url, categories)
     categories_data = []
     budget_categories_calculation(id, categories, categories_data)
     data = {
@@ -379,8 +478,8 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
     data = zip(spends, stats, days, days_url)
 
     categories = []
-    for item in Cost.STATUS_CHOICES:
-        categories.append(item[0])
+    for item in Category.objects.values('title'):
+        categories.append(item['title'])
 
     categories_data = []
     comp_categories_calculation(categories, categories_data, start_date, end_date)
@@ -449,8 +548,8 @@ def year_stats_detail(request, year):
     year_sum = Cost.objects.filter(publish__year=year).aggregate(Sum('value'))['value__sum']
     categories = []
 
-    for item in Cost.STATUS_CHOICES:
-        categories.append(item[0])
+    for item in Category.objects.values('title'):
+        categories.append(item['title'])
 
     categories_data = []
     year_categories_calculation(year, categories, categories_data)
@@ -472,9 +571,10 @@ def year_stats_detail(request, year):
             year_budget_id.append(item['id'])
         else:
             pass
-    year_budget_data = zip(year_budget_title, year_budget_spends, year_budget_id)
 
+    year_budget_data = zip(year_budget_title, year_budget_spends, year_budget_id)
     categories_res = zip(categories, categories_data)
+
     another = "/costs/{}/".format(int(year)+1)
     back = "/costs/{}".format(int(year)-1)
     return render(request, 'core_sm/costs/year_stats_detail.html', {'year': year,
@@ -514,8 +614,8 @@ def month_stats_detail(request, year, month):
     min_month_day = day_numbers[day_min.index(min(day_min))]
     categories = []
 
-    for item in Cost.STATUS_CHOICES:
-        categories.append(item[0])
+    for item in Category.objects.values('title'):
+        categories.append(item['title'])
 
     categories_data = []
     month_category_calculation(year, month, categories, categories_data)
@@ -606,8 +706,8 @@ def day_stats_detail(request, year, month, day):
     day_avg = day_data.aggregate(Avg('value'))['value__avg']
     categories = []
 
-    for item in Cost.STATUS_CHOICES:
-        categories.append(item[0])
+    for item in Category.objects.values('title'):
+        categories.append(item['title'])
 
     categories_data = []
     day_category_calculation(year, month, day, categories, categories_data)

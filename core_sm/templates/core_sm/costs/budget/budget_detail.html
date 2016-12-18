@@ -16,12 +16,12 @@
             </tr>
         </thead>
         <tbody>
-            {% for item, date, date_url in info %}
+            {% for item, date, date_url, category in info %}
             <tr>
                 <td>{{ item.title }}</td>
                 <td>{{ item.value }}</td>
                 <td><a href="/costs/{{ date_url }}/">{{ date }}</a></td>
-                <td>{{ item.category }}</td>
+                <td>{{ category }}</td>
                 <td><a href="/budget_item_delete/{{ item.id }}/">Usuń</a></td>
             </tr>
             {% endfor %}
