@@ -180,3 +180,35 @@ def category_year_data_calculation(Months_data, year, category_id):
         else:
             Months_data.append(0)
     return Months_data
+
+
+def category_month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg, category_id):
+    for day in day_numbers:
+        val_1 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day,
+                                    category_id=category_id).aggregate(Sum('value'))['value__sum']
+        val_2 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day,
+                                    category_id=category_id).aggregate(Min('value'))['value__min']
+        val_3 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day,
+                                    category_id=category_id).aggregate(Max('value'))['value__max']
+        val_4 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day,
+                                    category_id=category_id).aggregate(Avg('value'))['value__avg']
+        if val_1 and val_2 and val_3 and val_4 is not None:
+            day_sum.append(val_1)
+            day_min.append(val_2)
+            day_max.append(val_3)
+            day_avg.append("%.2f" % val_4)
+        else:
+            day_sum.append(0)
+            day_min.append(0)
+            day_max.append(0)
+            day_avg.append(0)
+    return day_sum, day_min, day_max, day_avg
+
+
+def category_day_day_calculation(day_data, title, value, day_id, budget_id):
+    for item in day_data.values('title', 'value', 'id', 'budget_id'):
+        title.append(item['title'])
+        value.append(float(item['value']))
+        day_id.append(item['id'])
+        budget_id.append(Budget.objects.get(id=item['budget_id']).title)
+    return title, value, day_id, budget_id

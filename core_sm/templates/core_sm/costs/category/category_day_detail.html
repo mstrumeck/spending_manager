@@ -2,13 +2,14 @@
 {% load staticfiles %}
 
 {% block title %}
-    Dzień {{ day }}/{{ month }}/{{ year }}
+    Podsumowanie kategorii {{ category_title }} za dzień {{ day }}/{{ month }}/{{ year }}
 {% endblock %}
 
 {% block content %}
-<h3>Podusmowanie dnia {{ day }}.{{ month }}.{{ year }}</h3>
-    <a href="/costs/{{ year}}/{{ month }}/">Podgląd miesięczny </a>
-    <a href="/costs/{{ year}}/">Podgląd roczny</a>
+<h3>Podusmowanie kategorii {{ category_title }} za dzień {{ day }}.{{ month }}.{{ year }}</h3>
+    <a href="/category/{{ year}}/{{ month }}/">Podgląd miesięczny </a>
+    <a href="/category/{{ year}}/">Podgląd roczny</a>
+    <a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Podsumowanie całego dnia</a>
     <a href={{ another }}>Kolejny dzień</a>
     <a href={{ back }}>Poprzedni dzień</a>
     <div>
@@ -26,7 +27,7 @@
                 <tr>
                     <th scope="row">{{ item.title }}</th>
                     <td>{{ item.value }}</td>
-                    <td><a href="/category/{{ item.category_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ item.category }}</a></td>
+                    <td>{{ item.category }}</td>
                     <td><a href="/budget/{{ item.budget_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ budget_title }}</a></td>
                     <td><a href="/delete/{{ item.id }}/">Usuń</a></td>
                 </tr>
@@ -48,7 +49,6 @@
                         <th></th>
                         <th scope="col">Nazwa</th>
                         <th scope="col">Cena</th>
-                        <th scope="col">Kategoria</th>
                         <th scope="col">Budżet</th>
                     </tr>
                 </thead>
@@ -94,24 +94,5 @@
                 </tbody>
             </table>
         </div>
-        <div>
-            {{ div }}
-            {{ script }}
-        </div>
-            <table>
-                <thead>
-                <tr>
-                    <th>Kategoria</th>
-                    <th>ZŁ</th>
-                </tr>
-                </thead>
-                <tbody>
-                    {% for cat, data, id in categories_res %}
-                        <tr>
-                            <th scope="row"><a href="/category/{{ id }}/{{ year }}/{{ month }}/{{ day }}/">{{ cat }}</a></th>
-                            <td>{{ data }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
 {% endblock %}

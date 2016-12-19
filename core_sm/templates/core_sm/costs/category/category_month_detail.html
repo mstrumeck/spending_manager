@@ -1,16 +1,13 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
-{% block title %}
-    Miesiąc {{ month }}/{{ year }}
-{% endblock %}
+{% block title %}Podsumowanie kategorii {{ category_title }} za miesiąc {{ month }}.{{ year }}{% endblock %}
 
 {% block content %}
-<h3>Podsumowanie miesiąca {{ month }}.{{ year }}</h3>
-    <a href={{ another }}>Następny miesiąc</a>
-    <a href={{ back }}>Poprzedni miesiąc</a>
-    <a href="/costs/{{ year }}/">Podgląd bieżacego roku</a>
-    <div>
+<h3>Podsumowanie kategorii {{ category_title }} za miesiąc {{ month }}.{{ year }}</h3>
+<a href="/category/{{ category_id }}/{{ year }}/">Podsumowanie roczne</a>
+<a href="/costs/{{ year }}/{{ month }}/">Podsumowanie całego miesiąca</a>
+<div>
         <table>
             <thead>
                 <tr>
@@ -71,28 +68,4 @@
         {{ div }}
         {{ script }}
     </div>
-    <div>
-        {{ div1 }}
-        {{ script1 }}
-    </div>
-
-    <div>
-    <table>
-        <thead>
-            <tr>
-                <th>Kategoria</th>
-                <th>ZŁ</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for cat, data, id in categories_res %}
-            <tr>
-                <th scope="row"><a href="/category/{{ id }}/{{ year }}/{{ month }}/">{{ cat }}</a></th>
-                <td>{{ data }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    </div>
-
 {% endblock %}

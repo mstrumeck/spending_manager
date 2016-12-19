@@ -2,13 +2,14 @@
 {% load staticfiles %}
 
 {% block title %}
-    Rok {{ year }}
+    Kategoria {{ category_title }} za rok {{ year }}
 {% endblock %}
 
 {% block content %}
-    <h3>Statystki za rok {{ year }}</h3>
+    <h3>Podsumowanie kategorii {{ category_title }} za rok {{ year }}</h3>
     <a href={{ another }}>Kolejny rok</a>
     <a href={{ back }}>Poprzedni rok</a>
+    <a href="/costs/{{ year }}/">Podsumowanie całego roku</a>
 
 <div>
     <table>

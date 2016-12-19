@@ -73,9 +73,9 @@
                 </tr>
             </thead>
             <tbody>
-            {% for cat, data in categories_res %}
+            {% for cat, data, id in categories_res %}
                 <tr>
-                    <th scope="row">{{ cat }}</th>
+                    <th scope="row"><a href="/category/{{ id }}/{{ year }}/">{{ cat }}</a></th>
                     <td>{{ data }}</td>
                 </tr>
             {% endfor %}
