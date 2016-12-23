@@ -10,23 +10,24 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-
-    <div>
-        <ul id="bar">
-            <li><a href="/">Menu glowne</a></li>
-            <li><a href="{% url 'core_sm:costs_stats' %}">Znajdz statystyke</a></li>
-            <li><a href="{% url 'core_sm:day_data_multiadd' %}">Multi-dodaj</a></li>
-            <li><a href="{% url 'core_sm:stats_comp' %}">Porównanie</a></li>
-            <li><a href="{% url 'core_sm:budget_list' %}">Lista budżetów</a></li>
-            <li><a href="{% url 'core_sm:edit_status' %}">Edycja kategorii</a></li>
-            <li><a href="{% url 'core_sm:budget_setup' %}">Edycja budżetu</a></li>
-        </ul>
+    <header>
+        <nav>
+            <ul id="bar">
+                <li><a href="/">Menu glowne</a></li>
+                <li><a href="{% url 'core_sm:costs_stats' %}">Znajdz statystyke</a></li>
+                <li><a href="{% url 'core_sm:day_data_multiadd' %}">Multi-dodaj</a></li>
+                <li><a href="{% url 'core_sm:stats_comp' %}">Porównanie</a></li>
+                <li><a href="{% url 'core_sm:budget_setup' %}">Opcje budżetu</a></li>
+                <li><a href="{% url 'core_sm:category_setup' %}">Opcje kategorii</a></li>
+            </ul>
+        </nav>
+    </header>
         <div id="content">
             {% block content %}
             {% endblock %}
         </div>
         <div id="quick-add">
-            <h3>Szybkie dodawanie</h3>
+            <p>Szybkie dodawanie</p>
             {% if sent %}
                     <h3>Wydatek dodany!</h3>
             {% endif %}
@@ -35,5 +36,6 @@
                 {% csrf_token %}
                 <input type="submit" value="Dodaj">
             </form>
+        </div>
 </body>
 </html>

@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from .models import Cost, Budget, Category
 from django.db.models import Avg, Max, Min, Sum
 from .forms import DataGenerateForm, DataAddForm, MultiaddGenerateForm, comp_form, StatusFormEdit, BudgetForm, \
-    BudgetDelete
+    CategoryForm
 from django.core.urlresolvers import reverse
 import datetime
 from bokeh.embed import components
@@ -16,6 +16,32 @@ from core_sm.functions import month_day_calculations, month_category_calculation
     year_categories_calculation, comp_categories_calculation, budget_categories_calculation, year_budget_calculation, \
     year_budget_categories_calculation, budget_month_day_calculations, budget_month_category_calculation, \
     budget_day_calculation, category_year_data_calculation, category_month_day_calculations, category_day_day_calculation
+
+
+def category_edit(request, id):
+    category = Category.objects.get(id=id)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+    else:
+        form = CategoryForm(instance=category)
+    return render(request, 'core_sm/costs/category/category_edit.html', {'form': form,
+                                                                         'category': category})
+
+
+def category_setup(request):
+    data = Category.objects.all()
+
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+    else:
+        form = CategoryForm
+
+    return render(request, 'core_sm/costs/category/category_setup.html', {'data': data,
+                                                                          'form': form})
 
 
 def category_day_stats_detail(request, category_id, year, month, day):
@@ -216,19 +242,6 @@ def category_detail(request, category_id):
                                                                            'data_max': data_max,
                                                                            'category_title': category_title,
                                                                            'category_budget_data': category_budget_data})
-
-
-def budget_list(request):
-    budget_items = Budget.objects.all()
-    val = []
-    for item in budget_items:
-        try:
-            val.append(Budget.objects.get(id=item.id).value - Cost.objects.filter(budget_id=item.id).aggregate(Sum('value'))['value__sum'])
-        except TypeError:
-            val.append(Budget.objects.get(id=item.id).value)
-    budget_data = zip(budget_items, val)
-    return render(request, 'core_sm/costs/budget/budget_list.html', {'budget_data': budget_data,
-                                                                     'val': val})
 
 
 def budget_item_delete(request, id):
@@ -655,14 +668,14 @@ def year_stats_detail(request, year):
         'Miesiące': Months,
         'ZŁ': Months_data
     }
-    p = Bar(data, values='ZŁ', label='Miesiące', legend=False)
+    p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=735, plot_height=350)
     script, div = components(p, CDN)
     all_data = zip(Months, Months_data, Months_url)
     year_sum = Cost.objects.filter(publish__year=year).aggregate(Sum('value'))['value__sum']
     categories = []
     categories_id = []
 
-    for item in Category.objects.values('title'):
+    for item in Category.objects.values('title', 'id'):
         categories.append(item['title'])
         categories_id.append(item['id'])
 
@@ -672,12 +685,13 @@ def year_stats_detail(request, year):
         'money': [float(x) for x in categories_data],
         'labels': categories
     }
-    p1 = Bar(data1, values='money', label='labels')
+    p1 = Bar(data1, values='money', label='labels', plot_width=735, plot_height=300, legend=False)
     script1, div1 = components(p1, CDN)
 
     year_budget_title = []
     year_budget_spends = []
     year_budget_id = []
+
     for item in Budget.objects.values('title', 'id'):
         val = Cost.objects.filter(budget_id=item['id'], publish__year=year).aggregate(Sum('value'))['value__sum']
         if val is not None:

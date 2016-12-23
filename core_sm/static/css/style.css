@@ -1,9 +1,24 @@
 body {
     margin: 0 auto;
     padding: 0;
-    font-family: helvetica, sans-serif;
+    font-family: Arial, helvetica, sans-serif;
+    font-size: 12px;
     width: 1260px;
 }
+
+nav {
+    text-align: center;
+}
+
+a {
+    text-decoration: none;
+}
+
+#start {
+    list-style-type: none;
+}
+
+
 
 #bar {
     list-style-type: none;
@@ -22,7 +37,7 @@ body {
 #content {
     border: solid;
     text-align: center;
-    width: 990px;
+    width: 1067px;
     float: left;
 
 }
@@ -30,10 +45,56 @@ body {
 #quick-add {
     border: solid;
     text-align: center;
-    width: 255px;
+    width: 180px;
     float: right;
 }
 
 #page {
     border: solid;
 }
+
+#year-budget {
+    position: absolute;
+    left: 905px;
+}
+
+
+
+#table-budget {
+    border: solid;
+    width: 200px;
+    font-size: 90%;
+    left: 885px;
+    position: absolute;
+}
+
+#table-month {
+    font-size: 90%;
+    left: 775px;
+    position: absolute;
+    border: solid;
+    height : 300px;
+
+}
+
+#table-category {
+    font-size: 90%;
+    left: 775px;
+    position: absolute;
+    border: solid;
+}
+
+#table-category > th, td {
+    padding: 5px 5px 5px 5px;
+}
+
+th {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 2px solid #111111;
+    border-top: 1px solid #999;
+    text-align: left;
+}
+
+tr:nth-child(even) {
+    background-color: #efefef;}

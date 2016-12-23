@@ -6,11 +6,12 @@
 {% endblock %}
 
 {% block content %}
-    <h2>Witaj w programie 'Spending Manager'</h2>
+    <p>Witaj w programie 'Spending Manager'</p>
     <div>
-        <h3>Pogląd całościowy</h3>
-        <a href="/costs/{{ year}}/">Wybierz aktualny rok</a>
-        <a href="/costs/{{ year }}/{{ month }}/">Wybierz aktualny miesiąc</a>
-        <a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Wybierz aktualny dzień</a>
+        <ul id="start">
+            <li><a href="/costs/{{ year}}/">Wybierz aktualny rok</a></li>
+            <li><a href="/costs/{{ year }}/{{ month }}/">Wybierz aktualny miesiąc</a></li>
+            <li><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Wybierz aktualny dzień</a></li>
+        </ul>
     </div>
 {% endblock %}

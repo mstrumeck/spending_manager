@@ -1,5 +1,5 @@
 from django import forms
-from .models import Cost, Budget
+from .models import Cost, Budget, Category
 import datetime
 
 
@@ -39,6 +39,12 @@ class BudgetForm(forms.ModelForm):
     class Meta:
         model = Budget
         fields = ['title', 'value']
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['title']
 
 
 class BudgetDelete(forms.Form):

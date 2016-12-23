@@ -6,12 +6,11 @@
 {% endblock %}
 
 {% block content %}
-    <h3>Podsumowanie kategorii {{ title }} za rok {{ year }}</h3>
-    <a href={{ another }}>Kolejny rok</a>
-    <a href={{ back }}>Poprzedni rok</a>
-
-<div>
-    <table>
+        <h3>Podsumowanie kategorii {{ title }} za rok {{ year }}</h3>
+        <a href={{ back }}>Poprzedni rok</a>
+        <a href={{ another }}>Kolejny rok</a>
+<div >
+    <table id="table-budget">
         <thead>
             <tr>
                 <th>Nazwa budżetu</th>
@@ -27,62 +26,59 @@
             {% endfor %}
         </tbody>
     </table>
-</div>
 
     <div>
-    {{ div }}
-    {{ script }}
-    </div>
-
-    <div>
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th>ZŁ</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for month, data, month_url in all_data %}
-            <tr>
-                <th scope="row"><a href="/costs/{{ year }}/{{ month_url }}/">{{ month }}</a></th>
-                <th>{{ data }}</th>
-            </tr>
-        {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <th scope="row">Suma</th>
-                <th>{{ year_sum }}</th>
-            </tr>
-        </tfoot>
-    </table>
-    </div>
-
-    <div>
-    {{ div1 }}
-    {{ script1 }}
-    </div>
-
-    <div>
-        <table>
+        <table id="table-month">
             <thead>
                 <tr>
-                    <th>Kategoria</th>
+                    <th>Miesiąć</th>
                     <th>ZŁ</th>
                 </tr>
             </thead>
             <tbody>
-            {% for cat, data, id in categories_res %}
+            {% for month, data, month_url in all_data %}
                 <tr>
-                    <th scope="row"><a href="/category/{{ id }}/{{ year }}/">{{ cat }}</a></th>
+                    <td scope="row"><a href="/costs/{{ year }}/{{ month_url }}/">{{ month }}</a></td>
                     <td>{{ data }}</td>
                 </tr>
             {% endfor %}
             </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="row">Suma</th>
+                    <th>{{ year_sum }}</th>
+                </tr>
+            </tfoot>
         </table>
     </div>
+    <div>
+        {{ div }}
+        {{ script }}
+    </div>
+</div>
 
+        <div>
+            <table id="table-category">
+                <thead>
+                    <tr>
+                        <th>Kategoria</th>
+                        <th>Zł</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for cat, data, id in categories_res %}
+                    <tr>
+                        <td scope="row"><a href="/category/{{ id }}/{{ year }}/">{{ cat }}</a></td>
+                        <td>{{ data }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+    </div>
+    <div>
+        {{ div1 }}
+        {{ script1 }}
+    </div>
 
 
 {% endblock %}

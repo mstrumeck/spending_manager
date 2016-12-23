@@ -1,0 +1,30 @@
+{% extends 'core_sm/base.html' %}
+{% load staticfiles %}
+
+{% block title %}Edycja kategorii{% endblock %}
+
+{% block content %}
+
+<table>
+    <thead>
+        <tr>
+            <th>Kategorie</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in data %}
+        <tr>
+            <td><a href="/category/{{ item.id }}/">{{ item.title }}</a></td>
+            <td><a href="/category_edit/{{ item.id }}/">Edycja</a></td>
+            <td>Podgląd</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+    <form method="POST">
+        {{ form }}
+        {% csrf_token %}
+        <input type="submit" value="Dodaj">
+    </form>
+{% endblock %}
