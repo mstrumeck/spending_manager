@@ -10,9 +10,12 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
+    <div class="logo-background">
+    <span class="logo">Spending Manager</span>
+        </div>
     <header>
         <nav>
-            <ul id="bar">
+            <ul class="bar">
                 <li><a href="/">Menu glowne</a></li>
                 <li><a href="{% url 'core_sm:costs_stats' %}">Znajdz statystyke</a></li>
                 <li><a href="{% url 'core_sm:day_data_multiadd' %}">Multi-dodaj</a></li>

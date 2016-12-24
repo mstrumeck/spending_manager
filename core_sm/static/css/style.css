@@ -1,3 +1,5 @@
+@import url(http://fonts.googleapis.com/css?family=Muli);
+
 body {
     margin: 0 auto;
     padding: 0;
@@ -11,7 +13,26 @@ nav {
 }
 
 a {
-    text-decoration: none;
+    text-decoration: none;}
+
+.logo-background {
+    padding:10px 100px;
+    font-size:14px;
+    background:#12c064;
+    color:#fff;
+    border-bottom:4px solid #1cdf78;
+    overflow:auto;}
+
+.logo-background ul {
+
+}
+
+.logo {
+    font-family: 'Muli', sans-serif;
+    float:left;
+    color:#f3f7cc;
+    font-size:20px;
+    margin-right:10%;
 }
 
 #start {
@@ -20,15 +41,21 @@ a {
 
 
 
-#bar {
+.bar {
     list-style-type: none;
     border: solid;
     padding: 5px;
     text-align: center;
-
+    background:#12c064;
+    color:#fff;
+    border-bottom:4px solid #1cdf78;
+    overflow:auto;
+    font-family: 'Muli', sans-serif;
+    font-size:20px;
+    margin-right:10%;
 }
 
-#bar > li {
+.bar > li {
     padding: 5px;
     border: solid;
     display: inline;
@@ -58,43 +85,30 @@ a {
     left: 905px;
 }
 
-
-
-#table-budget {
+.table-third {
     border: solid;
     width: 200px;
     font-size: 90%;
     left: 885px;
     position: absolute;
-}
+    z-index: 10;}
 
-#table-month {
+.table-second {
     font-size: 90%;
     left: 775px;
     position: absolute;
     border: solid;
-    height : 300px;
-
-}
-
-#table-category {
-    font-size: 90%;
-    left: 775px;
-    position: absolute;
-    border: solid;
-}
-
-#table-category > th, td {
-    padding: 5px 5px 5px 5px;
-}
+    display: table;
+    z-index: 10;
+    height: 300px;
+    }
 
 th {
     text-transform: uppercase;
     letter-spacing: 0.1em;
     border-bottom: 2px solid #111111;
     border-top: 1px solid #999;
-    text-align: left;
-}
+    text-align: left;}
 
 tr:nth-child(even) {
     background-color: #efefef;}
