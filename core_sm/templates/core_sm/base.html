@@ -10,21 +10,17 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-    <div class="logo-background">
-    <span class="logo">Spending Manager</span>
-        </div>
-    <header>
         <nav>
-            <ul class="bar">
-                <li><a href="/">Menu glowne</a></li>
-                <li><a href="{% url 'core_sm:costs_stats' %}">Znajdz statystyke</a></li>
+            <p id="logo">Spending Manager</p>
+            <ul>
+                <li><a href="/">Menu główne</a></li>
+                <li><a href="{% url 'core_sm:costs_stats' %}">Znajdź statystykę</a></li>
                 <li><a href="{% url 'core_sm:day_data_multiadd' %}">Multi-dodaj</a></li>
                 <li><a href="{% url 'core_sm:stats_comp' %}">Porównanie</a></li>
                 <li><a href="{% url 'core_sm:budget_setup' %}">Opcje budżetu</a></li>
                 <li><a href="{% url 'core_sm:category_setup' %}">Opcje kategorii</a></li>
             </ul>
         </nav>
-    </header>
         <div id="content">
             {% block content %}
             {% endblock %}

@@ -6,6 +6,8 @@ body {
     font-family: Arial, helvetica, sans-serif;
     font-size: 12px;
     width: 1260px;
+    background: #efefef;
+
 }
 
 nav {
@@ -15,61 +17,58 @@ nav {
 a {
     text-decoration: none;}
 
-.logo-background {
-    padding:10px 100px;
-    font-size:14px;
-    background:#12c064;
-    color:#fff;
-    border-bottom:4px solid #1cdf78;
-    overflow:auto;}
+a:visited {
+    color: black;}
 
-.logo-background ul {
+a:hover {
+    color: red;}
 
-}
-
-.logo {
+#logo {
     font-family: 'Muli', sans-serif;
-    float:left;
-    color:#f3f7cc;
-    font-size:20px;
-    margin-right:10%;
+    font-size: 24px;
+    float: left;
 }
 
 #start {
-    list-style-type: none;
-}
+    list-style-type: none;}
 
-
-
-.bar {
-    list-style-type: none;
+nav {
+    width: 100%;
+    padding: 10px;
     border: solid;
-    padding: 5px;
     text-align: center;
-    background:#12c064;
+    background:#091E6A;
     color:#fff;
-    border-bottom:4px solid #1cdf78;
     overflow:auto;
     font-family: 'Muli', sans-serif;
-    font-size:20px;
-    margin-right:10%;
+    font-size: 140%;
+    }
+
+nav ul {
+    list-style-type: none;
+    color: #fff;
+    float: left;
 }
 
-.bar > li {
-    padding: 5px;
-    border: solid;
+nav ul li {
+    margin: 4px;
+    padding: 6px;
+    background: #969EBE;
+    border-radius: 10px 10px 10px 10px;
+    box-shadow: 2px 2px 2px 2px #777777;
     display: inline;
-}
+    font-family: 'Muli', sans-serif;
+    }
 
 #content {
     border: solid;
     text-align: center;
     width: 1067px;
     float: left;
-
-}
+    background: white;}
 
 #quick-add {
+    background: white;
     border: solid;
     text-align: center;
     width: 180px;
