@@ -668,7 +668,7 @@ def year_stats_detail(request, year):
         'Miesiące': Months,
         'ZŁ': Months_data
     }
-    p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=735, plot_height=350)
+    p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=715, plot_height=350, color='blue')
     script, div = components(p, CDN)
     all_data = zip(Months, Months_data, Months_url)
     year_sum = Cost.objects.filter(publish__year=year).aggregate(Sum('value'))['value__sum']
@@ -685,7 +685,7 @@ def year_stats_detail(request, year):
         'money': [float(x) for x in categories_data],
         'labels': categories
     }
-    p1 = Bar(data1, values='money', label='labels', plot_width=735, plot_height=300, legend=False)
+    p1 = Bar(data1, values='money', label='labels', plot_width=715, plot_height=300, legend=False, color='blue')
     script1, div1 = components(p1, CDN)
 
     year_budget_title = []
@@ -734,7 +734,7 @@ def month_stats_detail(request, year, month):
         'Dni': day_numbers,
         'ZŁ': [float(x) for x in day_sum]
     }
-    p = Bar(data, plot_width=1250, values='ZŁ', legend=False)
+    p = Bar(data, values='ZŁ', plot_width=1050, plot_height=300, legend=False, color='blue')
     script, div = components(p, CDN)
 
     max_month_value = (max(day_max))
@@ -754,7 +754,7 @@ def month_stats_detail(request, year, month):
         'money': [float(x) for x in categories_data],
         'labels': categories
     }
-    p1 = Bar(data1, values='money', label='labels')
+    p1 = Bar(data1, values='money', label='labels', plot_width=705, plot_height=300, legend=False, color='blue')
     script1, div1 = components(p1, CDN)
     categories_res = zip(categories, categories_data, categories_id)
     sum_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Sum('value'))

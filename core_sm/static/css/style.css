@@ -5,6 +5,7 @@ body {
     padding: 0;
     font-family: Arial, helvetica, sans-serif;
     font-size: 12px;
+    letter-spacing: 0.1em;
     width: 1260px;
     background: #efefef;
 
@@ -22,6 +23,9 @@ a:visited {
 
 a:hover {
     color: red;}
+
+a:active {
+    color: black;}
 
 #logo {
     font-family: 'Muli', sans-serif;
@@ -84,27 +88,22 @@ nav ul li {
     left: 905px;
 }
 
-.table-third {
-    border: solid;
-    width: 200px;
+.table {
     font-size: 90%;
-    left: 885px;
-    position: absolute;
-    z-index: 10;}
-
-.table-second {
-    font-size: 90%;
-    left: 775px;
-    position: absolute;
-    border: solid;
-    display: table;
     z-index: 10;
-    height: 300px;
-    }
+    float: left;
+    margin: 2px;
+    height: 350px;}
+
+.table-month {
+    z-index: 10;
+    float: left;
+    margin: 2px;
+    width: 1050px;
+}
 
 th {
     text-transform: uppercase;
-    letter-spacing: 0.1em;
     border-bottom: 2px solid #111111;
     border-top: 1px solid #999;
     text-align: left;}

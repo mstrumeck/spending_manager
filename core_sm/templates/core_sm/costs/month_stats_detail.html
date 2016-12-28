@@ -10,8 +10,14 @@
     <a href={{ another }}>Następny miesiąc</a>
     <a href={{ back }}>Poprzedni miesiąc</a>
     <a href="/costs/{{ year }}/">Podgląd bieżacego roku</a>
+
+<div>
+    <div class="table-month">
+        {{ div }}
+        {{ script }}
+    </div>
     <div>
-        <table>
+        <table class="table-month">
             <thead>
                 <tr>
                     <th></th>
@@ -43,40 +49,15 @@
             </tfoot>
         </table>
     </div>
-    <div>
-        <p>Najwięcej wydano {{ max_month_value }} w dniu {{ max_month_day }}</p>
-        <p>Najmniej wydano {{ min_month_value }} w dniu {{ min_month_day }}</p>
-    </div>
-
-<div>
-    <table>
-        <thead>
-            <tr>
-                <th>Nazwa budżetu</th>
-                <th>Wydana kwota</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for title, spends, id in month_budget_data %}
-                <tr>
-                    <td><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
-                    <td>{{ spends }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
 
-    <div>
-        {{ div }}
-        {{ script }}
-    </div>
-    <div>
+<div>
+    <div class="table">
         {{ div1 }}
         {{ script1 }}
     </div>
 
-    <div>
+    <div class="table">
     <table>
         <thead>
             <tr>
@@ -87,12 +68,52 @@
         <tbody>
         {% for cat, data, id in categories_res %}
             <tr>
-                <th scope="row"><a href="/category/{{ id }}/{{ year }}/{{ month }}/">{{ cat }}</a></th>
+                <td scope="row"><a href="/category/{{ id }}/{{ year }}/{{ month }}/">{{ cat }}</a></td>
                 <td>{{ data }}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
     </div>
+
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nazwa budżetu</th>
+                    <th>Wydana kwota</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for title, spends, id in month_budget_data %}
+                    <tr>
+                        <td><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
+                        <td>{{ spends }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table">
+        <table>
+            <tbody>
+                <tr>
+                    <th>Najwięcej wydano</th>
+                    <td>{{ max_month_value }}</td>
+                    <th>Najmniej wydano</th>
+                    <td>{{ max_month_day }}</td>
+                </tr>
+                <tr>
+                    <th>W dniu</th>
+                    <td>{{ max_month_day }}</td>
+                    <th>W dniu</th>
+                    <td>{{ min_month_day }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
 
 {% endblock %}
