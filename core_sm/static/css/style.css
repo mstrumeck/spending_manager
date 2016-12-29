@@ -58,11 +58,66 @@ nav ul li {
     margin: 4px;
     padding: 6px;
     background: #969EBE;
-    border-radius: 10px 10px 10px 10px;
-    box-shadow: 2px 2px 2px 2px #777777;
     display: inline;
     font-family: 'Muli', sans-serif;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px #777777;
     }
+
+nav ul li:hover {background-color: #435083}
+
+nav ul li:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);}
+
+nav ul li a:hover {
+    color: white;}
+
+.button {
+    margin: 4px;
+    padding: 6px;
+    background: #969EBE;
+    display: inline;
+    font-family: 'Muli', sans-serif;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px #777777;
+}
+
+.button ul {
+    list-style-type: none;
+    color: #fff;
+    float: left;
+}
+
+.button ul li {
+    margin: 4px;
+    padding: 6px;
+    background: #969EBE;
+    display: inline;
+    font-family: 'Muli', sans-serif;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px #777777;
+    }
+
+.button ul li:hover {background-color: #435083}
+
+.button ul li:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);}
+
+.button ul li a:hover {
+    color: white;}
 
 #content {
     border: solid;
@@ -89,11 +144,11 @@ nav ul li {
 }
 
 .table {
+    border: solid;
     font-size: 90%;
     z-index: 10;
     float: left;
-    margin: 2px;
-    height: 350px;}
+    margin: 2px;}
 
 .table-month {
     z-index: 10;
@@ -101,6 +156,29 @@ nav ul li {
     margin: 2px;
     width: 1050px;
 }
+
+.table-day-one {
+    border: solid;
+    font-size: 90%;
+    z-index: 10;
+    float: left;
+    margin: 2px;
+    width: 450px;}
+
+.table-day-two {
+    border: solid;
+    font-size: 90%;
+    z-index: 10;
+    float: left;
+    margin: 2px;
+    width: 595px;
+}
+
+.center {
+    border: solid;
+    display: inline-block;
+    margin: 3px;
+    padding: 3px;}
 
 th {
     text-transform: uppercase;

@@ -7,10 +7,27 @@
 
 {% block content %}
 <h3>Podsumowanie miesiąca {{ month }}.{{ year }}</h3>
-    <a href={{ another }}>Następny miesiąc</a>
-    <a href={{ back }}>Poprzedni miesiąc</a>
-    <a href="/costs/{{ year }}/">Podgląd bieżacego roku</a>
-
+    <div>
+        <a href={{ another }}>Następny miesiąc</a>
+        <a href="/costs/{{ year }}/">Podgląd bieżacego roku</a>
+        <a href={{ back }}>Poprzedni miesiąc</a>
+    </div>
+        <table class="center">
+            <tbody>
+                <tr>
+                    <th>Najwięcej wydano</th>
+                    <td>{{ max_month_value }}</td>
+                    <th>Najmniej wydano</th>
+                    <td>{{ max_month_day }}</td>
+                </tr>
+                <tr>
+                    <th>W dniu</th>
+                    <td>{{ max_month_day }}</td>
+                    <th>W dniu</th>
+                    <td>{{ min_month_day }}</td>
+                </tr>
+            </tbody>
+        </table>
 <div>
     <div class="table-month">
         {{ div }}
@@ -91,25 +108,6 @@
                         <td>{{ spends }}</td>
                     </tr>
                 {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div class="table">
-        <table>
-            <tbody>
-                <tr>
-                    <th>Najwięcej wydano</th>
-                    <td>{{ max_month_value }}</td>
-                    <th>Najmniej wydano</th>
-                    <td>{{ max_month_day }}</td>
-                </tr>
-                <tr>
-                    <th>W dniu</th>
-                    <td>{{ max_month_day }}</td>
-                    <th>W dniu</th>
-                    <td>{{ min_month_day }}</td>
-                </tr>
             </tbody>
         </table>
     </div>

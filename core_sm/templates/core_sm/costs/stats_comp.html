@@ -7,7 +7,50 @@
 
     <h3>Zestawienie od {{ date_x }} do {{ date_y }}</h3>
 
-    <table>
+<div>
+    <div class="table">
+{{ div }}
+{{ script }}
+    </div>
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nazwa budżetu</th>
+                    <th>Wydana kwota</th>
+                </tr>
+            </thead>
+                <tbody>
+                {% for title, spends, id in comp_budget_data %}
+                <tr>
+                    <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
+                    <td>{{ spends }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th scope="row">Suma</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cat, cat_data in categories_res %}
+        <tr>
+            <th>{{ cat }}</th>
+            <th>{{ cat_data }}</th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+        </div>
+</div>
+
+<table class="table-month">
         <thead>
             <tr>
                 <th scope="col">Nazwa</th>
@@ -48,49 +91,11 @@
             </tr>
         </tfoot>
     </table>
-
-    <div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nazwa budżetu</th>
-                    <th>Wydana kwota</th>
-                </tr>
-            </thead>
-                <tbody>
-                {% for title, spends, id in comp_budget_data %}
-                <tr>
-                    <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
-                    <td>{{ spends }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-{{ div }}
-{{ script }}
-
-<table>
-    <thead>
-        <tr>
-            <th></th>
-            <th scope="row">Suma</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for cat, cat_data in categories_res %}
-        <tr>
-            <th>{{ cat }}</th>
-            <th>{{ cat_data }}</th>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
+<div class="table">
 <form action="" method="POST">
     {{ form.as_p }}
     {% csrf_token %}
     <input type="submit" value="Dodaj">
 </form>
-
+</div>
 {% endblock %}

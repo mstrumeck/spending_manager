@@ -613,7 +613,7 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
         'money': [float(x) for x in categories_data],
         'labels': categories
     }
-    p = Bar(vis_data, values='money', label='labels')
+    p = Bar(vis_data, values='money', label='labels', plot_width=695, plot_height=400, legend=False, color='blue')
     script, div = components(p, CDN)
 
     categories_res = zip(categories, categories_data)
@@ -668,7 +668,7 @@ def year_stats_detail(request, year):
         'Miesiące': Months,
         'ZŁ': Months_data
     }
-    p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=715, plot_height=350, color='blue')
+    p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=710, plot_height=350, color='blue')
     script, div = components(p, CDN)
     all_data = zip(Months, Months_data, Months_url)
     year_sum = Cost.objects.filter(publish__year=year).aggregate(Sum('value'))['value__sum']
@@ -685,7 +685,7 @@ def year_stats_detail(request, year):
         'money': [float(x) for x in categories_data],
         'labels': categories
     }
-    p1 = Bar(data1, values='money', label='labels', plot_width=715, plot_height=300, legend=False, color='blue')
+    p1 = Bar(data1, values='money', label='labels', plot_width=710, plot_height=300, legend=False, color='blue')
     script1, div1 = components(p1, CDN)
 
     year_budget_title = []
@@ -754,7 +754,7 @@ def month_stats_detail(request, year, month):
         'money': [float(x) for x in categories_data],
         'labels': categories
     }
-    p1 = Bar(data1, values='money', label='labels', plot_width=705, plot_height=300, legend=False, color='blue')
+    p1 = Bar(data1, values='money', label='labels', plot_width=680, plot_height=300, legend=False, color='blue')
     script1, div1 = components(p1, CDN)
     categories_res = zip(categories, categories_data, categories_id)
     sum_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Sum('value'))
@@ -850,7 +850,7 @@ def day_stats_detail(request, year, month, day):
         'money': [float(x) for x in categories_data],
         'labels': categories
     }
-    p = Bar(data, values='money', label='labels')
+    p = Bar(data, values='money', label='labels', plot_width=600, plot_height=300, legend=False, color='blue')
     script, div = components(p, CDN)
 
     categories_res = zip(categories, categories_data, categories_id)
