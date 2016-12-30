@@ -78,16 +78,15 @@ nav ul li a:hover {
     color: white;}
 
 .button {
-    margin: 4px;
-    padding: 6px;
-    background: #969EBE;
-    display: inline;
+    width: 100%;
+    padding: 10px;
+    border: solid;
+    text-align: center;
+    color:#fff;
+    overflow:auto;
     font-family: 'Muli', sans-serif;
-    cursor: pointer;
-    outline: none;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 5px #777777;
+    font-size: 100%;
+    display: inline-block;
 }
 
 .button ul {
@@ -175,7 +174,6 @@ nav ul li a:hover {
 }
 
 .center {
-    border: solid;
     display: inline-block;
     margin: 3px;
     padding: 3px;}

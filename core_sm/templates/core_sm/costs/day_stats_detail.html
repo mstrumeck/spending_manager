@@ -7,14 +7,16 @@
 
 {% block content %}
 <h3>Podusmowanie dnia {{ day }}.{{ month }}.{{ year }}</h3>
-
     <div class="center">
-        <a href="/costs/{{ year}}/{{ month }}/">Podgląd miesięczny </a>
-        <a href="/costs/{{ year}}/">Podgląd roczny</a>
-        <a href={{ another }}>Kolejny dzień</a>
-        <a href={{ back }}>Poprzedni dzień</a>
+        <div class="button">
+            <ul>
+                <li><a href="/costs/{{ year}}/{{ month }}/">Podgląd miesięczny </a></li>
+                <li><a href="/costs/{{ year}}/">Podgląd roczny</a></li>
+                <li><a href={{ another }}>Kolejny dzień</a></li>
+                <li><a href={{ back }}>Poprzedni dzień</a></li>
+            </ul>
+        </div>
     </div>
-
 <div class="table">
     <div>
         {{ div }}
