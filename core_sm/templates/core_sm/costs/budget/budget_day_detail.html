@@ -1,13 +1,13 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
-{% block title %}{{ budget_day_title }} {{ day }}-{{ month }}-{{ year }}{% endblock %}
+{% block title %}{{ budget_day_title }} {{ day }}/{{ month }}/{{ year }}{% endblock %}
 
 {% block content %}
 <h3>Podsumowanie budżetu {{ budget_day_title }} za dzień {{ day }}.{{ month }}.{{ year }}</h3>
 <h3>Saldo {{ total_budget }}</h3>
 
-<div class="center">
+    <div class="center">
         <div class="button">
             <ul>
                 <li><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">Podgląd miesięczny</a></li>
@@ -16,7 +16,13 @@
         </div>
     </div>
 
-    <div>
+<div class="table">
+    <div class="table">
+        {{ div }}
+        {{ script }}
+    </div>
+
+    <div class="table">
         <table>
             <thead>
                 <tr>
@@ -31,7 +37,7 @@
                     <th scope="row">{{ title }}</th>
                     <td>{{ value }}</td>
                     <td>{{ category }}</td>
-                    <td><a href="/delete/{{ id }}/">Usuń</a></td>
+                    <td class="button-setup"><a href="/delete/{{ id }}/">Usuń</a></td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -43,8 +49,11 @@
             </tfoot>
         </table>
         </div>
+</div>
 
-        <div>
+<div class="table">
+
+    <div class="table">
             <table>
                 <thead>
                     <tr>
@@ -59,7 +68,7 @@
                         <th scope="row">Największy wydatek</th>
                         {% if day_max != 0 %}
                             {% for item in day_max %}
-                            <th>{{ item }}</th>
+                            <td>{{ item }}</td>
                             {% endfor %}
                         {% endif %}
                     </tr>
@@ -67,37 +76,37 @@
                         <th scope="row">Najmniejszy wydatek</th>
                         {% if day_min != 0 %}
                             {% for item in day_min %}
-                            <th>{{ item }}</th>
+                            <td>{{ item }}</td>
                             {% endfor %}
                         {% endif %}
                     </tr>
                     <tr>
                         <th scope="row">Średnia</th>
-                        <th>{{ day_avg }}</th>
+                        <td>{{ day_avg }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div>
-            {{ div }}
-            {{ script }}
-        </div>
-        <div>
-    <table>
-        <thead>
-            <tr>
-                <th>Kategoria</th>
-                <th>ZŁ</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for cat, data in categories_res %}
-            <tr>
-                <th scope="row">{{ cat }}</th>
-                <td>{{ data }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Kategoria</th>
+                    <th>ZŁ</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for cat, data in categories_res %}
+                <tr>
+                    <th scope="row">{{ cat }}</th>
+                    <td>{{ data }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
     </div>
 {% endblock %}

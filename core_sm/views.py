@@ -31,7 +31,10 @@ def category_edit(request, id):
 
 
 def category_setup(request):
-    data = Category.objects.all()
+    info_total = []
+    info = Category.objects.all()
+    for item in info:
+        info_total.append(Cost.objects.filter(category_id=item.id).aggregate(Sum('value'))['value__sum'])
 
     if request.method == 'POST':
         form = CategoryForm(request.POST)
@@ -39,6 +42,8 @@ def category_setup(request):
             form.save()
     else:
         form = CategoryForm
+
+    data = zip(info, info_total)
 
     return render(request, 'core_sm/costs/category/category_setup.html', {'data': data,
                                                                           'form': form})
@@ -302,7 +307,7 @@ def budget_day_stats_detail(request, id, year, month, day):
         'money': [float(x) for x in categories_data],
         'labels': categories
     }
-    p = Bar(data, values='money', label='labels')
+    p = Bar(data, values='money', label='labels', plot_width=760, plot_height=300, legend=False, color='blue')
     script, div = components(p, CDN)
     categories_res = zip(categories, categories_data)
     return render(request, 'core_sm/costs/budget/budget_day_detail.html', {'year': year,
@@ -588,7 +593,7 @@ def costs_stats(request):
 
 def current_detail(request):
     year = datetime.date.today().year
-    month = datetime.date.today().month
+    month = str(datetime.date.today().month).zfill(2)
     day = str(datetime.date.today().day).zfill(2)
     return render(request, 'core_sm/costs/start.html', {'year': year,
                                                         'month': month,

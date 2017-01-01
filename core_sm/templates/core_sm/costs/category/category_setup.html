@@ -9,14 +9,15 @@
     <thead>
         <tr>
             <th>Kategorie</th>
+            <th>Suma</th>
         </tr>
     </thead>
     <tbody>
-    {% for item in data %}
+    {% for item, total in data %}
         <tr>
-            <td><a href="/category/{{ item.id }}/">{{ item.title }}</a></td>
-            <td><a href="/category_edit/{{ item.id }}/">Edycja</a></td>
-            <td>Podgląd</td>
+            <td class="button-setup"><a href="/category/{{ item.id }}/">{{ item.title }}</a></td>
+            <td>{{ total }}</td>
+            <td class="button-setup"><a href="/category_edit/{{ item.id }}/">Edycja</a></td>
         </tr>
     {% endfor %}
     </tbody>
