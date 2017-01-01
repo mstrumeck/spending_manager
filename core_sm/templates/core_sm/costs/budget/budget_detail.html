@@ -6,7 +6,31 @@
 {% block content %}
 <h3>Kwota twojego budżetu wynosi: {{ budget }} zł</h3>
 
-    <table>
+<div class="table">
+    {{ div }}
+    {{ script }}
+    </div>
+
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Kategoria</th>
+                    <th>ZŁ</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for cat, data, id in cat_all %}
+                <tr>
+                    <th scope="row" class="button-setup"><a href="/category/{{ id }}/">{{ cat }}</a></th>
+                    <td>{{ data }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+
+    <table class="table-month">
         <thead>
             <tr>
                 <th scope="col">Nazwa</th>
@@ -16,13 +40,13 @@
             </tr>
         </thead>
         <tbody>
-            {% for item, date, date_url, category in info %}
+            {% for item, date, date_url, category, category_id in info %}
             <tr>
                 <td>{{ item.title }}</td>
                 <td>{{ item.value }}</td>
-                <td><a href="/costs/{{ date_url }}/">{{ date }}</a></td>
-                <td>{{ category }}</td>
-                <td><a href="/budget_item_delete/{{ item.id }}/">Usuń</a></td>
+                <td class="button-setup"><a href="/costs/{{ date_url }}/">{{ date }}</a></td>
+                <td class="button-setup"><a href="/category/{{ category_id }}/">{{ category }}</a></td>
+                <td class="button-setup"><a href="/budget_item_delete/{{ item.id }}/">Usuń</a></td>
             </tr>
             {% endfor %}
         </tbody>
@@ -37,26 +61,5 @@
             </tr>
         </tfoot>
     </table>
-    {{ div }}
-    {{ script }}
-
-    <div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Kategoria</th>
-                    <th>ZŁ</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for cat, data in cat_all %}
-                <tr>
-                    <th scope="row">{{ cat }}</th>
-                    <td>{{ data }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        </div>
 
 {% endblock %}

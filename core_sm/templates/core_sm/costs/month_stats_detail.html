@@ -16,7 +16,6 @@
         </ul>
     </div>
 </div>
-
         <table>
             <tbody>
                 <tr>
@@ -52,7 +51,7 @@
             <tbody>
                 {% for day, sum, max, min, avg in day_data %}
                 <tr>
-                    <th scope="row"><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Dzień {{ day }}</a></th>
+                    <th scope="row" class="button-setup"><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Dzień {{ day }}</a></th>
                     <td>{{ sum }}</td>
                     <td>{{ max }}</td>
                     <td>{{ min }}</td>
@@ -90,7 +89,7 @@
         <tbody>
         {% for cat, data, id in categories_res %}
             <tr>
-                <td scope="row"><a href="/category/{{ id }}/{{ year }}/{{ month }}/">{{ cat }}</a></td>
+                <td scope="row" class="button-setup"><a href="/category/{{ id }}/{{ year }}/{{ month }}/">{{ cat }}</a></td>
                 <td>{{ data }}</td>
             </tr>
         {% endfor %}
@@ -109,7 +108,7 @@
             <tbody>
                 {% for title, spends, id in month_budget_data %}
                     <tr>
-                        <td><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
+                        <td class="button-setup"><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
                         <td>{{ spends }}</td>
                     </tr>
                 {% endfor %}

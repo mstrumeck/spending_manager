@@ -343,16 +343,18 @@ def budget_month_stats_detail(request, id, year, month):
         'Dni': day_numbers,
         'ZŁ': [float(x) for x in day_sum]
     }
-    p = Bar(data, plot_width=1250, values='ZŁ', legend=False)
+    p = Bar(data, values='ZŁ', plot_width=1050, plot_height=300, legend=False, color='blue')
     script, div = components(p, CDN)
     max_month_value = (max(day_max))
     max_month_day = day_numbers[day_max.index(max(day_max))]
     min_month_value = (min(day_min))
     min_month_day = day_numbers[day_min.index(min(day_min))]
     categories = []
+    category_id =[]
 
-    for item in Category.objects.values('title'):
+    for item in Category.objects.values('title', 'id'):
         categories.append(item['title'])
+        category_id.append(item['id'])
 
     categories_data = []
     budget_month_category_calculation(year, month, id, categories, categories_data)
@@ -360,9 +362,9 @@ def budget_month_stats_detail(request, id, year, month):
         'money': [float(x) for x in categories_data],
         'labels': categories
     }
-    p1 = Bar(data1, values='money', label='labels')
+    p1 = Bar(data1, values='money', label='labels', plot_width=920, plot_height=300, legend=False, color='blue')
     script1, div1 = components(p1, CDN)
-    categories_res = zip(categories, categories_data)
+    categories_res = zip(categories, categories_data, category_id)
     return render(request, 'core_sm/costs/budget/budget_month_detail.html', {'day_data': day_data,
                                                                              'sum_cost': sum_cost,
                                                                              'min_cost': min_cost,
@@ -400,14 +402,16 @@ def budget_year_stats_detail(request, id, year):
         'Miesiące': Months,
         'ZŁ': Months_data
     }
-    p = Bar(data, values='ZŁ', label='Miesiące')
+    p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=920, plot_height=350, color='blue')
     script, div = components(p, CDN)
     all_data = zip(Months, Months_data, Months_url)
     year_sum = Cost.objects.filter(publish__year=year, budget_id=id).aggregate(Sum('value'))['value__sum']
     categories = []
+    category_id = []
 
-    for item in Category.objects.values('title'):
+    for item in Category.objects.values('title', 'id'):
         categories.append(item['title'])
+        category_id.append(item['id'])
 
     categories_data = []
     year_budget_categories_calculation(year, categories, categories_data, id)
@@ -415,9 +419,9 @@ def budget_year_stats_detail(request, id, year):
         'money': [float(x) for x in categories_data],
         'labels': categories
     }
-    p1 = Bar(data1, values='money', label='labels')
+    p1 = Bar(data1, values='money', label='labels', legend=False, plot_width=920, plot_height=350, color='blue')
     script1, div1 = components(p1, CDN)
-    categories_res = zip(categories, categories_data)
+    categories_res = zip(categories, categories_data, category_id)
     return render(request, 'core_sm/costs/budget/budget_year_detail.html', {'year_sum': year_sum,
                                                                             'script': mark_safe(script),
                                                                             'div': mark_safe(div),
@@ -448,20 +452,22 @@ def budget_detail(request, id):
     except TypeError:
         total_budget = 0
     categories = []
+    categories_id = []
 
-    for item in Category.objects.values('title'):
+    for item in Category.objects.values('title', 'id'):
         categories.append(item['title'])
+        categories_id.append(item['id'])
 
-    info = zip(base, date, date_url, categories)
+    info = zip(base, date, date_url, categories, categories_id)
     categories_data = []
     budget_categories_calculation(id, categories, categories_data)
     data = {
         'money': [float(x) for x in categories_data],
         'labels': categories
     }
-    p1 = Bar(data, values='money', label='labels')
+    p1 = Bar(data, values='money', label='labels', legend=False, plot_width=920, plot_height=350, color='blue')
     script, div = components(p1, CDN)
-    cat_all = zip(categories, categories_data)
+    cat_all = zip(categories, categories_data, categories_id)
     return render(request, 'core_sm/costs/budget/budget_detail.html', {'info': info,
                                                                 'title': title,
                                                                 'total': total,
@@ -487,18 +493,20 @@ def budget_setup(request):
     budget_titles = []
     budget_values = []
     budget_id = []
+    budget_created = []
     spendings_values = []
 
-    for item in Budget.objects.values('title', 'value', 'id'):
+    for item in Budget.objects.values('title', 'value', 'id', 'publish'):
         budget_titles.append(item['title'])
         budget_values.append(item['value'])
         budget_id.append(item['id'])
+        budget_created.append(str(item['publish']).replace('-', '/'))
         try:
             spendings_values.append(item['value'] - Cost.objects.filter(budget_id=item['id']).aggregate(Sum('value'))['value__sum'])
         except(TypeError):
             spendings_values.append(item['value'])
 
-    all_data = zip(budget_titles, budget_values, spendings_values, budget_id)
+    all_data = zip(budget_titles, budget_values, spendings_values, budget_id, budget_created)
 
     return render(request, 'core_sm/costs/budget/budget_setup.html', {'add': add,
                                                          'form': form,

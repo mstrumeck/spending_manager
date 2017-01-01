@@ -7,9 +7,11 @@ import datetime
 
 class Category(models.Model):
     title = models.CharField(max_length=200)
+    publish = models.DateField(auto_now_add=True)
+    updated = models.DateField(auto_now=True)
 
     class Meta:
-        ordering = ('-title',)
+        ordering = ('-publish',)
 
     def __str__(self):
         return self.title
@@ -21,10 +23,11 @@ class Category(models.Model):
 class Budget(models.Model):
     title = models.CharField(max_length=200, db_index=True)
     value = models.DecimalField(decimal_places=2, max_digits=10)
-    created = models.DateTimeField(auto_now_add=True)
+    publish = models.DateField(auto_now_add=True)
+    updated = models.DateField(auto_now=True)
 
     class Meta:
-        ordering = ('-created',)
+        ordering = ('-publish',)
 
     def __str__(self):
         return self.title

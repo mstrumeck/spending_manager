@@ -8,6 +8,14 @@
     <h3>Zestawienie od {{ date_x }} do {{ date_y }}</h3>
 
 <div>
+<form action="" method="POST">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <input type="submit" value="Dodaj">
+</form>
+</div>
+
+<div>
     <div class="table">
 {{ div }}
 {{ script }}
@@ -23,7 +31,7 @@
                 <tbody>
                 {% for title, spends, id in comp_budget_data %}
                 <tr>
-                    <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
+                    <td class="button-setup"><a href="/budget/{{ id }}/">{{ title }}</a></td>
                     <td>{{ spends }}</td>
                 </tr>
                 {% endfor %}
@@ -65,10 +73,10 @@
             <tr>
                 <td>{{ item.title }}</td>
                 <td>{{ item.value }}</td>
-                <td><a href="/costs/{{ url }}/">{{ dates }}</a></td>
+                <td class="button-setup"><a href="/costs/{{ url }}/">{{ dates }}</a></td>
                 <td>{{ item.category }}</td>
-                <td><a href="/budget/{{ item.budget_id }}/">{{ budget_title }}</a></td>
-                <td><a href="/delete/{{ item.id }}/">Usuń</a></td>
+                <td class="button-setup"><a href="/budget/{{ item.budget_id }}/">{{ budget_title }}</a></td>
+                <td class="button-setup"><a href="/delete/{{ item.id }}/">Usuń</a></td>
             </tr>
             {% endfor %}
         </tbody>
@@ -91,11 +99,5 @@
             </tr>
         </tfoot>
     </table>
-<div class="table">
-<form action="" method="POST">
-    {{ form.as_p }}
-    {% csrf_token %}
-    <input type="submit" value="Dodaj">
-</form>
-</div>
+
 {% endblock %}

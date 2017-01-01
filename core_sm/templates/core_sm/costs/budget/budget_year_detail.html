@@ -7,20 +7,23 @@
 <h3>Podsumowanie budżetu {{ budget_year_title }} za rok {{ year }}</h3>
 <h3>Saldo {{ total_budget }}</h3>
 
-{{ div }}
-{{ script }}
-    <div>
+<div class="table">
+    <div class="table">
+        {{ div }}
+        {{ script }}
+    </div>
+    <div class="table">
         <table>
             <thead>
                 <tr>
-                    <th></th>
+                    <th>Miesiąc</th>
                     <th>ZŁ</th>
                 </tr>
             </thead>
             <tbody>
             {% for month, data, month_url in all_data %}
                 <tr>
-                    <th scope="row"><a href="/budget/{{ id }}/{{ year }}/{{ month_url }}">{{ month }}</a></th>
+                    <th scope="row" class="button-setup"><a href="/budget/{{ id }}/{{ year }}/{{ month_url }}">{{ month }}</a></th>
                     <th>{{ data }}</th>
                 </tr>
             {% endfor %}
@@ -33,29 +36,31 @@
             </tfoot>
         </table>
     </div>
+</div>
 
     <div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Kategoria</th>
-                    <th>ZŁ</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for cat, data in categories_res %}
-                <tr>
-                    <th scope="row">{{ cat }}</th>
-                    <td>{{ data }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div>
-    {{ div1 }}
-    {{ script1 }}
+        <div class="table">
+        {{ div1 }}
+        {{ script1 }}
+        </div>
+        <div class="table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kategoria</th>
+                        <th>ZŁ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for cat, data, id in categories_res %}
+                    <tr>
+                        <th scope="row" class="button-setup"><a href="/category/{{ id }}/{{ year }}/">{{ cat }}</a></th>
+                        <td>{{ data }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
 {% endblock %}

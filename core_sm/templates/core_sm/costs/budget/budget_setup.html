@@ -11,16 +11,18 @@
             <th scope="col">Nazwa budżetu</th>
             <th scope="col">Kwota</th>
             <th scope="col">Saldo</th>
+            <th scope="col">Data dodania</th>
         </tr>
         </thead>
         <tbody>
-            {% for title, value, balance, id in all_data %}
+            {% for title, value, balance, id, date in all_data %}
             <tr>
-                <td>{{ title }}</td>
+                <td class="button-setup"><a href="/budget/{{ id }}/">{{ title }}</a></td>
                 <td>{{ value }}</td>
                 <td>{{ balance }}</td>
-                <td><a href="/budget_edit/{{ id }}/">Edytuj</a></td>
-                <td><a href="/budget_delete/{{ id }}/">Usuń</a></td>
+                <td>{{ date }}</td>
+                <td class="button-setup"><a href="/budget_edit/{{ id }}/">Edytuj</a></td>
+                <td class="button-setup"><a href="/budget_delete/{{ id }}/">Usuń</a></td>
             </tr>
             {% endfor %}
         </tbody>

@@ -137,11 +137,6 @@ nav ul li a:hover {
     border: solid;
 }
 
-#year-budget {
-    position: absolute;
-    left: 905px;
-}
-
 .table {
     border: solid;
     font-size: 90%;
@@ -186,3 +181,13 @@ th {
 
 tr:nth-child(even) {
     background-color: #efefef;}
+
+.button-setup:hover {
+    background: #969EBE;
+    display: inline;
+    font-family: 'Muli', sans-serif;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px #777777;}
