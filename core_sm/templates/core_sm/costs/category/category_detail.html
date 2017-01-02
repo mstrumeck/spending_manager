@@ -6,7 +6,34 @@
 {% block content %}
 <h3>{{ category_title }}</h3>
 
-<table>
+<div>
+
+    <div class="table">
+    {{ div }}
+    {{ script }}
+    </div>
+
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nazwa budżetu</th>
+                    <th>Wydana kwota</th>
+                </tr>
+            </thead>
+                <tbody>
+                {% for title, spends, id in category_budget_data %}
+                <tr>
+                    <td class="button-setup"><a href="/budget/{{ id }}/">{{ title }}</a></td>
+                    <td>{{ spends }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+</div>
+
+<table class="table-month">
         <thead>
             <tr>
                 <th scope="col">Nazwa</th>
@@ -20,47 +47,32 @@
             <tr>
                 <td>{{ item.title }}</td>
                 <td>{{ item.value }}</td>
-                <td><a href="/costs/{{ url }}/">{{ dates }}</a></td>
-                <td><a href="/budget/{{ item.budget_id }}/">{{ budget_title }}</a></td>
-                <td><a href="/delete/{{ item.id }}/">Usuń</a></td>
+                <td class="button-setup"><a href="/costs/{{ url }}/">{{ dates }}</a></td>
+                <td class="button-setup"><a href="/budget/{{ item.budget_id }}/">{{ budget_title }}</a></td>
+                <td class="button-setup"><a href="/delete/{{ item.id }}/">Usuń</a></td>
             </tr>
             {% endfor %}
         </tbody>
         <tfoot>
             <tr>
-                <td scope="col">Suma</td>
+                <th scope="col">Suma</th>
                 <td>{{ data_sum }}</td>
             </tr>
             <tr>
-                <td>Średnia</td>
+                <th>Średnia</th>
                 <td>{{ data_avg }}</td>
             </tr>
             <tr>
-                <td>Min</td>
+                <th>Min</th>
                 <td>{{ data_min }}</td>
             </tr>
             <tr>
-                <td>Max</td>
+                <th>Max</th>
                 <td>{{ data_max }}</td>
             </tr>
         </tfoot>
     </table>
-    <div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nazwa budżetu</th>
-                    <th>Wydana kwota</th>
-                </tr>
-            </thead>
-                <tbody>
-                {% for title, spends, id in category_budget_data %}
-                <tr>
-                    <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
-                    <td>{{ spends }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+
+
+
 {% endblock %}

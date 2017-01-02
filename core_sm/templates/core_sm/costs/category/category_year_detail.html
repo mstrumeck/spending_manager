@@ -12,30 +12,12 @@
     <a href="/costs/{{ year }}/">Podsumowanie całego roku</a>
 
 <div>
-    <table>
-        <thead>
-            <tr>
-                <th>Nazwa budżetu</th>
-                <th>Wydana kwota</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for title, spends, id in year_budget_data %}
-                <tr>
-                    <td><a href="/budget/{{ id }}/{{ year }}/">{{ title }}</a></td>
-                    <td>{{ spends }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-    <div>
+    <div class="table">
     {{ div }}
     {{ script }}
     </div>
 
-    <div>
+    <div class="table">
     <table>
         <thead>
             <tr>
@@ -46,7 +28,7 @@
         <tbody>
         {% for month, data, month_url in all_data %}
             <tr>
-                <th scope="row"><a href="/costs/{{ year }}/{{ month_url }}/">{{ month }}</a></th>
+                <th scope="row"><a href="/category/{{ category_id }}/{{ year }}/{{ month_url }}/">{{ month }}</a></th>
                 <th>{{ data }}</th>
             </tr>
         {% endfor %}
@@ -59,4 +41,30 @@
         </tfoot>
     </table>
     </div>
+</div>
+
+<div>
+    <div class="table">
+        {{ div1 }}
+        {{ script1 }}
+    </div>
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nazwa budżetu</th>
+                    <th>Wydana kwota</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for title, spends, id in year_budget_data %}
+                    <tr>
+                        <td><a href="/budget/{{ id }}/{{ year }}/">{{ title }}</a></td>
+                        <td>{{ spends }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

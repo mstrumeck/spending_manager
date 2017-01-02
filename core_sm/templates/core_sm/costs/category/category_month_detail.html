@@ -5,10 +5,40 @@
 
 {% block content %}
 <h3>Podsumowanie kategorii {{ category_title }} za miesiąc {{ month }}.{{ year }}</h3>
-<a href="/category/{{ category_id }}/{{ year }}/">Podsumowanie roczne</a>
-<a href="/costs/{{ year }}/{{ month }}/">Podsumowanie całego miesiąca</a>
+<div class="center">
+    <div class="button">
+        <ul>
+            <li><a href="/category/{{ category_id }}/{{ year }}/">Podsumowanie roczne</a></li>
+            <li><a href="/costs/{{ year }}/{{ month }}/">Podsumowanie całego miesiąca</a></li>
+        </ul>
+    </div>
+</div>
+
 <div>
-        <table>
+
+    <table>
+            <tbody>
+                <tr>
+                    <th>Najwięcej wydano</th>
+                    <td>{{ max_month_value }}</td>
+                    <th>Najmniej wydano</th>
+                    <td>{{ max_month_day }}</td>
+                </tr>
+                <tr>
+                    <th>W dniu</th>
+                    <td>{{ max_month_day }}</td>
+                    <th>W dniu</th>
+                    <td>{{ min_month_day }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+    <div class="table">
+        {{ div }}
+        {{ script }}
+    </div>
+    <div class="table">
+        <table class="table-month">
             <thead>
                 <tr>
                     <th></th>
@@ -21,7 +51,7 @@
             <tbody>
                 {% for day, sum, max, min, avg in day_data %}
                 <tr>
-                    <th scope="row"><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Dzień {{ day }}</a></th>
+                    <th scope="row"><a href="/category/{{ category_id }}/{{ year }}/{{ month }}/{{ day }}/">Dzień {{ day }}</a></th>
                     <td>{{ sum }}</td>
                     <td>{{ max }}</td>
                     <td>{{ min }}</td>
@@ -40,32 +70,31 @@
             </tfoot>
         </table>
     </div>
-    <div>
-        <p>Najwięcej wydano {{ max_month_value }} w dniu {{ max_month_day }}</p>
-        <p>Najmniej wydano {{ min_month_value }} w dniu {{ min_month_day }}</p>
-    </div>
-
-<div>
-    <table>
-        <thead>
-            <tr>
-                <th>Nazwa budżetu</th>
-                <th>Wydana kwota</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for title, spends, id in month_budget_data %}
-                <tr>
-                    <td><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
-                    <td>{{ spends }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 </div>
 
-    <div>
-        {{ div }}
-        {{ script }}
+<div>
+    <div class="table">
+        {{ div1 }}
+        {{ script1 }}
     </div>
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nazwa budżetu</th>
+                    <th>Wydana kwota</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for title, spends, id in month_budget_data %}
+                    <tr>
+                        <td><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
+                        <td>{{ spends }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
 {% endblock %}

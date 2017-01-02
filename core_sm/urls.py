@@ -14,7 +14,7 @@ urlpatterns = [
     url(r'^compare/(?P<date_x>\d{4}-\d{2}-\d{2})/(?P<date_y>\d{4}-\d{2}-\d{2})/$', views.stats_comp, name='stats_comp'),
     url(r'^status_edit', views.edit_status, name='edit_status'),
     url(r'^budget_setup$', views.budget_setup, name='budget_setup'),
-    url(r'^budget/(?P<id>\d+)/$', views.budget_detail, name='budget_detail'),
+    url(r'^budget/(?P<budget_id>\d+)/$', views.budget_detail, name='budget_detail'),
     url(r'^budget/(?P<id>\d+)/(?P<year>\d{4})/$', views.budget_year_stats_detail, name='budget_year_stats_detail'),
     url(r'^budget/(?P<id>\d+)/(?P<year>\d{4})/(?P<month>\d{2})/$', views.budget_month_stats_detail,
         name='budget_month_stats_detail'),
