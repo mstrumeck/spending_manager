@@ -6,6 +6,7 @@
 {% block content %}
 <h3>Kwota twojego budżetu wynosi: {{ budget }} zł</h3>
 
+
 <div class="table">
     {{ div }}
     {{ script }}
@@ -52,11 +53,11 @@
         </tbody>
         <tfoot>
             <tr>
-                <td>Suma wydatków</td>
+                <th>Suma wydatków</th>
                 <td>{{ total }}</td>
             </tr>
             <tr>
-                <td>Saldo</td>
+                <th>Saldo</th>
                 <td>{{ total_budget }}</td>
             </tr>
         </tfoot>

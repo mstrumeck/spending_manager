@@ -8,8 +8,10 @@
 <div class="center">
     <div class="button">
         <ul>
+            <li><a href="{{ back }}">Poprzedni miesiąc</a></li>
             <li><a href="/category/{{ category_id }}/{{ year }}/">Podsumowanie roczne</a></li>
             <li><a href="/costs/{{ year }}/{{ month }}/">Podsumowanie całego miesiąca</a></li>
+            <li><a href="{{ another }}">Następny miesiąc</a></li>
         </ul>
     </div>
 </div>
@@ -88,7 +90,7 @@
             <tbody>
                 {% for title, spends, id in month_budget_data %}
                     <tr>
-                        <td><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
+                        <td class="button-setup"><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
                         <td>{{ spends }}</td>
                     </tr>
                 {% endfor %}

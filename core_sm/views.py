@@ -86,7 +86,15 @@ def category_day_stats_detail(request, category_id, year, month, day):
             day_budget_id.append(item['id'])
         else:
             pass
+
     day_budget_data = zip(day_budget_title, day_budget_spends, day_budget_id)
+
+    data = {
+        'money': [float(x) for x in day_budget_spends],
+        'labels': day_budget_title
+    }
+    p1 = Bar(data, values='money', label='labels', plot_width=800, plot_height=300, legend=False, color='blue')
+    script, div = components(p1, CDN)
     return render(request, 'core_sm/costs/category/category_day_detail.html', {'year': year,
                                                                                'month': month,
                                                                                'day': day,
@@ -97,7 +105,9 @@ def category_day_stats_detail(request, category_id, year, month, day):
                                                                                'day_max': day_max,
                                                                                'day_min': day_min,
                                                                                'day_budget_data': day_budget_data,
-                                                                               'category_title': category_title})
+                                                                               'category_title': category_title,
+                                                                               'script': mark_safe(script),
+                                                                               'div': mark_safe(div)})
 
 
 def category_month_stats_detail(request, category_id, year, month):
@@ -168,6 +178,23 @@ def category_month_stats_detail(request, category_id, year, month):
     script1, div1 = components(p1, CDN)
 
     month_budget_data = zip(month_budget_title, month_budget_spends, month_budget_id)
+
+    next_month = int(month) + 1
+    next_year = int(year)
+
+    if next_month > 12:
+        next_month = str(1).zfill(2)
+        next_year = int(year) + 1
+    another = "/category/{}/{}/{}/".format(category_id, next_year, next_month)
+
+    back_month = int(month) - 1
+    back_year = int(year)
+
+    if back_month < 1:
+        back_month = 12
+        back_year = int(year) - 1
+    back = "/category/{}/{}/{}/".format(category_id, back_year, back_month)
+
     return render(request, 'core_sm/costs/category/category_month_detail.html', {'year': year,
                                                                                  'category_id': category_id,
                                                                                  'month': month,
@@ -186,7 +213,9 @@ def category_month_stats_detail(request, category_id, year, month):
                                                                                  'script1': mark_safe(script1),
                                                                                  'div1': mark_safe(div1),
                                                                                  'month_budget_data': month_budget_data,
-                                                                                 'category_title': category_title})
+                                                                                 'category_title': category_title,
+                                                                                 'another': another,
+                                                                                 'back': back})
 
 
 def category_year_stats_detail(request, category_id, year):
@@ -244,8 +273,9 @@ def category_year_stats_detail(request, category_id, year):
     p1 = Bar(data1, values='money', label='labels', legend=False, plot_width=810, plot_height=350, color='blue')
     script1, div1 = components(p1, CDN)
 
-    another = "/costs/{}/".format(int(year) + 1)
-    back = "/costs/{}".format(int(year) - 1)
+    another = "/category/{}/{}/".format(category_id, (int(year) + 1))
+    back = "/category/{}/{}/".format(category_id, (int(year) + 1))
+
     return render(request, 'core_sm/costs/category/category_year_detail.html', {'category_title': category_title,
                                                                                 'category_id': category_id,
                                                                                 'year': year,
@@ -531,10 +561,20 @@ def budget_detail(request, budget_id):
     categories_id = []
 
     for item in Cost.objects.filter(budget_id=budget_id).values('title', 'publish', 'category_id'):
-        date.append(str(item['title']))
+        date.append(str(item['publish']))
         date_url.append(str(item['publish']).replace('-', '/'))
         categories.append(Category.objects.get(id=item['category_id']).title)
         categories_id.append(Category.objects.get(id=item['category_id']).id)
+
+    categories_title = []
+    categories_title_id =[]
+    categories_data = []
+
+    for item in Category.objects.values('title', 'id'):
+        categories_title.append(item['title'])
+        categories_title_id.append(item['id'])
+
+    budget_categories_calculation(budget_id, categories_title, categories_data)
 
     try:
         total_budget = budget - total
@@ -543,15 +583,15 @@ def budget_detail(request, budget_id):
 
     info = zip(base, date, date_url, categories, categories_id)
 
-    categories_data = []
-    budget_categories_calculation(budget_id, categories, categories_data)
+
     data = {
         'money': [float(x) for x in categories_data],
-        'labels': categories
+        'labels': categories_title
     }
     p1 = Bar(data, values='money', label='labels', legend=False, plot_width=920, plot_height=350, color='blue')
     script, div = components(p1, CDN)
-    cat_all = zip(categories, categories_data, categories_id)
+
+    cat_all = zip(categories_title, categories_data, categories_title_id)
     return render(request, 'core_sm/costs/budget/budget_detail.html', {'info': info,
                                                                 'title': title,
                                                                 'total': total,
@@ -559,7 +599,8 @@ def budget_detail(request, budget_id):
                                                                 'total_budget': total_budget,
                                                                 'script': mark_safe(script),
                                                                 'div': mark_safe(div),
-                                                                'cat_all': cat_all})
+                                                                'cat_all': cat_all,
+                                                                       'categories_data': categories_data})
 
 
 def budget_setup(request):
@@ -705,7 +746,7 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
         'money': [float(x) for x in categories_data],
         'labels': categories
     }
-    p = Bar(vis_data, values='money', label='labels', plot_width=695, plot_height=400, legend=False, color='blue')
+    p = Bar(vis_data, values='money', label='labels', plot_width=685, plot_height=400, legend=False, color='blue')
     script, div = components(p, CDN)
 
     categories_res = zip(categories, categories_data)

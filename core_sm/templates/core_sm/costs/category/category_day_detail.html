@@ -7,42 +7,75 @@
 
 {% block content %}
 <h3>Podusmowanie kategorii {{ category_title }} za dzień {{ day }}.{{ month }}.{{ year }}</h3>
-    <a href="/category/{{ year}}/{{ month }}/">Podgląd miesięczny </a>
-    <a href="/category/{{ year}}/">Podgląd roczny</a>
-    <a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Podsumowanie całego dnia</a>
-    <a href={{ another }}>Kolejny dzień</a>
-    <a href={{ back }}>Poprzedni dzień</a>
+
+<div class="center">
+    <div class="button">
+        <ul>
+            <li><a href="/category/{{ year}}/{{ month }}/">Podgląd miesięczny </a></li>
+            <li><a href="/category/{{ year}}/">Podgląd roczny</a></li>
+            <li><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Podsumowanie całego dnia</a></li>
+        </ul>
+    </div>
+</div>
+
+<div>
+    <div class="table">
+        {{ div }}
+        {{ script }}
+    </div>
+
+    <div class="table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nazwa budżetu</th>
+                        <th>Wydana kwota</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for title, spends, id in day_budget_data %}
+                <tr>
+                    <td class="button-setup"><a href="/budget/{{ id }}/">{{ title }}</a></td>
+                    <td>{{ spends }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+</div>
+
     <div>
-        <table>
+
+    <div class="table">
+        <table class="table-day-two">
             <thead>
                 <tr>
                     <th></th>
                     <th scope="col">Wartość</th>
-                    <th scope="col">Kategoria</th>
                     <th scope="col">Budżet</th>
                 </tr>
             </thead>
             <tbody>
             {% for item, budget_title in all_data %}
                 <tr>
-                    <th scope="row">{{ item.title }}</th>
+                    <td scope="row">{{ item.title }}</td>
                     <td>{{ item.value }}</td>
-                    <td>{{ item.category }}</td>
-                    <td><a href="/budget/{{ item.budget_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ budget_title }}</a></td>
-                    <td><a href="/delete/{{ item.id }}/">Usuń</a></td>
+                    <td class="button-setup"><a href="/budget/{{ item.budget_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ budget_title }}</a></td>
+                    <td class="button-setup"><a href="/delete/{{ item.id }}/">Usuń</a></td>
                 </tr>
             {% endfor %}
             </tbody>
             <tfoot>
                 <tr>
-                    <th>Podsumowanie</th>
+                    <th>Suma</th>
                     <td>{{ day_sum }}</td>
                 </tr>
             </tfoot>
         </table>
         </div>
 
-        <div>
+        <div class="table">
             <table>
                 <thead>
                     <tr>
@@ -76,23 +109,6 @@
                 </tbody>
             </table>
         </div>
-        <div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nazwa budżetu</th>
-                        <th>Wydana kwota</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for title, spends, id in day_budget_data %}
-                <tr>
-                    <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
-                    <td>{{ spends }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    </div>
 
 {% endblock %}

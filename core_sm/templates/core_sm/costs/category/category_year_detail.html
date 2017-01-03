@@ -7,9 +7,17 @@
 
 {% block content %}
     <h3>Podsumowanie kategorii {{ category_title }} za rok {{ year }}</h3>
-    <a href={{ another }}>Kolejny rok</a>
-    <a href={{ back }}>Poprzedni rok</a>
-    <a href="/costs/{{ year }}/">Podsumowanie całego roku</a>
+<div class="center">
+    <div class="button">
+        <ul>
+            <li><a href={{ back }}>Poprzedni rok</a></li>
+            <li><a href="/costs/{{ year }}/">Podsumowanie całego roku</a></li>
+            <li><a href={{ another }}>Kolejny rok</a></li>
+        </ul>
+    </div>
+</div>
+
+
 
 <div>
     <div class="table">
