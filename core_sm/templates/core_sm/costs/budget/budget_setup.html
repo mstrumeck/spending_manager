@@ -22,7 +22,10 @@
                 <td>{{ balance }}</td>
                 <td>{{ date }}</td>
                 <td class="button-setup"><a href="/budget_edit/{{ id }}/">Edytuj</a></td>
-                <td class="button-setup"><a href="/budget_delete/{{ id }}/">Usuń</a></td>
+                <td class="button-setup">
+                    <a href="/budget_delete/{{ id }}/"
+                       onclick="return confirm('To spowoduje usunięcie wszystkiego');">Usuń</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

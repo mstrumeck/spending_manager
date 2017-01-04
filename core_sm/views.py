@@ -365,10 +365,9 @@ def budget_item_delete(request, id):
     return render(request, 'core_sm/costs/budget/budget_item_delete.html', {'message': message})
 
 
-def budget_delete(request, id):
-    message = "{} został pomyślnie usuniety".format(Budget.objects.get(id=id).title)
-    Budget.objects.get(id=id).delete()
-    return render(request, 'core_sm/costs/budget/budget_delete.html', {'message': message})
+def budget_delete(request, budget_id):
+    title = Budget.objects.get(id=budget_id).title
+    return render(request, 'core_sm/costs/budget/budget_delete.html', {'title': title})
 
 
 def budget_edit(request, id):
@@ -632,7 +631,6 @@ def budget_setup(request):
             spendings_values.append(item['value'])
 
     all_data = zip(budget_titles, budget_values, spendings_values, budget_id, budget_created)
-
     return render(request, 'core_sm/costs/budget/budget_setup.html', {'add': add,
                                                          'form': form,
                                                          'all_data': all_data})

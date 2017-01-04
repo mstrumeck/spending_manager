@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'budget/(?P<id>\d+)/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$',
         views.budget_day_stats_detail, name='budget_day_stats_detail'),
     url(r'^budget_edit/(?P<id>\d+)/$', views.budget_edit, name='budget_edit'),
-    url(r'^budget_delete/(?P<id>\d+)/$', views.budget_delete, name='budget_delete'),
+    url(r'^budget_delete/(?P<budget_id>\d+)/$', views.budget_delete, name='budget_delete'),
     url(r'^budget_item_delete/(?P<id>\d+)/$', views.budget_item_delete, name='budget_item_delete'),
     url(r'^category/(?P<category_id>\d+)/$', views.category_detail, name='category_detail'),
     url(r'^category/(?P<category_id>\d+)/(?P<year>\d{4})/$', views.category_year_stats_detail,
