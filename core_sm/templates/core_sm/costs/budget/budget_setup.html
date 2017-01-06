@@ -34,7 +34,7 @@
     {% if add %}
         <h3>Budżet dodany</h3>
     {% endif %}
-    <form method="POST">
+    <form method="POST" class="multi-form">
         {{ form.as_p }}
         {% csrf_token %}
         <input type="submit" value="Dodaj">

@@ -39,7 +39,6 @@ a:active {
 nav {
     width: 100%;
     padding: 10px;
-    border: solid;
     text-align: center;
     background:#091E6A;
     color:#fff;
@@ -80,7 +79,6 @@ nav ul li a:hover {
 .button {
     width: 100%;
     padding: 10px;
-    border: solid;
     text-align: center;
     color:#fff;
     overflow:auto;
@@ -119,26 +117,56 @@ nav ul li a:hover {
     color: white;}
 
 #content {
-    border: solid;
     text-align: center;
     width: 1067px;
     float: left;
     background: white;}
 
 #quick-add {
+
     background: white;
-    border: solid;
     text-align: center;
     width: 180px;
     float: right;
+    font-size: 80%;
 }
 
-#page {
-    border: solid;
+#quick-add option {
+    margin: 2px;
+    padding: 2px;
+    width: 80px;
 }
+
+#quick-add input {
+    margin: 2px;
+    padding: 2px;
+    width: 80px;
+}
+
+#quick-add input[type=submit] {
+    background: #969EBE;
+    display: inline;
+    font-family: 'Muli', sans-serif;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px #777777;
+}
+
+#quick-add input[type=submit]:hover {
+    background-color: #435083;
+    color: white;
+}
+
+#quick-add input[type=submit]:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
 
 .table {
-    border: solid;
     font-size: 90%;
     z-index: 10;
     float: left;
@@ -152,7 +180,6 @@ nav ul li a:hover {
 }
 
 .table-day-one {
-    border: solid;
     font-size: 90%;
     z-index: 10;
     float: left;
@@ -160,7 +187,6 @@ nav ul li a:hover {
     width: 450px;}
 
 .table-day-two {
-    border: solid;
     font-size: 90%;
     z-index: 10;
     float: left;
@@ -191,3 +217,44 @@ tr:nth-child(even) {
     border: none;
     border-radius: 10px;
     box-shadow: 0 5px #777777;}
+
+.multi-form {
+    margin: 2px;
+    padding: 2px;
+}
+
+.multi-form input {
+    margin: 2px;
+    padding: 2px;
+    width: 130px;
+}
+
+.multi-form option {
+    margin: 2px;
+    padding: 2px;
+    width: 130px;
+}
+
+.multi-form input[type=submit] {
+    margin: 2px;
+    padding: 2px;
+    background: #969EBE;
+    display: inline;
+    font-family: 'Muli', sans-serif;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px #777777;
+}
+
+.multi-form input[type=submit]:hover {
+    background-color: #435083;
+    color: white;
+}
+
+.multi-form input[type=submit]:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}

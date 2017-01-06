@@ -29,6 +29,8 @@ class DataAddForm(forms.ModelForm):
         }
 
 
+
+
 class MultiaddGenerateForm(forms.Form):
     formy = forms.IntegerField(max_value=20, min_value=1, label='Ilość zakupów')
 

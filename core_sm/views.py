@@ -8,7 +8,7 @@ import datetime
 from bokeh.embed import components
 from django.utils.safestring import mark_safe
 from bokeh.resources import CDN
-from bokeh.charts import Bar
+from bokeh.charts import Bar, Line
 import calendar
 from django.forms import modelformset_factory
 from core_sm.functions import month_day_calculations, month_category_calculation, \
@@ -226,7 +226,7 @@ def category_year_stats_detail(request, category_id, year):
     year_month_calculation(Months)
     category_year_data_calculation(Months_data, year, category_id)
     data = {
-        'Miesiące': Months,
+        'Miesiące': Months_url,
         'ZŁ': Months_data
     }
     p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=910, plot_height=350, color='blue')
@@ -513,7 +513,7 @@ def budget_year_stats_detail(request, id, year):
     year_month_calculation(Months)
     year_budget_calculation(Months_data, year, id)
     data = {
-        'Miesiące': Months,
+        'Miesiące': Months_url,
         'ZŁ': Months_data
     }
     p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=910, plot_height=350, color='blue')
@@ -796,11 +796,13 @@ def year_stats_detail(request, year):
     year_month_calculation(Months)
     year_data_calculation(Months_data, year)
     data = {
-        'Miesiące': Months,
+        'Miesiące': Months_url,
         'ZŁ': Months_data
     }
     p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=710, plot_height=350, color='blue')
     script, div = components(p, CDN)
+    p_line = Line(data, xlabel='Miesiące', legend=False, plot_width=710, plot_height=350, color='blue')
+    script_line, div_line = components(p_line, CDN)
     all_data = zip(Months, Months_data, Months_url)
     year_sum = Cost.objects.filter(publish__year=year).aggregate(Sum('value'))['value__sum']
     categories = []
@@ -849,7 +851,9 @@ def year_stats_detail(request, year):
                                                                     'categories_res': categories_res,
                                                                     'year_budget_data': year_budget_data,
                                                                     'another': another,
-                                                                    'back': back})
+                                                                    'back': back,
+                                                                    'script_line': mark_safe(script_line),
+                                                                    'div_line': mark_safe(div_line)})
 
 
 def month_stats_detail(request, year, month):

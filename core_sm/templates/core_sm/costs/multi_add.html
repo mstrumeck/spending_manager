@@ -8,15 +8,17 @@
 
 {% block content %}
     <h3>Multi dodawanie</h3>
-    <form method="POST">
-        {{ formset }}
-        {% csrf_token %}
-        <input type="submit" name="form" value="Dodaj">
-    </form>
 
-    <form method="POST">
+    <form method="POST" class="form">
         {% csrf_token %}
         {{ generate_form }}
         <input type="submit" name="no_line" value="Generuj">
     </form>
+
+    <form method="POST" class="multi-form">
+        {{ formset.as_table }}
+        {% csrf_token %}
+        <input type="submit" name="form" value="Dodaj">
+    </form>
+
 {% endblock %}
