@@ -20,6 +20,9 @@
             <td>{{ total }}</td>
             <td>{{ url }}</td>
             <td class="button-setup"><a href="/category_edit/{{ item.id }}/">Edycja</a></td>
+            <td class="button-setup">
+                <a href="/category_delete/{{ item.id }}/"
+                   onclick="return confirm('Uwaga! To spowoduje również usunięcie wszystkich wydatków powiązanych!');">Usuń</a></td>
         </tr>
     {% endfor %}
     </tbody>

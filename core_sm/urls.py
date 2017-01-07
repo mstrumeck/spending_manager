@@ -5,7 +5,7 @@ urlpatterns = [
     url(r'^$', views.current_detail, name='current_detail'),
     url(r'^stats$', views.costs_stats, name='costs_stats'),
     url(r'^costs/(?P<year>\d{4})/(?P<month>\d{2})/$', views.month_stats_detail, name='month_stats_detail'),
-    url(r'^costs/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', views.day_stats_detail, name='day_stats_detail'),
+    url(r'^costs/(?P<date>\d{4}-\d{2}-\d{2})/$', views.day_stats_detail, name='day_stats_detail'),
     url(r'^costs/(?P<year>\d+)/$', views.year_stats_detail, name='year_stats_detail'),
     url(r'^day_data_multiadd/$', views.day_data_multiadd, name='day_data_multiadd'),
     url(r'^day_data_multiadd/(?P<no_of_lines>\d+)/$', views.day_data_multiadd, name='day_data_multiadd'),
@@ -31,5 +31,6 @@ urlpatterns = [
     url(r'^category/(?P<category_id>\d+)/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$',
         views.category_day_stats_detail, name='category_day_stats_detail'),
     url(r'^category_setup/$', views.category_setup, name='category_setup'),
-    url(r'^category_edit/(?P<id>\d+)/$', views.category_edit, name='category_edit')
+    url(r'^category_edit/(?P<id>\d+)/$', views.category_edit, name='category_edit'),
+    url(r'^category_delete/(?P<category_id>\d+)/$', views.category_delete, name='category_delete')
 ]

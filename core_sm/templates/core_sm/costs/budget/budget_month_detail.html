@@ -2,6 +2,10 @@
 {% load staticfiles %}
 
 {% block title %}{{ budget_month_title }} {{ month }}-{{ year }}{% endblock%}
+{% block script %}
+    <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
+    <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
+{% endblock %}
 
 {% block content %}
 <h3>Podsumowanie budżetu {{ budget_month_title }} za miesiąc {{ month }}.{{ year }}</h3>

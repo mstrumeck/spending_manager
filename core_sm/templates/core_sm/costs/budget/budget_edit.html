@@ -4,7 +4,7 @@
 {% block title %}Edycja {{ budget.title }}{% endblock %}
 
 {% block content %}
-    <form method="POST">
+    <form method="POST" class="multi-form">
         {{ form }}
         {% csrf_token %}
         <input type="submit" value="Edytuj">

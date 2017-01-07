@@ -4,11 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
-    <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
     <script type="text/javascript"></script>
     <title>{% block title %}{% endblock %}</title>
-
+    {% block script %}{% endblock %}
 </head>
 <body>
         <nav>

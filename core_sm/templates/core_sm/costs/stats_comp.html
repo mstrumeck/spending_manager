@@ -2,6 +2,10 @@
 {% load staticfiles %}
 
 {% block title %}Porównanie od {{ date_x }} do {{ date_y }}{% endblock %}
+{% block script %}
+    <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
+    <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
+{% endblock %}
 
 {% block content%}
 
@@ -11,7 +15,7 @@
 <form action="" method="POST" class="multi-form">
     {{ form.as_p }}
     {% csrf_token %}
-    <input type="submit" value="Dodaj">
+    <input type="submit" value="Porównaj">
 </form>
 </div>
 

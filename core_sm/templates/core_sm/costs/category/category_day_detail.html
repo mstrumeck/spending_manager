@@ -4,6 +4,10 @@
 {% block title %}
     Podsumowanie kategorii {{ category_title }} za dzień {{ day }}/{{ month }}/{{ year }}
 {% endblock %}
+{% block script %}
+    <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
+    <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
+{% endblock %}
 
 {% block content %}
 <h3>Podusmowanie kategorii {{ category_title }} za dzień {{ day }}.{{ month }}.{{ year }}</h3>

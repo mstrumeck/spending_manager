@@ -18,6 +18,12 @@ from core_sm.functions import month_day_calculations, month_category_calculation
     budget_day_calculation, category_year_data_calculation, category_month_day_calculations, category_day_day_calculation
 
 
+def category_delete(request, category_id):
+    title = Category.objects.get(id=category_id).title
+    Category.objects.get(id=category_id).delete()
+    return render(request, 'core_sm/costs/category/category_delete.html', {'title': title})
+
+
 def category_edit(request, id):
     category = Category.objects.get(id=id)
     if request.method == 'POST':
@@ -367,6 +373,7 @@ def budget_item_delete(request, id):
 
 def budget_delete(request, budget_id):
     title = Budget.objects.get(id=budget_id).title
+    Budget.objects.get(id=budget_id).delete()
     return render(request, 'core_sm/costs/budget/budget_delete.html', {'title': title})
 
 

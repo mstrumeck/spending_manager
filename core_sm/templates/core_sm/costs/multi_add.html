@@ -9,7 +9,7 @@
 {% block content %}
     <h3>Multi dodawanie</h3>
 
-    <form method="POST" class="form">
+    <form method="POST" class="multi-form">
         {% csrf_token %}
         {{ generate_form }}
         <input type="submit" name="no_line" value="Generuj">

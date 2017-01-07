@@ -1,8 +1,11 @@
 from django import forms
 from .models import Cost, Budget, Category
 import datetime
+from functools import partial
 from django.utils.translation import ugettext_lazy as _
 
+DateInput = partial(forms.DateInput, {'class': 'datepicker'})
+DATE_INPUT_FORMATS = ['%Y/%m/%d']
 
 YEARS_CHOICES = [(datetime.date.today() - datetime.timedelta(days=x*365)).year for x in range(10)]
 YEAR_CHOICES = zip(YEARS_CHOICES, YEARS_CHOICES)
@@ -29,10 +32,8 @@ class DataAddForm(forms.ModelForm):
         }
 
 
-
-
 class MultiaddGenerateForm(forms.Form):
-    formy = forms.IntegerField(max_value=20, min_value=1, label='Ilość zakupów')
+    formy = forms.IntegerField(max_value=30, min_value=1, label='Ilość zakupów')
 
 
 class comp_form(forms.Form):
