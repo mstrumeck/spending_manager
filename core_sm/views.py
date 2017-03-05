@@ -11,6 +11,12 @@ from bokeh.resources import CDN
 from bokeh.charts import Bar, Line
 import calendar
 from django.forms import modelformset_factory
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+from .forms import LoginForm
+from django.contrib.auth.decorators import login_required
 from core_sm.functions import month_day_calculations, month_category_calculation, \
     day_day_calculation, day_category_calculation, year_data_calculation, year_month_calculation, \
     year_categories_calculation, comp_categories_calculation, budget_categories_calculation, year_budget_calculation, \
@@ -675,6 +681,7 @@ def edit_status(request):
                                                               'delete': delete})
 
 
+@login_required
 def day_data_multiadd(request, no_of_lines=0):
     no_of_lines = int(no_of_lines)
     CostFormSet = modelformset_factory(Cost, form=DataAddForm, extra=no_of_lines)
@@ -682,6 +689,7 @@ def day_data_multiadd(request, no_of_lines=0):
     if request.method == 'POST' and 'form' in request.POST:
         formset = CostFormSet(request.POST, request.FILES)
         if formset.is_valid():
+            formset.user = User.objects.get(user=request.user)
             formset.save()
     else:
         formset = CostFormSet(queryset=Cost.objects.none())
@@ -698,7 +706,7 @@ def day_data_multiadd(request, no_of_lines=0):
                                                             'no_of_lines': no_of_lines,
                                                             'generate_form': generate_form})
 
-
+@login_required
 def day_data_delete(request, id):
     Message = "Rekord '{}' został usunięty z bazy danych".format(Cost.objects.filter(id=id).values('title')[0]['title'])
     Cost.objects.filter(id=id).delete()
@@ -725,10 +733,11 @@ def current_detail(request):
                                                         'day': day})
 
 
+@login_required
 def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today()):
     start_date = date_x
     end_date = date_y
-    spends = Cost.objects.filter(publish__range=(start_date, end_date))
+    spends = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user)
     stats = []
     days = []
     days_url = []
@@ -746,7 +755,7 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
         categories.append(item['title'])
 
     categories_data = []
-    comp_categories_calculation(categories, categories_data, start_date, end_date)
+    comp_categories_calculation(categories, categories_data, start_date, end_date, request)
     vis_data = {
         'money': [float(x) for x in categories_data],
         'labels': categories
@@ -756,16 +765,16 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
 
     categories_res = zip(categories, categories_data)
 
-    data_sum = Cost.objects.filter(publish__range=(start_date, end_date)).aggregate(Sum('value'))['value__sum']
-    data_avg = Cost.objects.filter(publish__range=(start_date, end_date)).aggregate(Avg('value'))['value__avg']
-    data_min = Cost.objects.filter(publish__range=(start_date, end_date)).aggregate(Min('value'))['value__min']
-    data_max = Cost.objects.filter(publish__range=(start_date, end_date)).aggregate(Max('value'))['value__max']
+    data_sum = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Sum('value'))['value__sum']
+    data_avg = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Avg('value'))['value__avg']
+    data_min = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Min('value'))['value__min']
+    data_max = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Max('value'))['value__max']
 
     comp_budget_title = []
     comp_budget_spends = []
     comp_budget_id = []
     for item in Budget.objects.values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], publish__range=(start_date, end_date)).aggregate(Sum('value'))['value__sum']
+        val = Cost.objects.filter(budget_id=item['id'], publish__range=(start_date, end_date), user=request.user).aggregate(Sum('value'))['value__sum']
         if val is not None:
             comp_budget_title.append(item['title'])
             comp_budget_spends.append(val)
@@ -796,12 +805,13 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
                                                              'comp_budget_data': comp_budget_data})
 
 
+@login_required
 def year_stats_detail(request, year):
     Months = []
     Months_data = []
     Months_url = [str(x).zfill(2) for x in range(13)[1:]]
     year_month_calculation(Months)
-    year_data_calculation(Months_data, year)
+    year_data_calculation(Months_data, year, request)
     data = {
         'Miesiące': Months_url,
         'ZŁ': Months_data
@@ -811,7 +821,7 @@ def year_stats_detail(request, year):
     p_line = Line(data, xlabel='Miesiące', legend=False, plot_width=710, plot_height=350, color='blue')
     script_line, div_line = components(p_line, CDN)
     all_data = zip(Months, Months_data, Months_url)
-    year_sum = Cost.objects.filter(publish__year=year).aggregate(Sum('value'))['value__sum']
+    year_sum = Cost.objects.filter(publish__year=year, user=request.user).aggregate(Sum('value'))['value__sum']
     categories = []
     categories_id = []
 
@@ -820,7 +830,7 @@ def year_stats_detail(request, year):
         categories_id.append(item['id'])
 
     categories_data = []
-    year_categories_calculation(year, categories, categories_data)
+    year_categories_calculation(year, categories, categories_data, request)
     data1 = {
         'money': [float(x) for x in categories_data],
         'labels': categories
@@ -833,7 +843,7 @@ def year_stats_detail(request, year):
     year_budget_id = []
 
     for item in Budget.objects.values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], publish__year=year).aggregate(Sum('value'))['value__sum']
+        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, user=request.user).aggregate(Sum('value'))['value__sum']
         if val is not None:
             year_budget_title.append(item['title'])
             year_budget_spends.append(val)
@@ -863,6 +873,7 @@ def year_stats_detail(request, year):
                                                                     'div_line': mark_safe(div_line)})
 
 
+@login_required
 def month_stats_detail(request, year, month):
     mr = calendar.monthrange(int(year), int(month))
     day_numbers = [str(x).zfill(2) for x in range(mr[1]+1)][1:]
@@ -870,7 +881,7 @@ def month_stats_detail(request, year, month):
     day_min = []
     day_max = []
     day_avg = []
-    month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg)
+    month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg, request)
     day_data = zip(day_numbers, day_sum, day_max, day_min, day_avg)
     data = {
         'Dni': day_numbers,
@@ -891,7 +902,7 @@ def month_stats_detail(request, year, month):
 
     categories_data = []
 
-    month_category_calculation(year, month, categories, categories_data)
+    month_category_calculation(year, month, categories, categories_data, request)
     data1 = {
         'money': [float(x) for x in categories_data],
         'labels': categories
@@ -899,16 +910,16 @@ def month_stats_detail(request, year, month):
     p1 = Bar(data1, values='money', label='labels', plot_width=680, plot_height=300, legend=False, color='blue')
     script1, div1 = components(p1, CDN)
     categories_res = zip(categories, categories_data, categories_id)
-    sum_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Sum('value'))
-    min_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Min('value'))
-    max_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Max('value'))
-    avg_cost = Cost.objects.filter(publish__year=year, publish__month=month).aggregate(Avg('value'))['value__avg']
+    sum_cost = Cost.objects.filter(publish__year=year, publish__month=month, user=request.user).aggregate(Sum('value'))
+    min_cost = Cost.objects.filter(publish__year=year, publish__month=month, user=request.user).aggregate(Min('value'))
+    max_cost = Cost.objects.filter(publish__year=year, publish__month=month, user=request.user).aggregate(Max('value'))
+    avg_cost = Cost.objects.filter(publish__year=year, publish__month=month, user=request.user).aggregate(Avg('value'))['value__avg']
 
     month_budget_title = []
     month_budget_spends = []
     month_budget_id = []
     for item in Budget.objects.values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, publish__month=month).aggregate(Sum('value'))['value__sum']
+        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, publish__month=month, user=request.user).aggregate(Sum('value'))['value__sum']
         if val is not None:
             month_budget_title.append(item['title'])
             month_budget_spends.append(val)
@@ -955,8 +966,9 @@ def month_stats_detail(request, year, month):
                                                                      'back': back})
 
 
+@login_required
 def day_stats_detail(request, year, month, day):
-    day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day)
+    day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user)
     title = []
     value = []
     category = []
@@ -987,7 +999,7 @@ def day_stats_detail(request, year, month, day):
         categories_id.append(item['id'])
 
     categories_data = []
-    day_category_calculation(year, month, day, categories, categories_data)
+    day_category_calculation(year, month, day, categories, categories_data, request)
     data = {
         'money': [float(x) for x in categories_data],
         'labels': categories
@@ -1001,7 +1013,7 @@ def day_stats_detail(request, year, month, day):
     day_budget_spends = []
     day_budget_id = []
     for item in Budget.objects.values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, publish__month=month, publish__day=day).aggregate(Sum('value'))['value__sum']
+        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, publish__month=month, publish__day=day, user=request.user).aggregate(Sum('value'))['value__sum']
         if val is not None:
             day_budget_title.append(item['title'])
             day_budget_spends.append(val)
@@ -1044,3 +1056,23 @@ def day_stats_detail(request, year, month, day):
                                                                    'day_budget_data': day_budget_data,
                                                                    'another': another,
                                                                    'back': back})
+
+
+def user_login(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = authenticate(username=cd['username'],
+                                password=cd['password'])
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponse('Uwierzytelnianie zakonczylo sie sukcesem.')
+                else:
+                    return HttpResponse('Konto jest zablokowane')
+            else:
+                return HttpResponse('Nieprawidlowe dane uwierzytelniajace')
+    else:
+        form = LoginForm()
+    return render(request, 'account/login.html', {'form': form})

@@ -19,10 +19,16 @@ class DataGenerateForm(forms.Form):
     year = forms.ChoiceField(choices=YEAR_CHOICES)
 
 
+class LoginForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+
+
 class DataAddForm(forms.ModelForm):
     class Meta:
         model = Cost
         fields = ['title', 'value', 'publish', 'category', 'budget']
+        exclude = ['user']
         labels = {
             'title': _('Tytuł'),
             'value': _('Wartość'),

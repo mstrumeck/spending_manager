@@ -4,9 +4,9 @@ import calendar
 import datetime
 
 
-def comp_categories_calculation(categories, categories_data, start_date, end_date):
+def comp_categories_calculation(categories, categories_data, start_date, end_date, request):
     for item in categories:
-        val = Cost.objects.filter(publish__range=(start_date, end_date), category_id=
+        val = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user, category_id=
         Category.objects.get(title='{}'.format(item)).id).aggregate(Sum('value'))['value__sum']
         if val is not None:
             categories_data.append(val)
@@ -15,15 +15,15 @@ def comp_categories_calculation(categories, categories_data, start_date, end_dat
     return categories_data
 
 
-def month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg):
+def month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg, request):
     for day in day_numbers:
-        val_1 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day).aggregate(Sum('value'))[
+        val_1 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user).aggregate(Sum('value'))[
             'value__sum']
-        val_2 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day).aggregate(Min('value'))[
+        val_2 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user).aggregate(Min('value'))[
             'value__min']
-        val_3 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day).aggregate(Max('value'))[
+        val_3 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user).aggregate(Max('value'))[
             'value__max']
-        val_4 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day).aggregate(Avg('value'))[
+        val_4 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user).aggregate(Avg('value'))[
             'value__avg']
         if val_1 and val_2 and val_3 and val_4 is not None:
             day_sum.append(val_1)
@@ -38,9 +38,9 @@ def month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, 
     return day_sum, day_min, day_max, day_avg
 
 
-def month_category_calculation(year, month, categories, categories_data):
+def month_category_calculation(year, month, categories, categories_data, request):
     for item in categories:
-        val = Cost.objects.filter(publish__year=year, publish__month=month, category_id=
+        val = Cost.objects.filter(publish__year=year, publish__month=month, user=request.user, category_id=
         Category.objects.get(title='{}'.format(item)).id).aggregate(Sum('value'))['value__sum']
         if val is not None:
             categories_data.append(val)
@@ -58,9 +58,9 @@ def day_day_calculation(day_data, title, value, category, day_id, budget_id):
         return title, value, category, day_id, budget_id
 
 
-def day_category_calculation(year, month, day, categories, categories_data):
+def day_category_calculation(year, month, day, categories, categories_data, request):
     for data in categories:
-        val = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, category_id=
+        val = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user, category_id=
         Category.objects.get(title='{}'.format(data)).id).aggregate(Sum('value'))['value__sum']
         if val is not None:
             categories_data.append(val)
@@ -75,9 +75,9 @@ def year_month_calculation(Months):
     return Months
 
 
-def year_data_calculation(Months_data, year):
+def year_data_calculation(Months_data, year, request):
     for item in range(13)[1:]:
-        val = Cost.objects.filter(publish__year=year, publish__month=item).aggregate(Sum('value'))['value__sum']
+        val = Cost.objects.filter(publish__year=year, publish__month=item, user=request.user).aggregate(Sum('value'))['value__sum']
         if val is not None:
             Months_data.append(float(val))
         else:
@@ -85,9 +85,9 @@ def year_data_calculation(Months_data, year):
     return Months_data
 
 
-def year_categories_calculation(year, categories, categories_data):
+def year_categories_calculation(year, categories, categories_data, request):
     for data in categories:
-        val = Cost.objects.filter(publish__year=year, category_id=
+        val = Cost.objects.filter(publish__year=year, user=request.user, category_id=
         Category.objects.get(title='{}'.format(data)).id).aggregate(Sum('value'))['value__sum']
         if val is not None:
             categories_data.append(val)
@@ -128,15 +128,15 @@ def year_budget_categories_calculation(year, categories, categories_data, id):
     return categories_data
 
 
-def budget_month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg, id):
+def budget_month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg, id, request):
     for day in day_numbers:
-        val_1 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day,
+        val_1 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user,
                                     budget_id=id).aggregate(Sum('value'))['value__sum']
-        val_2 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day,
+        val_2 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user,
                                     budget_id=id).aggregate(Min('value'))['value__min']
-        val_3 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day,
+        val_3 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user,
                                     budget_id=id).aggregate(Max('value'))['value__max']
-        val_4 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day,
+        val_4 = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user,
                                     budget_id=id).aggregate(Avg('value'))['value__avg']
         if val_1 and val_2 and val_3 and val_4 is not None:
             day_sum.append(val_1)

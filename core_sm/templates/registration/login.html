@@ -1,0 +1,24 @@
+{% extends 'core_sm/base.html' %}
+
+{% block title %}Logowanie{% endblock %}
+
+{% block content %}
+    <h1>Logowanie</h1>
+    {% if form.errors %}
+    <p>
+        Nazwa użytkownika lub hasło są nieprawidłowe.
+        Spróbuj ponownie.
+    </p>
+    {% else %}
+        <p>Wypełnij poniższy formularz aby się zalogować:</p>
+    {% endif %}
+    <div class="login-form">
+        <form action="{% url 'core_sm:login' %}" method="POST">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <input type="hidden" name="text" value="{{ next }}">
+            <p><input type="submit" value="Zaloguj"></p>
+        </form>
+        <p><a href="{% url 'core_sm:password_reset' %}">Zapomniałeś hasła?</a></p>
+    </div>
+{% endblock %}
