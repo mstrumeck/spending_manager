@@ -7,6 +7,7 @@ import datetime
 
 
 class Category(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     title = models.CharField(max_length=200)
     publish = models.DateField(auto_now_add=True)
     updated = models.DateField(auto_now=True)

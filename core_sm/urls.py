@@ -13,7 +13,6 @@ urlpatterns = [
     url(r'^delete/(?P<id>\d+)/$', views.day_data_delete, name='day_data_delete'),
     url(r'^compare/$', views.stats_comp, name='stats_comp'),
     url(r'^compare/(?P<date_x>\d{4}-\d{2}-\d{2})/(?P<date_y>\d{4}-\d{2}-\d{2})/$', views.stats_comp, name='stats_comp'),
-    url(r'^status_edit', views.edit_status, name='edit_status'),
     url(r'^budget_setup$', views.budget_setup, name='budget_setup'),
     url(r'^budget/(?P<budget_id>\d+)/$', views.budget_detail, name='budget_detail'),
     url(r'^budget/(?P<id>\d+)/(?P<year>\d{4})/$', views.budget_year_stats_detail, name='budget_year_stats_detail'),
@@ -32,7 +31,7 @@ urlpatterns = [
     url(r'^category/(?P<category_id>\d+)/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$',
         views.category_day_stats_detail, name='category_day_stats_detail'),
     url(r'^category_setup/$', views.category_setup, name='category_setup'),
-    url(r'^category_edit/(?P<id>\d+)/$', views.category_edit, name='category_edit'),
+    url(r'^category_edit/(?P<category_id>\d+)/$', views.category_edit, name='category_edit'),
     url(r'^category_delete/(?P<category_id>\d+)/$', views.category_delete, name='category_delete'),
     #Bajery związane z logowaniem
     url(r'^login/$', auth_views.login, name='login'),

@@ -10,6 +10,10 @@
 {% block content %}
 <h3>Podsumowanie budżetu {{ budget_month_title }} za miesiąc {{ month }}.{{ year }}</h3>
 <h3>Saldo {{ total_budget }}</h3>
+{% if budget_owner != request.user.username %}
+    <h4>Budżet należy do użytkownika {{ budget_owner }}.</h4>
+    <h4>Nie masz dostępu do zawartości budżetu.</h4>
+{% endif %}
 
 <div class="center">
     <div class="button">

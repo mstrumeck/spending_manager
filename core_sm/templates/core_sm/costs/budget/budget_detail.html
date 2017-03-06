@@ -9,6 +9,10 @@
 
 {% block content %}
 <h3>Kwota twojego budżetu wynosi: {{ budget }} zł</h3>
+{% if budget_owner != request.user.username %}
+    <h4>Budżet należy do użytkownika {{ budget_owner }}.</h4>
+    <h4>Nie masz dostępu do zawartości budżetu.</h4>
+{% endif %}
 
 
 <div class="table">

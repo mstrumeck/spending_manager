@@ -8,6 +8,12 @@
 {% endblock %}
 
 {% block content %}
+
+{% if budget_owner != request.user.username %}
+    <h4>Budżet należy do użytkownika {{ budget_owner }}.</h4>
+    <h4>Nie masz dostępu do zawartości budżetu.</h4>
+{% endif %}
+
 <h3>Podsumowanie budżetu {{ budget_year_title }} za rok {{ year }}</h3>
 <h3>Saldo {{ total_budget }}</h3>
 

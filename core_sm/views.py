@@ -24,14 +24,16 @@ from core_sm.functions import month_day_calculations, month_category_calculation
     budget_day_calculation, category_year_data_calculation, category_month_day_calculations, category_day_day_calculation
 
 
+@login_required
 def category_delete(request, category_id):
     title = Category.objects.get(id=category_id).title
     Category.objects.get(id=category_id).delete()
     return render(request, 'core_sm/costs/category/category_delete.html', {'title': title})
 
 
-def category_edit(request, id):
-    category = Category.objects.get(id=id)
+@login_required
+def category_edit(request, category_id):
+    category = Category.objects.get(id=category_id)
     if request.method == 'POST':
         form = CategoryForm(request.POST, instance=category)
         if form.is_valid():
@@ -41,13 +43,13 @@ def category_edit(request, id):
     return render(request, 'core_sm/costs/category/category_edit.html', {'form': form,
                                                                          'category': category})
 
-
+@login_required
 def category_setup(request):
     info_total = []
     info_url = []
     info = Category.objects.all()
     for item in info:
-        info_total.append(Cost.objects.filter(category_id=item.id).aggregate(Sum('value'))['value__sum'])
+        info_total.append(Cost.objects.filter(category_id=item.id, user=request.user).aggregate(Sum('value'))['value__sum'])
         info_url.append(str(item.publish).replace('-', '/'))
 
     if request.method == 'POST':
@@ -62,10 +64,10 @@ def category_setup(request):
     return render(request, 'core_sm/costs/category/category_setup.html', {'data': data,
                                                                           'form': form})
 
-
+@login_required
 def category_day_stats_detail(request, category_id, year, month, day):
     category_title = Category.objects.get(id=category_id).title
-    day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, category_id=category_id)
+    day_data = Cost.objects.filter(user=request.user, publish__year=year, publish__month=month, publish__day=day, category_id=category_id)
     title = []
     value = []
     day_id = []
@@ -90,7 +92,7 @@ def category_day_stats_detail(request, category_id, year, month, day):
     day_budget_spends = []
     day_budget_id = []
     for item in Budget.objects.values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], publish__year=year,
+        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, user=request.user,
                                   publish__month=month, publish__day=day, category_id=category_id).aggregate(Sum('value'))['value__sum']
         if val is not None:
             day_budget_title.append(item['title'])
@@ -121,7 +123,7 @@ def category_day_stats_detail(request, category_id, year, month, day):
                                                                                'script': mark_safe(script),
                                                                                'div': mark_safe(div)})
 
-
+@login_required
 def category_month_stats_detail(request, category_id, year, month):
     category_title = Category.objects.get(id=category_id).title
     mr = calendar.monthrange(int(year), int(month))
@@ -130,7 +132,7 @@ def category_month_stats_detail(request, category_id, year, month):
     day_min = []
     day_max = []
     day_avg = []
-    category_month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg, category_id)
+    category_month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg, category_id, request)
     day_data = zip(day_numbers, day_sum, day_max, day_min, day_avg)
     data = {
         'Dni': day_numbers,
@@ -145,20 +147,20 @@ def category_month_stats_detail(request, category_id, year, month):
     min_month_day = day_numbers[day_min.index(min(day_min))]
 
     sum_cost = Cost.objects.filter(publish__year=year, publish__month=month,
-                                   category_id=category_id).aggregate(Sum('value'))['value__sum']
+                                   category_id=category_id, user=request.user).aggregate(Sum('value'))['value__sum']
     min_cost = Cost.objects.filter(publish__year=year, publish__month=month,
-                                   category_id=category_id).aggregate(Min('value'))['value__min']
+                                   category_id=category_id, user=request.user).aggregate(Min('value'))['value__min']
     max_cost = Cost.objects.filter(publish__year=year, publish__month=month,
-                                   category_id=category_id).aggregate(Max('value'))['value__max']
+                                   category_id=category_id, user=request.user).aggregate(Max('value'))['value__max']
     avg_cost = Cost.objects.filter(publish__year=year, publish__month=month,
-                                   category_id=category_id).aggregate(Avg('value'))['value__avg']
+                                   category_id=category_id, user=request.user).aggregate(Avg('value'))['value__avg']
 
     month_budget_title = []
     month_budget_spends = []
     month_budget_id = []
     for item in Budget.objects.values('title', 'id'):
         val = \
-        Cost.objects.filter(budget_id=item['id'], publish__year=year, publish__month=month).aggregate(Sum('value'))[
+        Cost.objects.filter(budget_id=item['id'], publish__year=year, publish__month=month, user=request.user).aggregate(Sum('value'))[
             'value__sum']
         if val is not None:
             month_budget_title.append(item['title'])
@@ -171,13 +173,13 @@ def category_month_stats_detail(request, category_id, year, month):
     budgets_id = []
     budgets_data = []
 
-    for item in Budget.objects.values('title', 'id'):
+    for item in Budget.objects.filter(user=request.user).values('title', 'id'):
         budgets.append(item['title'])
         budgets_id.append(item['id'])
 
     for item in budgets_id:
         val = Cost.objects.filter(publish__year=year, publish__month=month, category_id=category_id,
-        budget_id=item).aggregate(Sum('value'))['value__sum']
+        budget_id=item, user=request.user).aggregate(Sum('value'))['value__sum']
         if val is not None:
             budgets_data.append(val)
         else:
@@ -229,14 +231,14 @@ def category_month_stats_detail(request, category_id, year, month):
                                                                                  'another': another,
                                                                                  'back': back})
 
-
+@login_required
 def category_year_stats_detail(request, category_id, year):
     category_title = Category.objects.get(id=category_id).title
     Months = []
     Months_data = []
     Months_url = [str(x).zfill(2) for x in range(13)[1:]]
     year_month_calculation(Months)
-    category_year_data_calculation(Months_data, year, category_id)
+    category_year_data_calculation(Months_data, year, category_id, request)
     data = {
         'Miesiące': Months_url,
         'ZŁ': Months_data
@@ -244,14 +246,14 @@ def category_year_stats_detail(request, category_id, year):
     p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=910, plot_height=350, color='blue')
     script, div = components(p, CDN)
     all_data = zip(Months, Months_data, Months_url)
-    year_sum = Cost.objects.filter(publish__year=year, category_id=category_id).aggregate(Sum('value'))['value__sum']
+    year_sum = Cost.objects.filter(publish__year=year, category_id=category_id, user=request.user).aggregate(Sum('value'))['value__sum']
 
     year_budget_title = []
     year_budget_spends = []
     year_budget_id = []
 
-    for item in Budget.objects.values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, category_id=category_id).aggregate(Sum('value'))['value__sum']
+    for item in Budget.objects.filter(user=request.user).values('title', 'id'):
+        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, category_id=category_id, user=request.user).aggregate(Sum('value'))['value__sum']
         if val is not None:
             year_budget_title.append(item['title'])
             year_budget_spends.append(val)
@@ -265,13 +267,14 @@ def category_year_stats_detail(request, category_id, year):
     budgets_id = []
     budgets_data = []
 
-    for item in Budget.objects.values('title', 'id'):
+    for item in Budget.objects.filter(user=request.user).values('title', 'id'):
         budgets.append(item['title'])
         budgets_id.append(item['id'])
 
     for item in budgets_id:
         val = Cost.objects.filter(publish__year=year,
                                   category_id=category_id,
+                                  user=request.user,
                                   budget_id=item).aggregate(Sum('value'))['value__sum']
         if val is not None:
             budgets_data.append(val)
@@ -301,10 +304,10 @@ def category_year_stats_detail(request, category_id, year):
                                                                                 'script1': mark_safe(script1),
                                                                                 'div1': mark_safe(div1)})
 
-
+@login_required
 def category_detail(request, category_id):
     category_title = Category.objects.get(id=category_id).title
-    spends = Cost.objects.filter(category_id=category_id)
+    spends = Cost.objects.filter(category_id=category_id, user=request.user)
     stats = []
     days = []
     days_url = []
@@ -317,17 +320,17 @@ def category_detail(request, category_id):
 
     data = zip(spends, stats, days, days_url)
 
-    data_sum = Cost.objects.filter(category_id=category_id).aggregate(Sum('value'))['value__sum']
-    data_avg = Cost.objects.filter(category_id=category_id).aggregate(Avg('value'))['value__avg']
-    data_min = Cost.objects.filter(category_id=category_id).aggregate(Min('value'))['value__min']
-    data_max = Cost.objects.filter(category_id=category_id).aggregate(Max('value'))['value__max']
+    data_sum = Cost.objects.filter(category_id=category_id, user=request.user).aggregate(Sum('value'))['value__sum']
+    data_avg = Cost.objects.filter(category_id=category_id, user=request.user).aggregate(Avg('value'))['value__avg']
+    data_min = Cost.objects.filter(category_id=category_id, user=request.user).aggregate(Min('value'))['value__min']
+    data_max = Cost.objects.filter(category_id=category_id, user=request.user).aggregate(Max('value'))['value__max']
 
     category_budget_title = []
     category_budget_spends = []
     category_budget_id = []
 
     for item in Budget.objects.values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], category_id=category_id).aggregate(Sum('value'))[
+        val = Cost.objects.filter(budget_id=item['id'], category_id=category_id, user=request.user).aggregate(Sum('value'))[
             'value__sum']
         if val is not None:
             category_budget_title.append(item['title'])
@@ -340,12 +343,12 @@ def category_detail(request, category_id):
     budgets_id = []
     budgets_data = []
 
-    for item in Budget.objects.values('title', 'id'):
+    for item in Budget.objects.filter(user=request.user).values('title', 'id'):
         budgets.append(item['title'])
         budgets_id.append(item['id'])
 
     for item in budgets:
-        val = Cost.objects.filter(category_id=category_id, budget_id=Budget.objects.get(title='{}'.format(item)).id).aggregate(Sum('value'))['value__sum']
+        val = Cost.objects.filter(category_id=category_id, user=request.user, budget_id=Budget.objects.get(title='{}'.format(item)).id).aggregate(Sum('value'))['value__sum']
         if val is not None:
             budgets_data.append(val)
         else:
@@ -395,12 +398,19 @@ def budget_edit(request, id):
                                                                      'form': form})
 
 
+@login_required
 def budget_day_stats_detail(request, id, year, month, day):
+    budget_owner = User.objects.get(id=Budget.objects.get(id=id).id).username
     budget_day_title = Budget.objects.get(id=id).title
-    total = Cost.objects.filter(budget_id=id).aggregate(Sum('value'))['value__sum']
+    total = Cost.objects.filter(budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
     budget = Budget.objects.get(id=id).value
-    total_budget = budget - total
-    day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, budget_id=id)
+
+    try:
+        total_budget = budget - total
+    except TypeError:
+        total_budget = 0
+
+    day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, budget_id=id, user=request.user)
     title = []
     value = []
     category = []
@@ -416,21 +426,24 @@ def budget_day_stats_detail(request, id, year, month, day):
         day_min = [title[value.index(min(value))], min(value), category[value.index(min(value))]]
     except(ValueError, TypeError):
         day_min = 0
+
     day_sum = day_data.aggregate(Sum('value'))
     day_avg = day_data.aggregate(Avg('value'))['value__avg']
     categories = []
+    categories_data = []
 
     for item in Category.objects.values('title'):
         categories.append(item['title'])
 
-    categories_data = []
-    day_category_calculation(year, month, day, categories, categories_data)
+    day_category_calculation(year, month, day, categories, categories_data, request)
     data = {
-        'money': [float(x) for x in categories_data],
-        'labels': categories
-    }
+                'money': [float(x) for x in categories_data],
+                'labels': categories
+            }
+
     p = Bar(data, values='money', label='labels', plot_width=760, plot_height=300, legend=False, color='blue')
     script, div = components(p, CDN)
+
     categories_res = zip(categories, categories_data)
     return render(request, 'core_sm/costs/budget/budget_day_detail.html', {'year': year,
                                                                            'month': month,
@@ -446,26 +459,33 @@ def budget_day_stats_detail(request, id, year, month, day):
                                                                            'day_min': day_min,
                                                                            'total_budget': total_budget,
                                                                            'categories_res': categories_res,
-                                                                           'budget_day_title': budget_day_title})
+                                                                           'budget_day_title': budget_day_title,
+                                                                           'budget_owner': budget_owner})
 
-
+@login_required
 def budget_month_stats_detail(request, id, year, month):
+    budget_owner = User.objects.get(id=Budget.objects.get(id=id).id).username
     budget_month_title = Budget.objects.get(id=id).title
-    total = Cost.objects.filter(budget_id=id).aggregate(Sum('value'))['value__sum']
+    total = Cost.objects.filter(budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
     budget = Budget.objects.get(id=id).value
-    total_budget = budget - total
+
+    try:
+        total_budget = budget - total
+    except TypeError:
+        total_budget = 0
+
     mr = calendar.monthrange(int(year), int(month))
     day_numbers = [str(x).zfill(2) for x in range(mr[1] + 1)][1:]
     day_sum = []
     day_min = []
     day_max = []
     day_avg = []
-    budget_month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg, id)
+    budget_month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg, id, request)
     day_data = zip(day_numbers, day_sum, day_max, day_min, day_avg)
-    sum_cost = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id).aggregate(Sum('value'))['value__sum']
-    min_cost = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id).aggregate(Min('value'))['value__min']
-    max_cost = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id).aggregate(Max('value'))['value__max']
-    avg_cost = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id).aggregate(Avg('value'))['value__avg']
+    sum_cost = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
+    min_cost = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id, user=request.user).aggregate(Min('value'))['value__min']
+    max_cost = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id, user=request.user).aggregate(Max('value'))['value__max']
+    avg_cost = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id, user=request.user).aggregate(Avg('value'))['value__avg']
     data = {
         'Dni': day_numbers,
         'ZŁ': [float(x) for x in day_sum]
@@ -484,7 +504,7 @@ def budget_month_stats_detail(request, id, year, month):
         category_id.append(item['id'])
 
     categories_data = []
-    budget_month_category_calculation(year, month, id, categories, categories_data)
+    budget_month_category_calculation(year, month, id, categories, categories_data, request)
     data1 = {
         'money': [float(x) for x in categories_data],
         'labels': categories
@@ -512,19 +532,26 @@ def budget_month_stats_detail(request, id, year, month):
                                                                              'month': month,
                                                                              'id': id,
                                                                              'total_budget': total_budget,
-                                                                             'budget_month_title': budget_month_title})
+                                                                             'budget_month_title': budget_month_title,
+                                                                             'budget_owner': budget_owner})
 
-
+@login_required
 def budget_year_stats_detail(request, id, year):
+    budget_owner = User.objects.get(id=Budget.objects.get(id=id).id).username
     budget_year_title = Budget.objects.get(id=id).title
-    total = Cost.objects.filter(budget_id=id).aggregate(Sum('value'))['value__sum']
+    total = Cost.objects.filter(budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
     budget = Budget.objects.get(id=id).value
-    total_budget = budget - total
+
+    try:
+        total_budget = budget - total
+    except TypeError:
+        total_budget = 0
+
     Months = []
     Months_data = []
     Months_url = [str(x).zfill(2) for x in range(13)[1:]]
     year_month_calculation(Months)
-    year_budget_calculation(Months_data, year, id)
+    year_budget_calculation(Months_data, year, id, request)
     data = {
         'Miesiące': Months_url,
         'ZŁ': Months_data
@@ -532,7 +559,7 @@ def budget_year_stats_detail(request, id, year):
     p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=910, plot_height=350, color='blue')
     script, div = components(p, CDN)
     all_data = zip(Months, Months_data, Months_url)
-    year_sum = Cost.objects.filter(publish__year=year, budget_id=id).aggregate(Sum('value'))['value__sum']
+    year_sum = Cost.objects.filter(publish__year=year, budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
     categories = []
     category_id = []
 
@@ -541,7 +568,7 @@ def budget_year_stats_detail(request, id, year):
         category_id.append(item['id'])
 
     categories_data = []
-    year_budget_categories_calculation(year, categories, categories_data, id)
+    year_budget_categories_calculation(year, categories, categories_data, id, request)
     data1 = {
         'money': [float(x) for x in categories_data],
         'labels': categories
@@ -559,20 +586,22 @@ def budget_year_stats_detail(request, id, year):
                                                                             'id': id,
                                                                             'year': year,
                                                                             'total_budget': total_budget,
-                                                                            'budget_year_title' : budget_year_title})
+                                                                            'budget_year_title' : budget_year_title,
+                                                                            'budget_owner': budget_owner})
 
-
+@login_required
 def budget_detail(request, budget_id):
+    budget_owner = User.objects.get(id=Budget.objects.get(id=budget_id).id).username
     title = Budget.objects.get(id=budget_id).title
-    base = Cost.objects.filter(budget_id=budget_id).values()
-    total = Cost.objects.filter(budget_id=budget_id).aggregate(Sum('value'))['value__sum']
+    base = Cost.objects.filter(budget_id=budget_id, user=request.user).values()
+    total = Cost.objects.filter(budget_id=budget_id, user=request.user).aggregate(Sum('value'))['value__sum']
     budget = Budget.objects.get(id=budget_id).value
     date = []
     date_url = []
     categories = []
     categories_id = []
 
-    for item in Cost.objects.filter(budget_id=budget_id).values('title', 'publish', 'category_id'):
+    for item in Cost.objects.filter(budget_id=budget_id, user=request.user).values('title', 'publish', 'category_id'):
         date.append(str(item['publish']))
         date_url.append(str(item['publish']).replace('-', '/'))
         categories.append(Category.objects.get(id=item['category_id']).title)
@@ -586,7 +615,7 @@ def budget_detail(request, budget_id):
         categories_title.append(item['title'])
         categories_title_id.append(item['id'])
 
-    budget_categories_calculation(budget_id, categories_title, categories_data)
+    budget_categories_calculation(budget_id, categories_title, categories_data, request)
 
     try:
         total_budget = budget - total
@@ -612,9 +641,10 @@ def budget_detail(request, budget_id):
                                                                 'script': mark_safe(script),
                                                                 'div': mark_safe(div),
                                                                 'cat_all': cat_all,
-                                                                       'categories_data': categories_data})
+                                                                'categories_data': categories_data,
+                                                                'budget_owner': budget_owner})
 
-
+@login_required
 def budget_setup(request):
     add = False
 
@@ -649,48 +679,17 @@ def budget_setup(request):
                                                          'all_data': all_data})
 
 
-def edit_status(request):
-    delete = False
-    add = False
-    data = Cost.STATUS_CHOICES
-
-    if request.method == 'POST' and 'add' in request.POST:
-        form_add = StatusFormEdit(request.POST)
-        if form_add.is_valid():
-            add = True
-            cd = form_add.cleaned_data
-            Cost.STATUS_CHOICES.append([cd['status'], cd['status']])
-            Cost.STATUS_CHOICES.sort()
-    else:
-        form_add = StatusFormEdit()
-
-    if request.method == 'POST' and 'delete' in request.POST:
-        form_delete = StatusFormEdit(request.POST)
-        if form_delete.is_valid():
-            delete = True
-            cd = form_delete.cleaned_data
-            Cost.STATUS_CHOICES.remove(cd['status'])
-            Cost.STATUS_CHOICES.sort()
-    else:
-        form_delete = StatusFormEdit()
-
-    return render(request, 'core_sm/costs/status_edit.html', {'data': data,
-                                                              'add': add,
-                                                              'form_add': form_add,
-                                                              'form_delete': form_delete,
-                                                              'delete': delete})
-
-
 @login_required
 def day_data_multiadd(request, no_of_lines=0):
     no_of_lines = int(no_of_lines)
     CostFormSet = modelformset_factory(Cost, form=DataAddForm, extra=no_of_lines)
-
     if request.method == 'POST' and 'form' in request.POST:
         formset = CostFormSet(request.POST, request.FILES)
         if formset.is_valid():
-            formset.user = User.objects.get(user=request.user)
-            formset.save()
+            for form in formset.forms:
+                f = form.save(commit=False)
+                f.user = request.user
+                f.save()
     else:
         formset = CostFormSet(queryset=Cost.objects.none())
 
@@ -1012,6 +1011,7 @@ def day_stats_detail(request, year, month, day):
     day_budget_title = []
     day_budget_spends = []
     day_budget_id = []
+
     for item in Budget.objects.values('title', 'id'):
         val = Cost.objects.filter(budget_id=item['id'], publish__year=year, publish__month=month, publish__day=day, user=request.user).aggregate(Sum('value'))['value__sum']
         if val is not None:
