@@ -15,4 +15,4 @@ from whitenoise.django import DjangoWhiteNoise
 
 application = get_wsgi_application()
 application = DjangoWhiteNoise(application)
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "spending_manager.settings")
+os.environ['DJANGO_SETTINGS_MODULE'] = 'mysite.settings'
