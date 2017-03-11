@@ -682,7 +682,9 @@ def budget_setup(request):
 @login_required
 def day_data_multiadd(request, no_of_lines=0):
     no_of_lines = int(no_of_lines)
-    CostFormSet = modelformset_factory(Cost, form=DataAddForm, extra=no_of_lines)
+    form_cls = DataAddForm
+    form_cls.user = request.user
+    CostFormSet = modelformset_factory(Cost, form=form_cls, extra=no_of_lines)
     if request.method == 'POST' and 'form' in request.POST:
         formset = CostFormSet(request.POST, request.FILES)
         if formset.is_valid():
@@ -691,7 +693,7 @@ def day_data_multiadd(request, no_of_lines=0):
                 f.user = request.user
                 f.save()
     else:
-        formset = CostFormSet(queryset=Cost.objects.none())
+        formset = CostFormSet(queryset=Cost.objects.none(), form_kwargs={'user': request.user})
 
     if request.method == 'POST' and 'no_line' in request.POST:
         generate_form = MultiaddGenerateForm(request.POST)
@@ -705,13 +707,15 @@ def day_data_multiadd(request, no_of_lines=0):
                                                             'no_of_lines': no_of_lines,
                                                             'generate_form': generate_form})
 
+
 @login_required
 def day_data_delete(request, id):
     Message = "Rekord '{}' został usunięty z bazy danych".format(Cost.objects.filter(id=id).values('title')[0]['title'])
     Cost.objects.filter(id=id).delete()
     return render(request, 'core_sm/costs/day_delete.html', {'Message': Message})
 
-
+#Tutaj dokończ
+@login_required
 def costs_stats(request):
     if request.method == "GET":
         form = DataGenerateForm()

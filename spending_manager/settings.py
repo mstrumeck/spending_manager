@@ -125,8 +125,4 @@ LOGIN_REDIRECT_URL = reverse_lazy('core_sm:current_detail')
 LOGIN_URL = reverse_lazy('core_sm:login')
 LOGOUT_URL = reverse_lazy('core_sm:logout')
 
-STATIC_URL = '/static/'
-
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-)
+STATIC_URL = '/core_sm/static/'
