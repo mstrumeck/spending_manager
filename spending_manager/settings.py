@@ -126,6 +126,7 @@ USE_TZ = False
 LOGIN_REDIRECT_URL = reverse_lazy('core_sm:current_detail')
 LOGIN_URL = reverse_lazy('core_sm:login')
 LOGOUT_URL = reverse_lazy('core_sm:logout')
+LOGGING_CONFIG = None
 
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
