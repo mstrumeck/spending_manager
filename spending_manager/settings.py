@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 from django.core.urlresolvers import reverse_lazy
 import dj_database_url
-from django.conf import settings
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -30,8 +29,6 @@ SECRET_KEY = 'dm=wb4!1z$o3z^2o)&bkd8)d*98m61)pm%anca3pc%-l(fb0z1'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-settings.
-
 
 # Application definition
 
