@@ -37,14 +37,6 @@ class DataAddForm(forms.ModelForm):
             'budget': _('Budżet')
         }
 
-        def __init__(self, *args, **kwargs):
-            super(DataAddForm, self).__init__(*args, **kwargs)
-            self.user = kwargs.pop('user')
-            self.fields['category'].queryset = Category.objects.filter(user=self.user)
-            self.fields['budget'].queryset = Budget.objects.filter(user=self.user)
-
-
-
 
 class MultiaddGenerateForm(forms.Form):
     formy = forms.IntegerField(max_value=30, min_value=1, label='Ilość zakupów')

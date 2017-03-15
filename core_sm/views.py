@@ -43,8 +43,10 @@ def category_edit(request, category_id):
     return render(request, 'core_sm/costs/category/category_edit.html', {'form': form,
                                                                          'category': category})
 
+
 @login_required
 def category_setup(request):
+    add = False
     info_total = []
     info_url = []
     info = Category.objects.all()
@@ -55,14 +57,18 @@ def category_setup(request):
     if request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
-            form.save()
+            add = True
+            f = form.save(commit=False)
+            f.user = request.user
+            f.save()
     else:
         form = CategoryForm
 
     data = zip(info, info_total, info_url)
 
     return render(request, 'core_sm/costs/category/category_setup.html', {'data': data,
-                                                                          'form': form})
+                                                                          'form': form,
+                                                                          'add': add})
 
 @login_required
 def category_day_stats_detail(request, category_id, year, month, day):
@@ -644,16 +650,17 @@ def budget_detail(request, budget_id):
                                                                 'categories_data': categories_data,
                                                                 'budget_owner': budget_owner})
 
+
 @login_required
 def budget_setup(request):
-    add = False
-
+    add =False
     if request.method == 'POST':
         form = BudgetForm(request.POST)
         if form.is_valid():
             add = True
-            form.save()
-
+            f = form.save(commit=False)
+            f.user = request.user
+            f.save()
     else:
         form = BudgetForm()
 
@@ -681,6 +688,7 @@ def budget_setup(request):
 
 @login_required
 def day_data_multiadd(request, no_of_lines=0):
+    add = False
     no_of_lines = int(no_of_lines)
     form_cls = DataAddForm
     form_cls.user = request.user
@@ -689,11 +697,12 @@ def day_data_multiadd(request, no_of_lines=0):
         formset = CostFormSet(request.POST, request.FILES)
         if formset.is_valid():
             for form in formset.forms:
+                add = True
                 f = form.save(commit=False)
                 f.user = request.user
                 f.save()
     else:
-        formset = CostFormSet(queryset=Cost.objects.none(), form_kwargs={'user': request.user})
+        formset = CostFormSet(queryset=Cost.objects.none())
 
     if request.method == 'POST' and 'no_line' in request.POST:
         generate_form = MultiaddGenerateForm(request.POST)
@@ -705,7 +714,8 @@ def day_data_multiadd(request, no_of_lines=0):
 
     return render(request, 'core_sm/costs/multi_add.html', {'formset': formset,
                                                             'no_of_lines': no_of_lines,
-                                                            'generate_form': generate_form})
+                                                            'generate_form': generate_form,
+                                                            'add': add})
 
 
 @login_required
