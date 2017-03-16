@@ -406,7 +406,7 @@ def budget_edit(request, id):
 
 @login_required
 def budget_day_stats_detail(request, id, year, month, day):
-    budget_owner = User.objects.get(id=Budget.objects.get(id=id).id).username
+    budget_owner = User.objects.get(id=Budget.objects.get(id=id).user_id).username
     budget_day_title = Budget.objects.get(id=id).title
     total = Cost.objects.filter(budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
     budget = Budget.objects.get(id=id).value
@@ -470,7 +470,7 @@ def budget_day_stats_detail(request, id, year, month, day):
 
 @login_required
 def budget_month_stats_detail(request, id, year, month):
-    budget_owner = User.objects.get(id=Budget.objects.get(id=id).id).username
+    budget_owner = User.objects.get(id=Budget.objects.get(id=id).user_id).username
     budget_month_title = Budget.objects.get(id=id).title
     total = Cost.objects.filter(budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
     budget = Budget.objects.get(id=id).value
@@ -543,7 +543,7 @@ def budget_month_stats_detail(request, id, year, month):
 
 @login_required
 def budget_year_stats_detail(request, id, year):
-    budget_owner = User.objects.get(id=Budget.objects.get(id=id).id).username
+    budget_owner = User.objects.get(id=Budget.objects.get(id=id).user_id).username
     budget_year_title = Budget.objects.get(id=id).title
     total = Cost.objects.filter(budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
     budget = Budget.objects.get(id=id).value
@@ -597,7 +597,7 @@ def budget_year_stats_detail(request, id, year):
 
 @login_required
 def budget_detail(request, budget_id):
-    budget_owner = User.objects.get(id=Budget.objects.get(id=budget_id).id).username
+    budget_owner = User.objects.get(id=Budget.objects.get(id=budget_id).user_id).username
     title = Budget.objects.get(id=budget_id).title
     base = Cost.objects.filter(budget_id=budget_id, user=request.user).values()
     total = Cost.objects.filter(budget_id=budget_id, user=request.user).aggregate(Sum('value'))['value__sum']
