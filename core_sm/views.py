@@ -804,6 +804,14 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
     else:
         form = comp_form()
 
+    budgets_sum = Budget.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Sum('value'))['value__sum']
+    total_cost_per_budget = sum(comp_budget_spends)
+
+    try:
+        total_budget = budgets_sum - total_cost_per_budget
+    except TypeError:
+        total_budget = 0
+
     return render(request, 'core_sm/costs/stats_comp.html', {'data': data,
                                                              'data_sum': data_sum,
                                                              'data_avg': data_avg,
@@ -815,7 +823,10 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
                                                              'form': form,
                                                              'date_x': date_x,
                                                              'date_y': date_y,
-                                                             'comp_budget_data': comp_budget_data})
+                                                             'comp_budget_data': comp_budget_data,
+                                                             'total_cost_per_budget': total_cost_per_budget,
+                                                             'total_budget': total_budget,
+                                                             'budgets_sum': budgets_sum})
 
 
 @login_required

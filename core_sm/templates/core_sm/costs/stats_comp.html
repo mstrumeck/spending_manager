@@ -40,6 +40,20 @@
                 </tr>
                 {% endfor %}
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td><b>Suma budżetów</b></td>
+                        <td>{{ budgets_sum }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Suma wydatków</b></td>
+                        <td>{{ total_cost_per_budget }}</td>
+                    </tr>
+                    <tr>
+                        <td><b>Saldo</b></td>
+                        <td><b>{{ total_budget }}</b></td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     <div class="table">
