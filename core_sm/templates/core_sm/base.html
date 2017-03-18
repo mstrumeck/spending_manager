@@ -18,15 +18,16 @@
                 <li><a href="{% url 'core_sm:stats_comp' %}">Porównanie</a></li>
                 <li><a href="{% url 'core_sm:budget_setup' %}">Opcje budżetu</a></li>
                 <li><a href="{% url 'core_sm:category_setup' %}">Opcje kategorii</a></li>
+
             </ul>
-            <span class="user">
-            {% if request.user.is_authenticated %}
+            <div class="user">
+                {% if request.user.is_authenticated %}
                 Witaj, {{ request.user.first_name }}!
                 <a href="{% url 'core_sm:logout' %}">Wyloguj</a>
-            {% else %}
+                {% else %}
                 <a href="{% url 'core_sm:login' %}">Zaloguj</a>
-            {% endif %}
-            </span>
+                {% endif %}
+            </div>
         </nav>
         <div id="content">
             {% block content %}

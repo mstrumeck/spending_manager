@@ -49,7 +49,7 @@ def category_setup(request):
     add = False
     info_total = []
     info_url = []
-    info = Category.objects.all()
+    info = Category.objects.filter(user_id=User.objects.get(username=request.user).id)
     for item in info:
         info_total.append(Cost.objects.filter(category_id=item.id, user=request.user).aggregate(Sum('value'))['value__sum'])
         info_url.append(str(item.publish).replace('-', '/'))
@@ -670,7 +670,7 @@ def budget_setup(request):
     budget_created = []
     spendings_values = []
 
-    for item in Budget.objects.values('title', 'value', 'id', 'publish'):
+    for item in Budget.objects.filter(user_id=User.objects.get(username=request.user).id).values('title', 'value', 'id', 'publish'):
         budget_titles.append(item['title'])
         budget_values.append(item['value'])
         budget_id.append(item['id'])
@@ -690,9 +690,7 @@ def budget_setup(request):
 def day_data_multiadd(request, no_of_lines=0):
     add = False
     no_of_lines = int(no_of_lines)
-    form_cls = DataAddForm
-    form_cls.user = request.user
-    CostFormSet = modelformset_factory(Cost, form=form_cls, extra=no_of_lines)
+    CostFormSet = modelformset_factory(model=Cost, form=DataAddForm, extra=no_of_lines)
     if request.method == 'POST' and 'form' in request.POST:
         formset = CostFormSet(request.POST, request.FILES)
         if formset.is_valid():
@@ -703,6 +701,9 @@ def day_data_multiadd(request, no_of_lines=0):
                 f.save()
     else:
         formset = CostFormSet(queryset=Cost.objects.none())
+        for item in formset:
+            item.fields['category'].queryset=Category.objects.filter(user=request.user)
+            item.fields['budget'].queryset=Budget.objects.filter(user=request.user)
 
     if request.method == 'POST' and 'no_line' in request.POST:
         generate_form = MultiaddGenerateForm(request.POST)

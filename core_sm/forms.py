@@ -29,6 +29,7 @@ class DataAddForm(forms.ModelForm):
         model = Cost
         fields = ['title', 'value', 'publish', 'category', 'budget']
         exclude = ['user']
+
         labels = {
             'title': _('Tytuł'),
             'value': _('Wartość'),

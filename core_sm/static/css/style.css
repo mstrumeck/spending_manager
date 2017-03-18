@@ -43,7 +43,7 @@ nav {
     color:#fff;
     overflow:auto;
     font-family: 'Muli', sans-serif;
-    font-size: 140%;
+    font-size: 110%;
     }
 
 nav ul {
@@ -256,4 +256,12 @@ tr:nth-child(even) {
   background-color: #3e8e41;
   box-shadow: 0 5px #666;
   transform: translateY(4px);
+}
+
+.user {
+    background: #969EBE;
+    padding: 6px;
+    margin: 20px;
+    float: right;
+    border-radius: 10px;
 }
