@@ -88,7 +88,7 @@ def year_data_calculation(Months_data, year, request):
 
 def year_categories_calculation(year, categories, categories_data, request):
     for data in categories:
-        val = Cost.objects.filter(publish__year=year, user=request.user, category_id=
+        val = Cost.objects.filter(publish__year=year, user_id=request.user.id, category_id=
         Category.objects.get(title='{}'.format(data)).id).aggregate(Sum('value'))['value__sum']
         if val is not None:
             categories_data.append(val)

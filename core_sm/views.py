@@ -846,11 +846,11 @@ def year_stats_detail(request, year):
     p_line = Line(data, xlabel='Miesiące', legend=False, plot_width=710, plot_height=350, color='blue')
     script_line, div_line = components(p_line, CDN)
     all_data = zip(Months, Months_data, Months_url)
-    year_sum = Cost.objects.filter(publish__year=year, user=request.user).aggregate(Sum('value'))['value__sum']
+    year_sum = Cost.objects.filter(publish__year=year, user_id=request.user.id).aggregate(Sum('value'))['value__sum']
     categories = []
     categories_id = []
 
-    for item in Category.objects.values('title', 'id'):
+    for item in Category.objects.filter(user_id=request.user.id).values('title', 'id'):
         categories.append(item['title'])
         categories_id.append(item['id'])
 
@@ -867,8 +867,8 @@ def year_stats_detail(request, year):
     year_budget_spends = []
     year_budget_id = []
 
-    for item in Budget.objects.values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, user=request.user).aggregate(Sum('value'))['value__sum']
+    for item in Budget.objects.filter(user_id=request.user.id).values('title', 'id'):
+        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, user_id=request.user.id).aggregate(Sum('value'))['value__sum']
         if val is not None:
             year_budget_title.append(item['title'])
             year_budget_spends.append(val)
@@ -894,6 +894,7 @@ def year_stats_detail(request, year):
                                                                     'year_budget_data': year_budget_data,
                                                                     'another': another,
                                                                     'back': back,
+                                                                    'categories': categories,
                                                                     'script_line': mark_safe(script_line),
                                                                     'div_line': mark_safe(div_line)})
 
@@ -921,7 +922,7 @@ def month_stats_detail(request, year, month):
     min_month_day = day_numbers[day_min.index(min(day_min))]
     categories = []
     categories_id = []
-    for item in Category.objects.values('title', 'id'):
+    for item in Category.objects.filter(user_id=request.user.id).values('title', 'id'):
         categories.append(item['title'])
         categories_id.append(item['id'])
 
@@ -993,7 +994,7 @@ def month_stats_detail(request, year, month):
 
 @login_required
 def day_stats_detail(request, year, month, day):
-    day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user)
+    day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user_id=request.user.id)
     title = []
     value = []
     category = []
@@ -1019,7 +1020,7 @@ def day_stats_detail(request, year, month, day):
     categories = []
     categories_id = []
 
-    for item in Category.objects.values('title', 'id'):
+    for item in Category.objects.filter(user_id=request.user.id).values('title', 'id'):
         categories.append(item['title'])
         categories_id.append(item['id'])
 
@@ -1038,8 +1039,8 @@ def day_stats_detail(request, year, month, day):
     day_budget_spends = []
     day_budget_id = []
 
-    for item in Budget.objects.values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, publish__month=month, publish__day=day, user=request.user).aggregate(Sum('value'))['value__sum']
+    for item in Budget.objects.filter(user_id=request.user.id).values('title', 'id'):
+        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, publish__month=month, publish__day=day, user_id=request.user.id).aggregate(Sum('value'))['value__sum']
         if val is not None:
             day_budget_title.append(item['title'])
             day_budget_spends.append(val)

@@ -3,7 +3,7 @@ from .models import Cost, Budget, Category
 
 
 class CostsAdmin(admin.ModelAdmin):
-    list_display = ['title', 'value', 'category',  'publish', 'updated']
+    list_display = ['title', 'value', 'category',  'publish', 'updated', 'user']
     list_filter = ['title', 'category', 'created']
     list_editable = ['value',  'category']
     search_fields = ['title', 'category', 'publish']
