@@ -117,6 +117,7 @@ def category_day_stats_detail(request, category_id, year, month, day):
     script, div = components(p1, CDN)
     return render(request, 'core_sm/costs/category/category_day_detail.html', {'year': year,
                                                                                'month': month,
+                                                                               'category_id': category_id,
                                                                                'day': day,
                                                                                'day_data': day_data,
                                                                                'all_data': all_data,
