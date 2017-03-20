@@ -4,10 +4,9 @@ import calendar
 import datetime
 
 
-def comp_categories_calculation(categories, categories_data, start_date, end_date, request):
-    for item in categories:
-        val = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user, category_id=
-        Category.objects.get(title='{}'.format(item)).id).aggregate(Sum('value'))['value__sum']
+def comp_categories_calculation(categories_id, categories_data, start_date, end_date, request):
+    for item in categories_id:
+        val = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user, category_id=item).aggregate(Sum('value'))['value__sum']
         if val is not None:
             categories_data.append(val)
         else:
@@ -58,15 +57,13 @@ def day_day_calculation(day_data, title, value, category, day_id, budget_id):
         return title, value, category, day_id, budget_id
 
 
-def day_category_calculation(year, month, day, categories, categories_data, request):
-    for data in categories:
-        val = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user, category_id=
-        Category.objects.get(title='{}'.format(data)).id).aggregate(Sum('value'))['value__sum']
+def day_category_calculation(year, month, day, categories_id, categories_data, request):
+    for data in categories_id:
+        val = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user, category_id=data).aggregate(Sum('value'))['value__sum']
         if val is not None:
             categories_data.append(val)
         else:
             categories_data.append(0)
-
     return categories_data
 
 
@@ -86,10 +83,9 @@ def year_data_calculation(Months_data, year, request):
     return Months_data
 
 
-def year_categories_calculation(year, categories, categories_data, request):
-    for data in categories:
-        val = Cost.objects.filter(publish__year=year, user_id=request.user.id, category_id=
-        Category.objects.get(title='{}'.format(data)).id).aggregate(Sum('value'))['value__sum']
+def year_categories_calculation(year, categories_id, categories_data, request):
+    for data in categories_id:
+        val = Cost.objects.filter(publish__year=year, user_id=request.user.id, category_id=data).aggregate(Sum('value'))['value__sum']
         if val is not None:
             categories_data.append(val)
         else:
@@ -97,10 +93,10 @@ def year_categories_calculation(year, categories, categories_data, request):
     return categories_data
 
 
-def budget_categories_calculation(budget_id, categories_title, categories_data, request):
-    for data in categories_title:
+def budget_categories_calculation(budget_id, categories_title_id, categories_data, request):
+    for data in categories_title_id:
         val = Cost.objects.filter(budget_id=budget_id, user=request.user,
-                                  category_id=Category.objects.get(title='{}'.format(data)).id).aggregate(
+                                  category_id=data).aggregate(
                                   Sum('value'))['value__sum']
         if val is not None:
             categories_data.append(val)
@@ -119,10 +115,9 @@ def year_budget_calculation(Months_data, year, id, request):
     return Months_data
 
 
-def year_budget_categories_calculation(year, categories, categories_data, id, request):
-    for data in categories:
-        val = Cost.objects.filter(publish__year=year, category_id=
-        Category.objects.get(title='{}'.format(data)).id, user=request.user, budget_id=id).aggregate(Sum('value'))['value__sum']
+def year_budget_categories_calculation(year, category_id, categories_data, id, request):
+    for data in category_id:
+        val = Cost.objects.filter(publish__year=year, category_id=data, user=request.user, budget_id=id).aggregate(Sum('value'))['value__sum']
         if val is not None:
             categories_data.append(val)
         else:
@@ -153,10 +148,9 @@ def budget_month_day_calculations(day_numbers, year, month, day_sum, day_min, da
     return day_sum, day_min, day_max, day_avg
 
 
-def budget_month_category_calculation(year, month, id, categories, categories_data, request):
-    for item in categories:
-        val = Cost.objects.filter(publish__year=year, publish__month=month, user=request.user, category_id=
-        Category.objects.get(title='{}'.format(item)).id, budget_id=id).aggregate(Sum('value'))['value__sum']
+def budget_month_category_calculation(year, month, id, category_id, categories_data, request):
+    for item in category_id:
+        val = Cost.objects.filter(publish__year=year, publish__month=month, user=request.user, category_id=item, budget_id=id).aggregate(Sum('value'))['value__sum']
         if val is not None:
             categories_data.append(val)
         else:

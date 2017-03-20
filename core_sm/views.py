@@ -511,7 +511,7 @@ def budget_month_stats_detail(request, id, year, month):
         category_id.append(item['id'])
 
     categories_data = []
-    budget_month_category_calculation(year, month, id, categories, categories_data, request)
+    budget_month_category_calculation(year, month, id, category_id, categories_data, request)
     data1 = {
         'money': [float(x) for x in categories_data],
         'labels': categories
@@ -575,7 +575,7 @@ def budget_year_stats_detail(request, id, year):
         category_id.append(item['id'])
 
     categories_data = []
-    year_budget_categories_calculation(year, categories, categories_data, id, request)
+    year_budget_categories_calculation(year, category_id, categories_data, id, request)
     data1 = {
         'money': [float(x) for x in categories_data],
         'labels': categories
@@ -622,7 +622,7 @@ def budget_detail(request, budget_id):
         categories_title.append(item['title'])
         categories_title_id.append(item['id'])
 
-    budget_categories_calculation(budget_id, categories_title, categories_data, request)
+    budget_categories_calculation(budget_id, categories_title_id, categories_data, request)
 
     try:
         total_budget = budget - total
@@ -766,11 +766,13 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
     data = zip(spends, stats, days, days_url)
 
     categories = []
-    for item in Category.objects.values('title'):
+    categories_id = []
+    for item in Category.objects.values('title', 'id'):
         categories.append(item['title'])
+        categories_id.append(item['id'])
 
     categories_data = []
-    comp_categories_calculation(categories, categories_data, start_date, end_date, request)
+    comp_categories_calculation(categories_id, categories_data, start_date, end_date, request)
     vis_data = {
         'money': [float(x) for x in categories_data],
         'labels': categories
@@ -856,7 +858,7 @@ def year_stats_detail(request, year):
         categories_id.append(item['id'])
 
     categories_data = []
-    year_categories_calculation(year, categories, categories_data, request)
+    year_categories_calculation(year, categories_id, categories_data, request)
     data1 = {
         'money': [float(x) for x in categories_data],
         'labels': categories
@@ -1026,7 +1028,7 @@ def day_stats_detail(request, year, month, day):
         categories_id.append(item['id'])
 
     categories_data = []
-    day_category_calculation(year, month, day, categories, categories_data, request)
+    day_category_calculation(year, month, day, categories_id, categories_data, request)
     data = {
         'money': [float(x) for x in categories_data],
         'labels': categories
@@ -1083,7 +1085,8 @@ def day_stats_detail(request, year, month, day):
                                                                    'categories_res': categories_res,
                                                                    'day_budget_data': day_budget_data,
                                                                    'another': another,
-                                                                   'back': back})
+                                                                   'back': back,
+                                                                   'categories_id': categories_id})
 
 
 def user_login(request):
