@@ -931,7 +931,7 @@ def month_stats_detail(request, year, month):
 
     categories_data = []
 
-    month_category_calculation(year, month, categories, categories_data, request)
+    month_category_calculation(year, month, categories_id, categories_data, request)
     data1 = {
         'money': [float(x) for x in categories_data],
         'labels': categories
