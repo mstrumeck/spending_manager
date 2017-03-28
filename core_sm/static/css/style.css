@@ -115,10 +115,9 @@ nav ul li a:hover {
 .button ul li a:hover {
     color: white;}
 
-#content {
+main {
     text-align: center;
-    width: 1067px;
-    float: left;
+    width: 100%;
     background: white;}
 
 #quick-add {
@@ -220,18 +219,24 @@ tr:nth-child(even) {
 .multi-form {
     margin: 2px;
     padding: 2px;
+    max-width: 100%;
 }
 
 .multi-form input {
     margin: 2px;
     padding: 2px;
-    width: 130px;
+    width : 13%;
+    font-size: 120%;
 }
 
 .multi-form option {
     margin: 2px;
     padding: 2px;
-    width: 130px;
+}
+
+.multi-form select {
+    width: 16%;
+    font-size: 100%;
 }
 
 .multi-form input[type=submit] {

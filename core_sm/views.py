@@ -767,7 +767,7 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
 
     categories = []
     categories_id = []
-    for item in Category.objects.values('title', 'id'):
+    for item in Category.objects.filter(user=request.user).values('title', 'id'):
         categories.append(item['title'])
         categories_id.append(item['id'])
 

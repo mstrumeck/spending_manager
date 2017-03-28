@@ -29,20 +29,10 @@
                 {% endif %}
             </div>
         </nav>
-        <div id="content">
+        <main>
             {% block content %}
             {% endblock %}
-        </div>
-        <div id="quick-add">
-            <p>Szybkie dodawanie</p>
-            {% if sent %}
-                    <h3>Wydatek dodany!</h3>
-            {% endif %}
-            <form method="POST">
-                {{ add_form.as_p}}
-                {% csrf_token %}
-                <input type="submit" value="Dodaj">
-            </form>
-        </div>
+        </main>
+
 </body>
 </html>
