@@ -46,16 +46,6 @@ def month_category_calculation(year, month, categories_id, categories_data, requ
             categories_data.append(0)
 
 
-def day_day_calculation(day_data, title, value, category, day_id, budget_id):
-        for item in day_data.values('title', 'value', 'category_id', 'id', 'budget_id'):
-            title.append(item['title'])
-            value.append(float(item['value']))
-            category.append(Category.objects.get(id=item['category_id']).title)
-            day_id.append(item['id'])
-            budget_id.append(Budget.objects.get(id=item['budget_id']).title)
-        return title, value, category, day_id, budget_id
-
-
 def day_category_calculation(year, month, day, categories_id, categories_data, request):
     for data in categories_id:
         val = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user, category_id=data).aggregate(Sum('value'))['value__sum']
@@ -156,18 +146,6 @@ def budget_month_category_calculation(year, month, id, category_id, categories_d
             categories_data.append(0)
 
 
-def budget_day_calculation(day_data, title, value, category, product_id):
-    for item in day_data.values('title'):
-        title.append(item['title'])
-    for item in day_data.values('value'):
-        value.append(float(item['value']))
-    for item in day_data.values('category_id'):
-        category.append(Category.objects.get(id=item['category_id']).title)
-    for item in day_data.values('id'):
-        product_id.append(item['id'])
-    return title, value, category, product_id
-
-
 def category_year_data_calculation(Months_data, year, category_id, request):
     for item in range(13)[1:]:
         val = Cost.objects.filter(publish__year=year, publish__month=item, category_id=category_id, user=request.user).aggregate(Sum('value'))['value__sum']
@@ -208,3 +186,25 @@ def category_day_day_calculation(day_data, title, value, day_id, budget_id):
         day_id.append(item['id'])
         budget_id.append(Budget.objects.get(id=item['budget_id']).title)
     return title, value, day_id, budget_id
+
+
+def day_day_calculation(day_data, title, value, category, day_id, budget_id):
+        for item in day_data.values('title', 'value', 'category_id', 'id', 'budget_id'):
+            title.append(item['title'])
+            value.append(float(item['value']))
+            category.append(Category.objects.get(id=item['category_id']).title)
+            day_id.append(item['id'])
+            budget_id.append(Budget.objects.get(id=item['budget_id']).title)
+        return title, value, category, day_id, budget_id
+
+
+def budget_day_calculation(day_data, title, value, category, product_id):
+    for item in day_data.values('title'):
+        title.append(item['title'])
+    for item in day_data.values('value'):
+        value.append(float(item['value']))
+    for item in day_data.values('category_id'):
+        category.append(Category.objects.get(id=item['category_id']).title)
+    for item in day_data.values('id'):
+        product_id.append(item['id'])
+    return title, value, category, product_id

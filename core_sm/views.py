@@ -1,3 +1,4 @@
+from core_sm.new_build.day_class import DayView
 from django.shortcuts import render, HttpResponseRedirect
 from .models import Cost, Budget, Category
 from django.db.models import Avg, Max, Min, Sum
@@ -596,6 +597,7 @@ def budget_year_stats_detail(request, id, year):
                                                                             'budget_year_title' : budget_year_title,
                                                                             'budget_owner': budget_owner})
 
+
 @login_required
 def budget_detail(request, budget_id):
     budget_owner = User.objects.get(id=Budget.objects.get(id=budget_id).user_id).username
@@ -726,7 +728,7 @@ def day_data_delete(request, id):
     Cost.objects.filter(id=id).delete()
     return render(request, 'core_sm/costs/day_delete.html', {'Message': Message})
 
-#Tutaj dokończ
+
 @login_required
 def costs_stats(request):
     if request.method == "GET":
@@ -997,6 +999,11 @@ def month_stats_detail(request, year, month):
 
 @login_required
 def day_stats_detail(request, year, month, day):
+    a = {
+        'publish__month': month,
+        'publish__year': year
+    }
+    trial = Cost.objects.filter(**a)
     day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user_id=request.user.id)
     title = []
     value = []
@@ -1086,7 +1093,8 @@ def day_stats_detail(request, year, month, day):
                                                                    'day_budget_data': day_budget_data,
                                                                    'another': another,
                                                                    'back': back,
-                                                                   'categories_id': categories_id})
+                                                                   'categories_id': categories_id,
+                                                                   'trial': trial})
 
 
 def user_login(request):
@@ -1107,3 +1115,22 @@ def user_login(request):
     else:
         form = LoginForm()
     return render(request, 'account/login.html', {'form': form})
+
+
+def test_view(request):
+    dd = DayView(2017, 3, 15, request)
+    dd.conf_day_view()
+    dd.day_calculation()
+    return render(request, 'core_sm/costs/category/test_view.html', {'Day_Data': dd.Day_Data,
+                                                                     'title': dd.title,
+                                                                     'value': dd.value,
+                                                                     'category': dd.category,
+                                                                     'budget': dd.budget,
+                                                                     'cost_id': dd.cost_id,
+                                                                     'day_max': dd.day_sum,
+                                                                     'day_avg': dd.day_avg,
+                                                                     'categories_title': dd.categories_title,
+                                                                     'categories_id': dd.categories_id,
+                                                                     'categories_sum': dd.categories_sum,
+                                                                     'budget_titles': dd.budget_titles,
+                                                                     'budget_values': dd.budget_values})
