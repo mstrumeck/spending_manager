@@ -1119,18 +1119,14 @@ def user_login(request):
 
 def test_view(request):
     dd = DayView(2017, 3, 15, request)
-    dd.conf_day_view()
     dd.day_calculation()
-    return render(request, 'core_sm/costs/category/test_view.html', {'Day_Data': dd.Day_Data,
-                                                                     'title': dd.title,
-                                                                     'value': dd.value,
-                                                                     'category': dd.category,
-                                                                     'budget': dd.budget,
-                                                                     'cost_id': dd.cost_id,
-                                                                     'day_max': dd.day_sum,
-                                                                     'day_avg': dd.day_avg,
-                                                                     'categories_title': dd.categories_title,
-                                                                     'categories_id': dd.categories_id,
-                                                                     'categories_sum': dd.categories_sum,
-                                                                     'budget_titles': dd.budget_titles,
-                                                                     'budget_values': dd.budget_values})
+    dd.day_max_min()
+    return render(request, 'core_sm/costs/category/test_view.html', {'year': dd.year,
+                                                                     'month': dd.month,
+                                                                     'day': dd.day,
+                                                                     'category_zip': dd.category_zip,
+                                                                     'budget_zip': dd.budget_zip,
+                                                                     'day_data': dd.day_data,
+                                                                     'day_sum': dd.day_sum,
+                                                                     'day_avg': dd.day_avg
+                                                                     })

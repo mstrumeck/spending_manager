@@ -11,15 +11,15 @@ class DayView(object):
         self.day = day
         self.request = request
         self.day_data_conf = {}
-        self.Day_Data = Cost.objects.filter(**self.day_data_conf)
+        self.day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user.id)
         """Data Containers"""
         self.title = []
         self.value =[]
         self.category = []
         self.budget = []
         self.cost_id = []
-        self.day_sum = self.Day_Data.aggregate(Sum('value'))['value__sum']
-        self.day_avg = self.Day_Data.aggregate(Avg('value'))['value__avg']
+        self.day_sum = self.day_data.aggregate(Sum('value'))['value__sum']
+        self.day_avg = self.day_data.aggregate(Avg('value'))['value__avg']
         self.day_max = 0
         self.day_min = 0
         self.categories_title = []
@@ -28,18 +28,12 @@ class DayView(object):
         self.budget_titles = []
         self.budget_values = []
         self.budget_id = []
-
-    def conf_day_view(self):
-        self.day_data_conf = {
-            'publish__year': self.year,
-            'publish__month': self.month,
-            'publish__day': self.day,
-            'user': self.request.user
-            }
-        return self.day_data_conf
+        '''ZIP Data'''
+        self.category_zip = zip(self.categories_title, self.categories_sum, self.categories_id)
+        self.budget_zip = zip(self.budget_titles, self.budget_values, self.budget_id)
 
     def day_calculation(self):
-        for item in self.Day_Data.values('title', 'value', 'category_id', 'id', 'budget_id'):
+        for item in self.day_data.values('title', 'value', 'category_id', 'id', 'budget_id'):
             self.title.append(item['title'])
             self.value.append(float(item['value']))
             self.category.append(Category.objects.get(id=item['category_id']).title)
@@ -68,6 +62,20 @@ class DayView(object):
 
         return self.title, self.value, self.category, self.cost_id, self.budget, \
                self.categories_title, self.categories_id, self.categories_sum
+
+    def day_max_min(self):
+        try:
+            self.day_max = [self.title[self.value.index(max(self.value))], max(self.value), self.category[self.value.index(max(self.value))],
+                       self.budget[self.value.index(max(self.value))]]
+        except(ValueError, TypeError):
+            self.day_max = 0
+
+        try:
+            self.day_min = [self.title[self.value.index(min(self.value))], min(self.value), self.category[self.value.index(min(self.value))],
+                       self.budget[self.value.index(min(self.value))]]
+        except(ValueError, TypeError):
+            self.day_min = 0
+        return self.day_max, self.day_min
 
 
 
