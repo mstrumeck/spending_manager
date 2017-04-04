@@ -9,7 +9,7 @@ import datetime
 from bokeh.embed import components
 from django.utils.safestring import mark_safe
 from bokeh.resources import CDN
-from bokeh.charts import Bar, Line
+from bokeh.charts import Bar, Line, Donut
 import calendar
 from django.forms import modelformset_factory
 from django.shortcuts import render
@@ -1117,10 +1117,18 @@ def user_login(request):
     return render(request, 'account/login.html', {'form': form})
 
 
-def test_view(request):
-    dd = DayView(2017, 3, 15, request)
+def test_view(request, year, month, day):
+    dd = DayView(year, month, day, request)
     dd.day_calculation()
     dd.day_max_min()
+    #dd.day_figures()
+    percent = []
+    for item in dd.categories_sum:
+        val = 100 * float(item / (sum(dd.categories_sum)))
+        percent.append(val)
+    
+    p = Donut(percent)
+    script, div = components(p, CDN)
     return render(request, 'core_sm/costs/category/test_view.html', {'year': dd.year,
                                                                      'month': dd.month,
                                                                      'day': dd.day,
@@ -1128,5 +1136,16 @@ def test_view(request):
                                                                      'budget_zip': dd.budget_zip,
                                                                      'day_data': dd.day_data,
                                                                      'day_sum': dd.day_sum,
-                                                                     'day_avg': dd.day_avg
+                                                                     'day_avg': dd.day_avg,
+                                                                     'categories_id': dd.categories_id,
+                                                                     'categories_title': dd.categories_title,
+                                                                     'categories_sum': dd.categories_sum,
+                                                                     'budget_id': dd.budget_id,
+                                                                     'budget_titles': dd.budget_titles,
+                                                                     'budget_values': dd.budget_values,
+                                                                     'day_max': dd.day_max,
+                                                                     'day_min': dd.day_min,
+                                                                     'script': mark_safe(script),
+                                                                     'div': mark_safe(div),
+                                                                     'percent': percent
                                                                      })

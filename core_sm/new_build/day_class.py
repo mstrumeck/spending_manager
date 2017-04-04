@@ -1,5 +1,8 @@
 from django.db.models import Avg, Max, Min, Sum
 from core_sm.models import Cost, Budget, Category
+from bokeh.embed import components
+from bokeh.charts import Bar, Line, Donut
+from bokeh.resources import CDN
 
 
 class DayView(object):
@@ -12,7 +15,9 @@ class DayView(object):
         self.request = request
         self.day_data_conf = {}
         self.day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user=request.user.id)
-        """Data Containers"""
+        self.script = None
+        self.div = None
+        '''DATA CONTAINERS'''
         self.title = []
         self.value =[]
         self.category = []
@@ -41,14 +46,14 @@ class DayView(object):
             self.budget.append(Budget.objects.get(id=item['budget_id']).title)
 
         for item in Category.objects.filter(user_id=self.request.user.id).values('title', 'id'):
-            self.categories_title.append(item['title'])
-            self.categories_id.append(item['id'])
             val = Cost.objects.filter(publish__year=self.year, publish__month=self.month, publish__day=self.day, user=self.request.user,
                                       category_id=item['id']).aggregate(Sum('value'))['value__sum']
             if val is not None:
                 self.categories_sum.append(val)
+                self.categories_title.append(item['title'])
+                self.categories_id.append(item['id'])
             else:
-                self.categories_sum.append(0)
+                pass
 
         for item in Budget.objects.filter(user_id=self.request.user.id).values('title', 'id'):
             val = Cost.objects.filter(budget_id=item['id'], publish__year=self.year, publish__month=self.month, publish__day=self.day,
@@ -76,12 +81,3 @@ class DayView(object):
         except(ValueError, TypeError):
             self.day_min = 0
         return self.day_max, self.day_min
-
-
-
-
-
-
-
-
-
