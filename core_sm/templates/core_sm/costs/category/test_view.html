@@ -20,10 +20,43 @@
         </div>
     </div>
 
-<div class="table">
+<div class="table container-fluid">
     <div>
         {{ div }}
         {{ script }}
+    </div>
+        <div>
+        <table class="table-day-one">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th scope="col">Wartość</th>
+                    <th scope="col">Kategoria</th>
+                    <th scope="col">Budżet</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in day_data %}
+                <tr>
+                    <th scope="row">{{ item.title }}</th>
+                    <td>{{ item.value }}</td>
+                    <td><a href="/category/{{ item.category_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ item.category }}</a></td>
+                    <td><a href="/budget/{{ item.budget_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ item.budget }}</a></td>
+                    <td><a href="/delete/{{ item.id }}/">Usuń</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Suma</th>
+                    <td>{{ day_sum }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Średnia</th>
+                    <td>{{ day_avg }}</td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
         <div>
             <table class="table-day-two">
@@ -58,8 +91,8 @@
         </div>
 
         <div>
-        <div class="table">
-            <table>
+        <div>
+            <table class="table">
                 <thead>
                 <tr>
                     <th>Kategoria</th>
@@ -110,41 +143,8 @@
             </table>
         </div>
         </div>
-
 </div>
 
-    <div>
-        <table class="table-day-one">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th scope="col">Wartość</th>
-                    <th scope="col">Kategoria</th>
-                    <th scope="col">Budżet</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for item in day_data %}
-                <tr>
-                    <th scope="row">{{ item.title }}</th>
-                    <td>{{ item.value }}</td>
-                    <td><a href="/category/{{ item.category_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ item.category }}</a></td>
-                    <td><a href="/budget/{{ item.budget_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ item.budget }}</a></td>
-                    <td><a href="/delete/{{ item.id }}/">Usuń</a></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>Suma</th>
-                    <td>{{ day_sum }}</td>
-                </tr>
-                <tr>
-                    <th scope="row">Średnia</th>
-                    <td>{{ day_avg }}</td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+
 
 {% endblock %}

@@ -84,7 +84,8 @@ class DayView(object):
 
     def day_figure(self):
         if not self.categories_title:
-            self.script = "<h1>Brak wydatków/kategorii</h1>"
+            self.script = "<h2>Aby wykres się pojawił, musisz dodać jakiś wydatek</h2>"
+            self.div = "<h1>Brak wydatków!</h1>"
             return self.script
         else:
             percent = []
