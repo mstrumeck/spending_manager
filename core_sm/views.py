@@ -1121,14 +1121,8 @@ def test_view(request, year, month, day):
     dd = DayView(year, month, day, request)
     dd.day_calculation()
     dd.day_max_min()
-    #dd.day_figures()
-    percent = []
-    for item in dd.categories_sum:
-        val = 100 * float(item / (sum(dd.categories_sum)))
-        percent.append(val)
-    
-    p = Donut(percent)
-    script, div = components(p, CDN)
+    dd.day_figure()
+
     return render(request, 'core_sm/costs/category/test_view.html', {'year': dd.year,
                                                                      'month': dd.month,
                                                                      'day': dd.day,
@@ -1145,7 +1139,6 @@ def test_view(request, year, month, day):
                                                                      'budget_values': dd.budget_values,
                                                                      'day_max': dd.day_max,
                                                                      'day_min': dd.day_min,
-                                                                     'script': mark_safe(script),
-                                                                     'div': mark_safe(div),
-                                                                     'percent': percent
+                                                                     'script': mark_safe(dd.script),
+                                                                     'div': mark_safe(dd.div),
                                                                      })

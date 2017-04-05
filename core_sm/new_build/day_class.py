@@ -81,3 +81,25 @@ class DayView(object):
         except(ValueError, TypeError):
             self.day_min = 0
         return self.day_max, self.day_min
+
+    def day_figure(self):
+        if not self.categories_title:
+            self.script = "<h1>Brak wydatków/kategorii</h1>"
+            return self.script
+        else:
+            percent = []
+            for item in self.categories_sum:
+                val = 100 * float(item / (sum(self.categories_sum)))
+                percent.append(val)
+
+            data = {
+                'money': percent,
+                'label': self.categories_title
+            }
+
+            p = Donut(data, values='money', label='label')
+            p.logo = None
+            p.toolbar_location = None
+            self.script, self.div = components(p, CDN)
+        return self.script, self.div
+
