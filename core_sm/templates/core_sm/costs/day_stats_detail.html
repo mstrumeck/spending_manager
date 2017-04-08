@@ -1,9 +1,7 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
-{% block title %}
-    Dzień {{ day }}/{{ month }}/{{ year }}
-{% endblock %}
+{% block title %}Dzień {{ day }}.{{ month }}.{{ year }}{% endblock %}
 {% block script %}
     <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
@@ -21,13 +19,11 @@
             </ul>
         </div>
     </div>
-<div class="table">
-    <div>
-        {{ div }}
-        {{ script }}
-    </div>
-        <div>
-            <table class="table-day-two">
+
+<div class="table container-fluid">
+
+    <div class="col-sm-12">
+            <table class="table">
                 <thead>
                     <tr>
                         <th></th>
@@ -54,35 +50,45 @@
                             {% endfor %}
                         {% endif %}
                     </tr>
-                    <tr>
-                        <th scope="row">Średnia</th>
-                        <td>{{ day_avg }}</td>
-                    </tr>
                 </tbody>
             </table>
         </div>
+    <div class="container-fluid">
+    <div class="col-sm-4 container">
+        {{ div }}
+        {{ script }}
+    </div>
 
-        <div>
-        <div class="table">
-            <table>
+    <div class="col-sm-8">
+            <table class="table">
                 <thead>
                 <tr>
                     <th>Kategoria</th>
-                    <th>ZŁ</th>
+                    <th>Zł</th>
+                    <th>Procent wydatków</th>
                 </tr>
                 </thead>
                 <tbody>
-                    {% for cat, data, id in categories_res %}
+                    {% if not categories_title and not categories_id and not categories_sum %}
                         <tr>
-                            <th scope="row"><a href="/category/{{ id }}/{{ year }}/{{ month }}/{{ day }}/">{{ cat }}</a></th>
-                            <td>{{ data }}</td>
+                            <th scope="row">Brak</th>
+                            <td>Brak</td>
+                            <td>Brak</td>
                         </tr>
-                    {% endfor %}
+                    {% else %}
+                    {% for title, value, id, percent in category_zip %}
+                            <tr>
+                                <th scope="row"><a href="/category/{{ id }}/{{ year }}/{{ month }}/{{ day }}/">{{ title }}</a></th>
+                                <td>{{ value }}</td>
+                                <td>{{ percent }}%</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
                 </tbody>
             </table>
         </div>
 
-        <div>
+    <div class="col-sm-8">
             <table class="table">
                 <thead>
                     <tr>
@@ -91,21 +97,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for title, spends, id in day_budget_data %}
-                <tr>
-                    <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
-                    <td>{{ spends }}</td>
-                </tr>
-                {% endfor %}
+                    {% if not budget_id and not budget_titles and not budget_values %}
+                        <tr>
+                            <th scope="row">Brak</th>
+                            <td>Brak</td>
+                        </tr>
+                    {% else %}
+                    {% for title, value, id in budget_zip %}
+                    <tr>
+                        <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
                 </tbody>
             </table>
         </div>
-        </div>
+    </div>
 
-</div>
-
-    <div>
-        <table class="table-day-one">
+        <div class="col-sm-12">
+        <table class="table">
             <thead>
                 <tr>
                     <th></th>
@@ -115,12 +126,12 @@
                 </tr>
             </thead>
             <tbody>
-            {% for item, budget_title in all_data %}
+            {% for item in day_data %}
                 <tr>
                     <th scope="row">{{ item.title }}</th>
                     <td>{{ item.value }}</td>
                     <td><a href="/category/{{ item.category_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ item.category }}</a></td>
-                    <td><a href="/budget/{{ item.budget_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ budget_title }}</a></td>
+                    <td><a href="/budget/{{ item.budget_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ item.budget }}</a></td>
                     <td><a href="/delete/{{ item.id }}/">Usuń</a></td>
                 </tr>
             {% endfor %}
@@ -130,8 +141,16 @@
                     <th>Suma</th>
                     <td>{{ day_sum }}</td>
                 </tr>
+                <tr>
+                    <th scope="row">Średnia</th>
+                    <td>{{ day_avg }}</td>
+                </tr>
             </tfoot>
         </table>
     </div>
+
+</div>
+
+
 
 {% endblock %}

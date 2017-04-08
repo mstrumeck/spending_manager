@@ -10,10 +10,6 @@ body {
     background: #efefef;
 }
 
-nav {
-    text-align: center;
-}
-
 a {
     text-decoration: none;}
 
@@ -262,4 +258,9 @@ tr:nth-child(even) {
     margin: 20px;
     float: right;
     border-radius: 10px;
+}
+
+#logon {
+    border-radius: none;
+    box-shadow: none;
 }

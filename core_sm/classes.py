@@ -103,15 +103,3 @@ class DayView(object):
             p.toolbar_location = None
             self.script, self.div = components(p, CDN)
         return self.script, self.div
-
-
-class DayViewCategory(DayView):
-
-    def __init__(self, year, month, day, category_id, request):
-        super().__init__(year, month, day, category_id, request)
-        self.category_id = category_id
-        self.category_title = Category.objects.get(id=category_id).title
-        self.day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day,
-                                            user=request.user.id, category_id=category_id)
-
-
