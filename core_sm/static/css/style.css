@@ -6,7 +6,7 @@ body {
     font-family: Arial, helvetica, sans-serif;
     font-size: 12px;
     letter-spacing: 0.1em;
-    width: 1260px;
+    width: 100%;
     background: #efefef;
 }
 
@@ -162,13 +162,6 @@ main {
   box-shadow: 0 5px #666;
   transform: translateY(4px);
 }
-
-
-.table {
-    font-size: 90%;
-    z-index: 10;
-    float: left;
-    margin: 2px;}
 
 .table-month {
     z-index: 10;

@@ -33,8 +33,9 @@ class DayView(object):
         self.budget_titles = []
         self.budget_values = []
         self.budget_id = []
+        self.category_percent = []
         '''ZIP Data'''
-        self.category_zip = zip(self.categories_title, self.categories_sum, self.categories_id)
+        self.category_zip = zip(self.categories_title, self.categories_sum, self.categories_id, self.category_percent)
         self.budget_zip = zip(self.budget_titles, self.budget_values, self.budget_id)
 
     def day_calculation(self):
@@ -88,17 +89,16 @@ class DayView(object):
             self.div = "<h1>Brak wydatków!</h1>"
             return self.script
         else:
-            percent = []
             for item in self.categories_sum:
                 val = 100 * float(item / (sum(self.categories_sum)))
-                percent.append(val)
+                self.category_percent.append(int(val))
 
             data = {
-                'money': percent,
+                'money': self.category_percent,
                 'label': self.categories_title
             }
 
-            p = Donut(data, values='money', label='label')
+            p = Donut(data, values='money', label='label', plot_width=390, plot_height=700, responsive=True)
             p.logo = None
             p.toolbar_location = None
             self.script, self.div = components(p, CDN)
