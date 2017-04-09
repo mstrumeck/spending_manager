@@ -103,3 +103,34 @@ class DayView(object):
             p.toolbar_location = None
             self.script, self.div = components(p, CDN)
         return self.script, self.div
+
+
+class DayViewCategory(DayView):
+
+    def __init__(self, year, month, day, category_id, request):
+        super().__init__(year, month, day, request)
+        self.category_id = category_id
+        self.category_title = Category.objects.get(id=category_id).title
+        self.day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day,
+                                            user=request.user.id, category_id=category_id)
+        self.day_sum = self.day_data.aggregate(Sum('value'))['value__sum']
+        self.day_avg = self.day_data.aggregate(Avg('value'))['value__avg']
+        self.budget_title = []
+        self.category_budget_zip = zip(self.day_data, self.budget_title)
+
+    def budget_title_calculation(self):
+        for item in self.day_data.values('budget_id'):
+            self.budget_title.append(Budget.objects.get(id=item['budget_id']).title)
+
+    def day_budget_calculation(self):
+        for item in Budget.objects.filter(user_id=self.request.user.id).values('title', 'id'):
+            val = Cost.objects.filter(budget_id=item['id'], publish__year=self.year, publish__month=self.month,
+                                      publish__day=self.day, category_id=self.category_id,
+                                      user_id=self.request.user.id).aggregate(Sum('value'))['value__sum']
+            if val is not None:
+                self.budget_titles.append(item['title'])
+                self.budget_values.append(val)
+                self.budget_id.append(item['id'])
+            else:
+                pass
+        return self.budget_titles, self.budget_values, self.budget_id
