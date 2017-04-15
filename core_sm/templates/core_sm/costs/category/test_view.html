@@ -24,11 +24,45 @@
     </div>
 </div>
 
+<div class="col-sm-4">
+    {{ div }}
+    {{ script }}
+</div>
+
+<div class="col-sm-8">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Kategoria</th>
+            <th>Zł</th>
+            <th>Procent wydatków</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if not categories_title and not categories_id and not categories_values %}
+        <tr>
+            <th scope="row">Brak</th>
+            <td>Brak</td>
+            <td>Brak</td>
+        </tr>
+        {% else %}
+        {% for title, value, id, percent in category_zip %}
+        <tr>
+            <th scope="row"><a href="/category/{{ id }}/{{ year }}/{{ month }}/{{ day }}/">{{ title }}</a></th>
+            <td>{{ value }}</td>
+            <td>{{ percent }}%</td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
 <table class="table">
     <thead>
     <tr>
         <th></th>
-        <th scope="col">Wartość</th>
+        <th scope="col">Zł</th>
         <th scope="col">Kategoria</th>
     </tr>
     </thead>
@@ -47,24 +81,11 @@
         <th>Suma</th>
         <td>{{ day_sum }}</td>
     </tr>
+    <tr>
+        <th>Średnia</th>
+        <th>{{ day_avg }}</th>
+    </tr>
     </tfoot>
-</table>
-
-<table class="table">
-    <thead>
-    <tr>
-        <th>Nazwa kategorii</th>
-        <th>Wydana kwota</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for cat, data in categories_res %}
-    <tr>
-        <th scope="row">{{ cat }}</th>
-        <td>{{ data }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
 </table>
 
 {% endblock %}

@@ -99,7 +99,6 @@ class DayView(object):
             p.logo = None
             p.toolbar_location = None
             self.script, self.div = components(p, CDN)
-        return self.script, self.div
 
 
 class DayViewCategory(DayView):
@@ -149,6 +148,8 @@ class DayViewBudget(DayView):
                                             user=request.user.id, budget_id=budget_id)
         self.category_title = []
         self.day_data_zip = zip(self.day_data, self.category_title)
+        self.script = None
+        self.div = None
         try:
             self.total_budget = Budget.objects.get(id=budget_id).value - Cost.objects.filter(budget_id=budget_id, user=request.user).aggregate(Sum('value'))['value__sum']
         except(TypeError):

@@ -992,7 +992,7 @@ def day_stats_detail(request, year, month, day):
                                                                      'day_avg': dd.day_avg,
                                                                      'categories_id': dd.categories_id,
                                                                      'categories_title': dd.categories_title,
-                                                                     'categories_sum': dd.categories_sum,
+                                                                     'categories_sum': dd.categories_values,
                                                                      'budget_id': dd.budget_id,
                                                                      'budget_titles': dd.budget_titles,
                                                                      'budget_values': dd.budget_values,
@@ -1027,10 +1027,20 @@ def test_view(request, year, month, budget_id, day):
     dd = DayViewBudget(year, month, day, budget_id, request)
     dd.category_title_calculation()
     dd.day_calculation()
+    dd.day_figure()
     return render(request, 'core_sm/costs/category/test_view.html', {'year': dd.year,
                                                                      'month': dd.month,
                                                                      'day': dd.day,
                                                                      'title': dd.budget_title,
                                                                      'budget_owner': dd.budget_owner,
                                                                      'total_budget': dd.total_budget,
-                                                                     'day_data_zip': dd.day_data_zip})
+                                                                     'day_data_zip': dd.day_data_zip,
+                                                                     'category_zip': dd.category_zip,
+                                                                     'categories_values': dd.categories_values,
+                                                                     'categories_title': dd.categories_title,
+                                                                     'categories_id': dd.categories_id,
+                                                                     'div': mark_safe(dd.div),
+                                                                     'script': mark_safe(dd.script),
+                                                                     'day_sum': dd.day_sum,
+                                                                     'day_avg': dd.day_avg
+                                                                     })
