@@ -1,109 +1,70 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
-{% block title %}Test{% endblock %}
+{% block title %}Podsumowanie budżetu "{{ title }}" {{ day }}/{{ month }}/{{ year }}{% endblock %}
 {% block script %}
     <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
 {% endblock %}
 
 {% block content %}
-<h3>Podusmowanie kategorii "{{ title }}" za dzień {{ day }}.{{ month }}.{{ year }}</h3>
-    <div class="center">
-        <div class="button">
-            <ul>
-                <li><a href="/category/{{ category_id }}/{{ year}}/{{ month }}/">Podgląd miesięczny </a></li>
-                <li><a href="/category/{{ category_id }}/{{ year}}/">Podgląd roczny</a></li>
-                <li><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Podsumowanie całego dnia</a></li>
-            </ul>
-        </div>
-    </div>
+<h3>Podsumowanie budżetu {{ title }} za dzień {{ day }}.{{ month }}.{{ year }}</h3>
+<h3>Saldo {{ total_budget }}</h3>
+{% if budget_owner != request.user.username %}
+    <h4>Budżet należy do użytkownika {{ budget_owner }}.</h4>
+    <h4>Nie masz dostępu do zawartości budżetu.</h4>
+{% endif %}
 
-    <div class="container">
-        <div>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th scope="col">Nazwa</th>
-                        <th scope="col">Cena</th>
-                        <th scope="col">Budżet</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">Największy wydatek</th>
-                        {% if day_max != 0 %}
-                            {% for item in day_max %}
-                            <td>{{ item }}</td>
-                            {% endfor %}
-                        {% endif %}
-                    </tr>
-                    <tr>
-                        <th scope="row">Najmniejszy wydatek</th>
-                        {% if day_min != 0 %}
-                            {% for item in day_min %}
-                            <td>{{ item }}</td>
-                            {% endfor %}
-                        {% endif %}
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    <div>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Nazwa budżetu</th>
-                <th>Wydana kwota</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for title, value, id in budget_zip %}
-            <tr>
-                <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
-                <td>{{ value }}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+<div class="center">
+    <div class="button">
+        <ul>
+            <li><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">Podgląd miesięczny</a></li>
+            <li><a href="/budget/{{ id }}/{{ year}}/">Podgląd roczny</a></li>
+        </ul>
     </div>
+</div>
 
-    <div>
+<table class="table">
+    <thead>
+    <tr>
+        <th></th>
+        <th scope="col">Wartość</th>
+        <th scope="col">Kategoria</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item, category in day_data_zip %}
+    <tr>
+        <th scope="row">{{ item.title }}</th>
+        <td>{{ item.value }}</td>
+        <td>{{ category }}</td>
+        <td class="button-setup"><a href="/delete/{{ item.id }}/">Usuń</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+        <th>Suma</th>
+        <td>{{ day_sum }}</td>
+    </tr>
+    </tfoot>
+</table>
 
-    <div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th scope="col">Wartość</th>
-                    <th scope="col">Budżet</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for item, budget_title in category_budget_zip %}
-                <tr>
-                    <td scope="row">{{ item.title }}</td>
-                    <td>{{ item.value }}</td>
-                    <td><a href="/budget/{{ item.budget_id }}/{{ year }}/{{ month }}/{{ day }}/">{{ budget_title }}</a></td>
-                    <td><a href="/delete/{{ item.id }}/">Usuń</a></td>
-                </tr>
-            {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th scope="row">Suma</th>
-                    <td><b>{{ day_sum }}</b></td>
-                </tr>
-                <tr>
-                    <th scope="row">Średnia</th>
-                    <td><b>{{ day_avg }}</b></td>
-                </tr>
-            </tfoot>
-        </table>
-        </div>
-
-    </div>
-    </div>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Nazwa kategorii</th>
+        <th>Wydana kwota</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cat, data in categories_res %}
+    <tr>
+        <th scope="row">{{ cat }}</th>
+        <td>{{ data }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}

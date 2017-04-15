@@ -1,4 +1,4 @@
-from core_sm.classes import DayView, DayViewCategory
+from core_sm.classes import DayView, DayViewCategory, DayViewBudget
 from django.shortcuts import HttpResponseRedirect
 from .models import Cost, Budget, Category
 from django.db.models import Avg, Max, Min, Sum
@@ -71,13 +71,13 @@ def category_setup(request):
                                                                           'form': form,
                                                                           'add': add})
 
+
 @login_required
 def category_day_stats_detail(request, category_id, year, month, day):
     dd = DayViewCategory(year, month, day, category_id, request)
-    dd.day_calculation()
     dd.day_max_min()
     dd.budget_title_calculation()
-    dd.day_budget_calculation()
+    dd.day_calculation()
     return render(request, 'core_sm/costs/category/category_day_detail.html', {'year': dd.year,
                                                                      'month': dd.month,
                                                                      'day': dd.day,
@@ -1023,22 +1023,14 @@ def user_login(request):
     return render(request, 'account/login.html', {'form': form})
 
 
-def test_view(request, year, month, category_id, day):
-    dd = DayViewCategory(year, month, day, category_id, request)
+def test_view(request, year, month, budget_id, day):
+    dd = DayViewBudget(year, month, day, budget_id, request)
+    dd.category_title_calculation()
     dd.day_calculation()
-    dd.day_max_min()
-    dd.budget_title_calculation()
-    dd.day_budget_calculation()
-
     return render(request, 'core_sm/costs/category/test_view.html', {'year': dd.year,
                                                                      'month': dd.month,
                                                                      'day': dd.day,
-                                                                     'title': dd.category_title,
-                                                                     'day_data': dd.day_data,
-                                                                     'budget_zip': dd.budget_zip,
-                                                                     'category_budget_zip': dd.category_budget_zip,
-                                                                     'day_sum': dd.day_sum,
-                                                                     'day_max': dd.day_max,
-                                                                     'day_min': dd.day_min,
-                                                                     'day_avg': dd.day_avg,
-                                                                     })
+                                                                     'title': dd.budget_title,
+                                                                     'budget_owner': dd.budget_owner,
+                                                                     'total_budget': dd.total_budget,
+                                                                     'day_data_zip': dd.day_data_zip})

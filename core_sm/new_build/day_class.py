@@ -135,6 +135,5 @@ class DayViewCategory(DayView):
                 self.budget_id.append(item['id'])
             else:
                 pass
-        return self.budget_titles, self.budget_values, self.budget_id
 
 
