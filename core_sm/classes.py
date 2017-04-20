@@ -16,8 +16,6 @@ class DayView(object):
         self.request = request
         self.day_data_conf = {}
         self.day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, user_id=request.user.id)
-        self.script = None
-        self.div = None
         '''DATA CONTAINERS'''
         self.title = []
         self.value =[]
@@ -95,7 +93,7 @@ class DayView(object):
                 'label': self.categories_title
             }
 
-            p = Donut(data, values='money', label='label', plot_width=390, plot_height=700, responsive=True)
+            p = Donut(data, values='money', label='label', plot_width=390, plot_height=600, responsive=True)
             p.logo = None
             p.toolbar_location = None
             self.script, self.div = components(p, CDN)
@@ -146,10 +144,17 @@ class DayViewBudget(DayView):
         self.budget_owner = User.objects.get(id=Budget.objects.get(id=budget_id).user_id).username
         self.day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day,
                                             user=request.user.id, budget_id=budget_id)
+        self.day_sum = self.day_data.aggregate(Sum('value'))['value__sum']
+        self.day_avg = self.day_data.aggregate(Avg('value'))['value__avg']
         self.category_title = []
-        self.day_data_zip = zip(self.day_data, self.category_title)
+        self.categories_title = []
+        self.categories_id = []
+        self.categories_values = []
+        self.category_percent = []
         self.script = None
         self.div = None
+        self.day_data_zip = zip(self.day_data, self.category_title)
+        self.category_zip = zip(self.categories_title, self.categories_values, self.categories_id)
         try:
             self.total_budget = Budget.objects.get(id=budget_id).value - Cost.objects.filter(budget_id=budget_id, user=request.user).aggregate(Sum('value'))['value__sum']
         except(TypeError):
@@ -160,15 +165,31 @@ class DayViewBudget(DayView):
             self.category_title.append(Category.objects.get(id=item['category_id']).title)
 
     def day_calculation(self):
-        for item in Category.objects.filter(publish__year=self.year, publish__month=self.month,
-                                          publish__day=self.day,  user_id=self.request.user.id).values('title', 'id'):
-            val = Cost.objects.filter(category_id=item['id'], publish__year=self.year, publish__month=self.month,
-                                      publish__day=self.day, budget_id=self.budget_id,
-                                      user_id=self.request.user.id).aggregate(Sum('value'))['value__sum']
-            if val is not None:
-                self.categories_title.append(item['title'])
-                self.categories_values.append(val)
-                self.categories_id.append(item['id'])
-            else:
-                pass
+        for item in Category.objects.filter(publish__year=self.year, publish__month=self.month, publish__day=self.day,
+                                            user_id=self.request.user.id).values('title', 'id'):
+            val = Cost.objects.filter(publish__year=self.year, publish__month=self.month, publish__day=self.day,
+                                      user_id=self.request.user.id, budget_id=self.budget_id,
+                                      category_id=item['id']).aggregate(Sum('value'))['value__sum']
+            self.categories_title.append(item['title'])
+            self.categories_values.append(val)
+            self.categories_id.append(item['id'])
+
+    def day_figure(self):
+        if not self.categories_title:
+            self.script = "<h2>Aby wykres się pojawił, musisz dodać wydatek oraz kategorie</h2>"
+            self.div = "<h1>Brak wydatków!</h1>"
+        else:
+            for item in self.categories_values:
+                val = 100 * float(item / (sum(self.categories_values)))
+                self.category_percent.append(int(val))
+
+            data = {
+                'money': self.category_percent,
+                'label': self.categories_title
+            }
+
+            p = Donut(data, values='money', label='label', plot_width=390, plot_height=600, responsive=True)
+            p.logo = None
+            p.toolbar_location = None
+            self.script, self.div = components(p, CDN)
 

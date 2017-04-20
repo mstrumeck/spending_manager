@@ -1,6 +1,10 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
 
 {% block title %}
     Multi dodawanie
@@ -12,16 +16,16 @@
     {% endif %}
     <h3>Multi dodawanie</h3>
 
-    <form method="POST" class="multi-form">
+    <form method="POST" class="form-inline">
         {% csrf_token %}
         {{ generate_form }}
         <input type="submit" name="no_line" value="Generuj">
     </form>
 
-    <form method="POST" class="multi-form">
-        {{ formset.as_table }}
-        {% csrf_token %}
-        <input type="submit" name="form" value="Dodaj">
-    </form>
+        <form method="POST">
+            {% bootstrap_formset formset layout='inline' %}
+            {% csrf_token %}
+            <input type="submit" name="form" value="Dodaj">
+        </form>
 
 {% endblock %}

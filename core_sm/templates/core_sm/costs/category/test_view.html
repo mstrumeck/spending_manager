@@ -16,14 +16,17 @@
 {% endif %}
 
 <div class="center">
-    <div class="button">
+    <div class="button col-sm-12">
         <ul>
             <li><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">Podgląd miesięczny</a></li>
             <li><a href="/budget/{{ id }}/{{ year}}/">Podgląd roczny</a></li>
         </ul>
     </div>
 </div>
-
+{{ categories_values }}
+{{ categories_title }}
+{{ categories_values }}
+{{ category_percent }}
 <div class="col-sm-4">
     {{ div }}
     {{ script }}
@@ -46,11 +49,11 @@
             <td>Brak</td>
         </tr>
         {% else %}
-        {% for title, value, id, percent in category_zip %}
+        {% for title, value, id in category_zip %}
         <tr>
             <th scope="row"><a href="/category/{{ id }}/{{ year }}/{{ month }}/{{ day }}/">{{ title }}</a></th>
             <td>{{ value }}</td>
-            <td>{{ percent }}%</td>
+            <td>%</td>
         </tr>
         {% endfor %}
         {% endif %}
@@ -79,11 +82,11 @@
     <tfoot>
     <tr>
         <th>Suma</th>
-        <td>{{ day_sum }}</td>
+        <td><b>{{ day_sum }}</b></td>
     </tr>
     <tr>
         <th>Średnia</th>
-        <th>{{ day_avg }}</th>
+        <td><b>{{ day_avg }}</b></td>
     </tr>
     </tfoot>
 </table>

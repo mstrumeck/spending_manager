@@ -1027,7 +1027,6 @@ def test_view(request, year, month, budget_id, day):
     dd = DayViewBudget(year, month, day, budget_id, request)
     dd.category_title_calculation()
     dd.day_calculation()
-    dd.day_figure()
     return render(request, 'core_sm/costs/category/test_view.html', {'year': dd.year,
                                                                      'month': dd.month,
                                                                      'day': dd.day,
@@ -1042,5 +1041,6 @@ def test_view(request, year, month, budget_id, day):
                                                                      'div': mark_safe(dd.div),
                                                                      'script': mark_safe(dd.script),
                                                                      'day_sum': dd.day_sum,
-                                                                     'day_avg': dd.day_avg
+                                                                     'day_avg': dd.day_avg,
+                                                                     'category_percent': dd.category_percent
                                                                      })
