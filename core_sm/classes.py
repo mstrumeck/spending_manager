@@ -4,6 +4,7 @@ from bokeh.embed import components
 from bokeh.charts import Donut
 from bokeh.resources import CDN
 from django.contrib.auth.models import User
+import calendar
 
 
 class DayView(object):
@@ -33,6 +34,8 @@ class DayView(object):
         self.budget_values = []
         self.budget_id = []
         self.category_percent = []
+        self.another = None
+        self.back = None
         '''ZIP Data'''
         self.category_zip = zip(self.categories_title, self.categories_values, self.categories_id, self.category_percent)
         self.budget_zip = zip(self.budget_titles, self.budget_values, self.budget_id)
@@ -97,6 +100,27 @@ class DayView(object):
             p.logo = None
             p.toolbar_location = None
             self.script, self.div = components(p, CDN)
+
+    def back_next_day(self):
+        mr = calendar.monthrange(int(self.year), int(self.month))
+        next_year = int(self.year)
+        next_month = int(self.month)
+        next_day = int(self.day) + 1
+        if next_day > mr[1]:
+            next_day = str(1).zfill(2)
+            next_month = str(next_month + 1).zfill(2)
+        if int(next_month) > 12:
+            next_month = str(1).zfill(2)
+            next_year += 1
+        self.another = "/costs/{}/{}/{}/".format(next_year, next_month, next_day)
+
+        back_year = int(self.year)
+        back_month = int(self.month)
+        back_day = int(self.day) - 1
+        if back_day < 1:
+            back_day = calendar.monthrange(int(self.year), int(self.month) - 1)[1]
+            back_month = "%.2f" % (back_month - 1)
+        self.back = "/costs/{}/{}/{}/".format(back_year, back_month, back_day)
 
 
 class DayViewCategory(DayView):
@@ -193,3 +217,11 @@ class DayViewBudget(DayView):
             p.toolbar_location = None
             self.script, self.div = components(p, CDN)
 
+
+class MonthView(object):
+    def __init__(self, year, month, request):
+        self.year = year
+        self.month = month
+        self.request = request
+        self.monthrange = calendar.monthrange(int(self.year), int(self.month))
+        self.days_in_month = [str(x).zfill(2) for x in range(self.monthrange[1]+1)][1:]

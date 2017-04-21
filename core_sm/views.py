@@ -366,68 +366,27 @@ def budget_edit(request, id):
 
 
 @login_required
-def budget_day_stats_detail(request, id, year, month, day):
-    budget_owner = User.objects.get(id=Budget.objects.get(id=id).user_id).username
-    budget_day_title = Budget.objects.get(id=id).title
-    total = Cost.objects.filter(budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
-    budget = Budget.objects.get(id=id).value
+def budget_day_stats_detail(request, budget_id, year, month, day):
+    dd = DayViewBudget(year, month, day, budget_id, request)
+    dd.category_title_calculation()
+    dd.day_calculation()
+    return render(request, 'core_sm/costs/budget/budget_day_detail.html', {'year': dd.year,
+                                                                           'month': dd.month,
+                                                                           'day': dd.day,
+                                                                           'title': dd.budget_title,
+                                                                           'budget_owner': dd.budget_owner,
+                                                                           'total_budget': dd.total_budget,
+                                                                           'day_data_zip': dd.day_data_zip,
+                                                                           'category_zip': dd.category_zip,
+                                                                           'categories_values': dd.categories_values,
+                                                                           'categories_title': dd.categories_title,
+                                                                           'categories_id': dd.categories_id,
+                                                                           'div': mark_safe(dd.div),
+                                                                           'script': mark_safe(dd.script),
+                                                                           'day_sum': dd.day_sum,
+                                                                           'day_avg': dd.day_avg,
+                                                                           'category_percent': dd.category_percent})
 
-    try:
-        total_budget = budget - total
-    except TypeError:
-        total_budget = 0
-
-    day_data = Cost.objects.filter(publish__year=year, publish__month=month, publish__day=day, budget_id=id, user=request.user)
-    title = []
-    value = []
-    category = []
-    product_id = []
-    budget_day_calculation(day_data, title, value, category, product_id)
-    all_data = zip(title, value, category, product_id)
-
-    try:
-        day_max = [title[value.index(max(value))], max(value), category[value.index(max(value))]]
-    except(ValueError, TypeError):
-        day_max = 0
-    try:
-        day_min = [title[value.index(min(value))], min(value), category[value.index(min(value))]]
-    except(ValueError, TypeError):
-        day_min = 0
-
-    day_sum = day_data.aggregate(Sum('value'))
-    day_avg = day_data.aggregate(Avg('value'))['value__avg']
-    categories = []
-    categories_data = []
-
-    for item in Category.objects.values('title'):
-        categories.append(item['title'])
-
-    day_category_calculation(year, month, day, categories, categories_data, request)
-    data = {
-                'money': [float(x) for x in categories_data],
-                'labels': categories
-            }
-
-    p = Bar(data, values='money', label='labels', plot_width=760, plot_height=300, legend=False, color='blue')
-    script, div = components(p, CDN)
-
-    categories_res = zip(categories, categories_data)
-    return render(request, 'core_sm/costs/budget/budget_day_detail.html', {'year': year,
-                                                                           'month': month,
-                                                                           'day': day,
-                                                                           'id': id,
-                                                                           'day_data': day_data,
-                                                                           'all_data': all_data,
-                                                                           'day_sum': day_sum['value__sum'],
-                                                                           'day_avg': day_avg,
-                                                                           'script': mark_safe(script),
-                                                                           'div': mark_safe(div),
-                                                                           'day_max': day_max,
-                                                                           'day_min': day_min,
-                                                                           'total_budget': total_budget,
-                                                                           'categories_res': categories_res,
-                                                                           'budget_day_title': budget_day_title,
-                                                                           'budget_owner': budget_owner})
 
 @login_required
 def budget_month_stats_detail(request, id, year, month):
@@ -962,26 +921,7 @@ def day_stats_detail(request, year, month, day):
     dd.day_calculation()
     dd.day_max_min()
     dd.day_figure()
-
-    mr = calendar.monthrange(int(year), int(month))
-    next_year = int(year)
-    next_month = int(month)
-    next_day = int(day) + 1
-    if next_day > mr[1]:
-        next_day = str(1).zfill(2)
-        next_month = str(next_month + 1).zfill(2)
-    if int(next_month) > 12:
-        next_month = str(1).zfill(2)
-        next_year += 1
-    another = "/costs/{}/{}/{}/".format(next_year, next_month, next_day)
-
-    back_year = int(year)
-    back_month = int(month)
-    back_day = int(day)-1
-    if back_day < 1:
-        back_day = calendar.monthrange(int(year), int(month)-1)[1]
-        back_month = "%.2f" % (back_month - 1)
-    back = "/costs/{}/{}/{}/".format(back_year, back_month, back_day)
+    dd.back_next_day()
     return render(request, 'core_sm/costs/day_stats_detail.html', {'year': dd.year,
                                                                      'month': dd.month,
                                                                      'day': dd.day,
@@ -1000,6 +940,8 @@ def day_stats_detail(request, year, month, day):
                                                                      'day_min': dd.day_min,
                                                                      'script': mark_safe(dd.script),
                                                                      'div': mark_safe(dd.div),
+                                                                     'back': dd.back,
+                                                                     'another': dd.another,
                                                                      })
 
 
