@@ -824,58 +824,12 @@ def year_stats_detail(request, year):
 
 @login_required
 def month_stats_detail(request, year, month):
-    mr = calendar.monthrange(int(year), int(month))
-    day_numbers = [str(x).zfill(2) for x in range(mr[1]+1)][1:]
-    day_sum = []
-    day_min = []
-    day_max = []
-    day_avg = []
-    month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg, request)
-    day_data = zip(day_numbers, day_sum, day_max, day_min, day_avg)
-    data = {
-        'Dni': day_numbers,
-        'ZŁ': [float(x) for x in day_sum]
-    }
-    p = Bar(data, values='ZŁ', plot_width=1050, plot_height=300, legend=False, color='blue')
-    script, div = components(p, CDN)
-
-    max_month_value = (max(day_max))
-    max_month_day = day_numbers[day_max.index(max(day_max))]
-    min_month_value = (min(day_min))
-    min_month_day = day_numbers[day_min.index(min(day_min))]
-    categories = []
-    categories_id = []
-    for item in Category.objects.filter(user_id=request.user.id).values('title', 'id'):
-        categories.append(item['title'])
-        categories_id.append(item['id'])
-
-    categories_data = []
-
-    month_category_calculation(year, month, categories_id, categories_data, request)
-    data1 = {
-        'money': [float(x) for x in categories_data],
-        'labels': categories
-    }
-    p1 = Bar(data1, values='money', label='labels', plot_width=680, plot_height=300, legend=False, color='blue')
-    script1, div1 = components(p1, CDN)
-    categories_res = zip(categories, categories_data, categories_id)
-    sum_cost = Cost.objects.filter(publish__year=year, publish__month=month, user=request.user).aggregate(Sum('value'))
-    min_cost = Cost.objects.filter(publish__year=year, publish__month=month, user=request.user).aggregate(Min('value'))
-    max_cost = Cost.objects.filter(publish__year=year, publish__month=month, user=request.user).aggregate(Max('value'))
-    avg_cost = Cost.objects.filter(publish__year=year, publish__month=month, user=request.user).aggregate(Avg('value'))['value__avg']
-
-    month_budget_title = []
-    month_budget_spends = []
-    month_budget_id = []
-    for item in Budget.objects.values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, publish__month=month, user=request.user).aggregate(Sum('value'))['value__sum']
-        if val is not None:
-            month_budget_title.append(item['title'])
-            month_budget_spends.append(val)
-            month_budget_id.append(item['id'])
-        else:
-            pass
-    month_budget_data = zip(month_budget_title, month_budget_spends, month_budget_id)
+    dd = MonthView(year, month, request)
+    dd.month_calculation()
+    dd.month_category_calculation()
+    dd.month_budget_calculation()
+    dd.month_figures_days()
+    dd.month_figures_category()
 
     next_month = int(month)+1
     next_year = int(year)
@@ -893,26 +847,17 @@ def month_stats_detail(request, year, month):
         back_year = int(year)-1
     back = "/costs/{}/{}/".format(back_year, back_month)
 
-    return render(request, 'core_sm/costs/month_stats_detail.html', {'year': year,
-                                                                     'month': month,
-                                                                     'sum_cost': sum_cost['value__sum'],
-                                                                     'min_cost': min_cost['value__min'],
-                                                                     'max_cost': max_cost['value__max'],
-                                                                     'avg_cost': avg_cost,
-                                                                     'day_numbers': day_numbers,
-                                                                     'day_data': day_data,
-                                                                     'max_month_value': max_month_value,
-                                                                     'max_month_day': max_month_day,
-                                                                     'min_month_value': min_month_value,
-                                                                     'min_month_day': min_month_day,
-                                                                     'script': mark_safe(script),
-                                                                     'div': mark_safe(div),
-                                                                     'script1': mark_safe(script1),
-                                                                     'div1': mark_safe(div1),
-                                                                     'categories_res': categories_res,
-                                                                     'month_budget_data': month_budget_data,
-                                                                     'another': another,
-                                                                     'back': back})
+    return render(request, 'core_sm/costs/month_stats_detail.html', {'year': dd.year,
+                                                                     'month': dd.month,
+                                                                     'day_data': dd.day_data,
+                                                                     'div': mark_safe(dd.div),
+                                                                     'script': mark_safe(dd.script),
+                                                                     'div_2': mark_safe(dd.div_2),
+                                                                     'script_2': mark_safe(dd.script_2),
+                                                                     'category_zip': dd.category_zip,
+                                                                     'budget_zip': dd.budget_zip,
+                                                                     'month_sum': dd.month_sum,
+                                                                     'month_avg': dd.month_avg})
 
 
 @login_required

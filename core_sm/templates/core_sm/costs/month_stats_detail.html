@@ -1,9 +1,7 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
-{% block title %}
-    Miesiąc {{ month }}/{{ year }}
-{% endblock %}
+{% block title %} Miesiąc {{ month }}/{{ year }} {% endblock %}
 {% block script %}
     <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
@@ -20,106 +18,79 @@
         </ul>
     </div>
 </div>
-        <table>
-            <tbody>
-                <tr>
-                    <th>Najwięcej wydano</th>
-                    <td>{{ max_month_value }}</td>
-                    <th>Najmniej wydano</th>
-                    <td>{{ max_month_day }}</td>
-                </tr>
-                <tr>
-                    <th>W dniu</th>
-                    <td>{{ max_month_day }}</td>
-                    <th>W dniu</th>
-                    <td>{{ min_month_day }}</td>
-                </tr>
-            </tbody>
-        </table>
-<div>
-    <div class="table-month">
-        {{ div }}
-        {{ script }}
-    </div>
-    <div>
-        <table class="table-month">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th scope="col">Suma</th>
-                    <th scope="col">Kwota maksymalna</th>
-                    <th scope="col">Kwota minimalna</th>
-                    <th scope="col">Średnia</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for day, sum, max, min, avg in day_data %}
-                <tr>
-                    <th scope="row"><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Dzień {{ day }}</a></th>
-                    <td>{{ sum }}</td>
-                    <td>{{ max }}</td>
-                    <td>{{ min }}</td>
-                    <td>{{ avg }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th>Cały miesiąc</th>
-                    <td>{{ sum_cost }}</td>
-                    <td>{{ max_cost }}</td>
-                    <td>{{ min_cost }}</td>
-                    <td>{{ avg_cost }}</td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+
+<div class="col-sm-6">
+    {{ div }}
+    {{ script }}
 </div>
 
-<div>
-    <div class="table">
-        {{ div1 }}
-        {{ script1 }}
-    </div>
-
-    <div class="table">
-    <table>
-        <thead>
-            <tr>
-                <th>Kategoria</th>
-                <th>ZŁ</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for cat, data, id in categories_res %}
-            <tr>
-                <td scope="row" class="button-setup"><a href="/category/{{ id }}/{{ year }}/{{ month }}/">{{ cat }}</a></td>
-                <td>{{ data }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    </div>
-
-    <div class="table">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nazwa budżetu</th>
-                    <th>Wydana kwota</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for title, spends, id in month_budget_data %}
-                    <tr>
-                        <td class="button-setup"><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
-                        <td>{{ spends }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
+<div class="col-sm-6">
+    {{ div_2 }}
+    {{ script_2 }}
 </div>
+
+<table class="col-sm-6">
+    <thead>
+    <tr>
+        <th>Nazwa kategorii</th>
+        <th>ZŁ</th>
+        <th>Procent wydatków</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for title, id, value, percent in category_zip %}
+    <tr>
+        <td scope="row" class="button-setup"><a href="/category/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
+        <td>{{ value }}</td>
+        <td>{{ percent }}%</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<table class="col-sm-6">
+    <thead>
+    <tr>
+        <th>Nazwa budżetu</th>
+        <th>Zł</th>
+        <th>Procent wydatków</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for title, id, value, percent in budget_zip %}
+    <tr>
+        <td class="button-setup"><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
+        <td>{{ value }}</td>
+        <td>{{ percent }}%</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th></th>
+        <th scope="col">Suma</th>
+        <th scope="col">Średnia</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for day, sum, avg in day_data %}
+    <tr>
+        <th scope="row"><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Dzień {{ day }}</a></th>
+        <td>{{ sum }}</td>
+        <td>{{ avg }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+        <th>Cały miesiąc</th>
+        <td><b>{{ month_sum }}</b></td>
+        <td><b>{{ month_avg }}</b></td>
+    </tr>
+    </tfoot>
+</table>
 
 {% endblock %}
