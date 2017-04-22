@@ -22,8 +22,8 @@
         <input type="submit" name="no_line" value="Generuj">
     </form>
 
-        <form method="POST">
-            {% bootstrap_formset formset layout='inline' %}
+        <form method="POST" class="multi-form">
+            {{ formset }}
             {% csrf_token %}
             <input type="submit" name="form" value="Dodaj">
         </form>

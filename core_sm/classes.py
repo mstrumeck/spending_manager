@@ -279,8 +279,8 @@ class MonthView(object):
 
     def month_figures_category(self):
         if not self.categories_titles:
-            self.script = "<h2>Aby wykres się pojawił, musisz dodać wydatek oraz kategorie</h2>"
-            self.div = "<h1>Brak wydatków!</h1>"
+            self.script_2 = "<h2>Aby wykres się pojawił, musisz dodać wydatek oraz kategorie</h2>"
+            self.div_2 = "<h1>Brak wydatków!</h1>"
         else:
             data = {
                 'money': self.category_percent,

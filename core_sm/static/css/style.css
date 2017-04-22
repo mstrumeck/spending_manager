@@ -209,12 +209,14 @@ tr:nth-child(even) {
     margin: 2px;
     padding: 2px;
     max-width: 100%;
+    display: inline-block;
+
 }
 
 .multi-form input {
     margin: 2px;
     padding: 2px;
-    width : 13%;
+    width : 11%;
     font-size: 120%;
 }
 
