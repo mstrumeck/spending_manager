@@ -2,7 +2,7 @@ bokeh==0.12.3
 cycler==0.10.0
 dj-database-url==0.4.2
 Django==1.10.1
-djangorestframework==3.4.7
+django-bootstrap3==8.2.2
 docutils==0.13.1
 gunicorn==19.7.0
 Jinja2==2.8
@@ -19,7 +19,6 @@ python-decouple==3.0
 pytz==2016.6.1
 PyYAML==3.12
 requests==2.11.1
-robotframework==3.0.2
 selenium==3.0.2
 six==1.10.0
 superzippy==0.0.9
