@@ -1,4 +1,4 @@
-from core_sm.classes import DayView, DayViewCategory, DayViewBudget
+from core_sm.classes import DayView, DayViewCategory, DayViewBudget, MonthView
 from django.shortcuts import HttpResponseRedirect
 from .models import Cost, Budget, Category
 from django.db.models import Avg, Max, Min, Sum
@@ -965,24 +965,22 @@ def user_login(request):
     return render(request, 'account/login.html', {'form': form})
 
 
-def test_view(request, year, month, budget_id, day):
-    dd = DayViewBudget(year, month, day, budget_id, request)
-    dd.category_title_calculation()
-    dd.day_calculation()
+def test_view(request, year, month):
+    dd = MonthView(year, month, request)
+    dd.month_calculation()
+    dd.month_category_calculation()
+    dd.month_budget_calculation()
+    dd.month_figures_days()
+    dd.month_figures_category()
     return render(request, 'core_sm/costs/category/test_view.html', {'year': dd.year,
                                                                      'month': dd.month,
-                                                                     'day': dd.day,
-                                                                     'title': dd.budget_title,
-                                                                     'budget_owner': dd.budget_owner,
-                                                                     'total_budget': dd.total_budget,
-                                                                     'day_data_zip': dd.day_data_zip,
-                                                                     'category_zip': dd.category_zip,
-                                                                     'categories_values': dd.categories_values,
-                                                                     'categories_title': dd.categories_title,
-                                                                     'categories_id': dd.categories_id,
+                                                                     'day_data': dd.day_data,
                                                                      'div': mark_safe(dd.div),
                                                                      'script': mark_safe(dd.script),
-                                                                     'day_sum': dd.day_sum,
-                                                                     'day_avg': dd.day_avg,
-                                                                     'category_percent': dd.category_percent
+                                                                     'div_2': mark_safe(dd.div_2),
+                                                                     'script_2': mark_safe(dd.script_2),
+                                                                     'category_zip': dd.category_zip,
+                                                                     'budget_zip': dd.budget_zip,
+                                                                     'month_sum': dd.month_sum,
+                                                                     'month_avg': dd.month_avg
                                                                      })
