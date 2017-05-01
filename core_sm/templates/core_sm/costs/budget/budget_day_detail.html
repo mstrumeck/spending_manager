@@ -18,8 +18,8 @@
 <div class="center">
     <div class="button col-sm-12">
         <ul>
-            <li><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">Podgląd miesięczny</a></li>
-            <li><a href="/budget/{{ id }}/{{ year}}/">Podgląd roczny</a></li>
+            <li><a href="/budget/{{ budget_id }}/{{ year }}/{{ month }}/">Podgląd miesięczny</a></li>
+            <li><a href="/budget/{{ budget_id }}/{{ year}}/">Podgląd roczny</a></li>
         </ul>
     </div>
 </div>
@@ -46,11 +46,11 @@
             <td>Brak</td>
         </tr>
         {% else %}
-        {% for title, value, id in category_zip %}
+        {% for title, value, id, percent in category_zip %}
         <tr>
             <th scope="row"><a href="/category/{{ id }}/{{ year }}/{{ month }}/{{ day }}/">{{ title }}</a></th>
             <td>{{ value }}</td>
-            <td>%</td>
+            <td>{{ percent }}%</td>
         </tr>
         {% endfor %}
         {% endif %}

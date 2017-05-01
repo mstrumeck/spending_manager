@@ -370,10 +370,12 @@ def budget_day_stats_detail(request, budget_id, year, month, day):
     dd = DayViewBudget(year, month, day, budget_id, request)
     dd.category_title_calculation()
     dd.day_calculation()
+    dd.day_figure()
     return render(request, 'core_sm/costs/budget/budget_day_detail.html', {'year': dd.year,
                                                                            'month': dd.month,
                                                                            'day': dd.day,
                                                                            'title': dd.budget_title,
+                                                                           'budget_id': dd.budget_id,
                                                                            'budget_owner': dd.budget_owner,
                                                                            'total_budget': dd.total_budget,
                                                                            'day_data_zip': dd.day_data_zip,
@@ -910,22 +912,7 @@ def user_login(request):
     return render(request, 'account/login.html', {'form': form})
 
 
-def test_view(request, year, month):
-    dd = MonthView(year, month, request)
-    dd.month_calculation()
-    dd.month_category_calculation()
-    dd.month_budget_calculation()
-    dd.month_figures_days()
-    dd.month_figures_category()
-    return render(request, 'core_sm/costs/category/test_view.html', {'year': dd.year,
-                                                                     'month': dd.month,
-                                                                     'day_data': dd.day_data,
-                                                                     'div': mark_safe(dd.div),
-                                                                     'script': mark_safe(dd.script),
-                                                                     'div_2': mark_safe(dd.div_2),
-                                                                     'script_2': mark_safe(dd.script_2),
-                                                                     'category_zip': dd.category_zip,
-                                                                     'budget_zip': dd.budget_zip,
-                                                                     'month_sum': dd.month_sum,
-                                                                     'month_avg': dd.month_avg
+def test_view(request, category_id, year, month):
+
+    return render(request, 'core_sm/costs/category/test_view.html', {
                                                                      })

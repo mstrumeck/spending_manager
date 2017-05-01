@@ -164,7 +164,7 @@ class DayViewBudget(DayView):
         self.script = None
         self.div = None
         self.day_data_zip = zip(self.day_data, self.category_title)
-        self.category_zip = zip(self.categories_title, self.categories_values, self.categories_id)
+        self.category_zip = zip(self.categories_title, self.categories_values, self.categories_id, self.category_percent)
         try:
             self.total_budget = Budget.objects.get(id=budget_id).value - Cost.objects.filter(budget_id=budget_id, user=request.user).aggregate(Sum('value'))['value__sum']
         except(TypeError):
@@ -175,14 +175,14 @@ class DayViewBudget(DayView):
             self.category_title.append(Category.objects.get(id=item['category_id']).title)
 
     def day_calculation(self):
-        for item in Category.objects.filter(publish__year=self.year, publish__month=self.month, publish__day=self.day,
-                                            user_id=self.request.user.id).values('title', 'id'):
+        for item in Category.objects.filter(user_id=self.request.user.id).values('title', 'id'):
             val = Cost.objects.filter(publish__year=self.year, publish__month=self.month, publish__day=self.day,
                                       user_id=self.request.user.id, budget_id=self.budget_id,
                                       category_id=item['id']).aggregate(Sum('value'))['value__sum']
-            self.categories_title.append(item['title'])
-            self.categories_values.append(val)
-            self.categories_id.append(item['id'])
+            if val is not None:
+                self.categories_title.append(item['title'])
+                self.categories_values.append(val)
+                self.categories_id.append(item['id'])
 
     def day_figure(self):
         if not self.categories_title:
@@ -291,4 +291,46 @@ class MonthView(object):
             p.logo = None
             p.toolbar_location = None
             self.script_2, self.div_2 = components(p, CDN)
+
+
+class MonthViewCategory(MonthView):
+
+    def __init__(self, request, year, month , category_id):
+        super().__init__(year, month, request)
+        self.category_id = category_id
+        self.category_title = Category.objects.get(id=category_id).title
+        self.month_sum = Cost.objects.filter(publish__year=self.year, publish__month=self.month,
+                                             category_id = self.category_id,
+                                             user=self.request.user).aggregate(Sum('value'))['value__sum']
+        self.month_avg = Cost.objects.filter(publish__year=self.year, publish__month=self.month,
+                                             category_id = self.category_id,
+                                             user=self.request.user).aggregate(Avg('value'))['value__avg']
+
+    def month_calculation(self):
+        for item in self.days_in_month:
+            val_sum = Cost.objects.filter(publish__year=self.year, publish__month=self.month, category_id=self.category_id,
+                                          publish__day=item, user=self.request.user).aggregate(Sum('value'))['value__sum']
+            val_avg = Cost.objects.filter(publish__year=self.year, publish__month=self.month, category_id=self.category_id,
+                                          publish__day=item, user=self.request.user).aggregate(Avg('value'))['value__avg']
+            if val_sum and val_avg is not None:
+                self.days_sums.append(val_sum)
+                self.days_avgs.append("%.2f" % val_avg)
+            else:
+                self.days_sums.append(0)
+                self.days_avgs.append(0)
+
+    def month_budget_calculation(self):
+        for item in Budget.objects.values('title', 'id'):
+            val = Cost.objects.filter(publish__year=self.year, publish__month=self.month, user=self.request.user,
+                                      category_id = self.category_id, budget_id=item['id']).aggregate(Sum('value'))['value__sum']
+            if val is not None:
+                self.budget_titles.append(item['title'])
+                self.budget_id.append(item['id'])
+                self.budget_values.append(val)
+            else:
+                pass
+        for item in self.budget_values:
+            val = 100 * float(item / (sum(self.budget_values)))
+            self.budget_percent.append(int(val))
+
 
