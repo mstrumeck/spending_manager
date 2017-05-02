@@ -1,5 +1,5 @@
 from core_sm.classes import DayView, DayViewCategory, DayViewBudget, MonthView, MonthViewCategory, MonthViewBudget, \
-    YearView
+    YearView, YearViewCategory
 from django.shortcuts import HttpResponseRedirect
 from .models import Cost, Budget, Category
 from django.db.models import Avg, Max, Min, Sum
@@ -128,78 +128,29 @@ def category_month_stats_detail(request, category_id, year, month):
                                                                      'back': back,
                                                                      'another': another})
 
+
 @login_required
 def category_year_stats_detail(request, category_id, year):
-    category_title = Category.objects.get(id=category_id).title
-    Months = []
-    Months_data = []
-    Months_url = [str(x).zfill(2) for x in range(13)[1:]]
-    year_month_calculation(Months)
-    category_year_data_calculation(Months_data, year, category_id, request)
-    data = {
-        'Miesiące': Months_url,
-        'ZŁ': Months_data
-    }
-    p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=910, plot_height=350, color='blue')
-    script, div = components(p, CDN)
-    all_data = zip(Months, Months_data, Months_url)
-    year_sum = Cost.objects.filter(publish__year=year, category_id=category_id, user=request.user).aggregate(Sum('value'))['value__sum']
-
-    year_budget_title = []
-    year_budget_spends = []
-    year_budget_id = []
-
-    for item in Budget.objects.filter(user=request.user).values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, category_id=category_id, user=request.user).aggregate(Sum('value'))['value__sum']
-        if val is not None:
-            year_budget_title.append(item['title'])
-            year_budget_spends.append(val)
-            year_budget_id.append(item['id'])
-        else:
-            pass
-
-    year_budget_data = zip(year_budget_title, year_budget_spends, year_budget_id)
-
-    budgets = []
-    budgets_id = []
-    budgets_data = []
-
-    for item in Budget.objects.filter(user=request.user).values('title', 'id'):
-        budgets.append(item['title'])
-        budgets_id.append(item['id'])
-
-    for item in budgets_id:
-        val = Cost.objects.filter(publish__year=year,
-                                  category_id=category_id,
-                                  user=request.user,
-                                  budget_id=item).aggregate(Sum('value'))['value__sum']
-        if val is not None:
-            budgets_data.append(val)
-        else:
-            budgets_data.append(0)
-
-    data1 = {
-        'money': [float(x) for x in budgets_data],
-        'labels': budgets
-    }
-    p1 = Bar(data1, values='money', label='labels', legend=False, plot_width=810, plot_height=350, color='blue')
-    script1, div1 = components(p1, CDN)
-
+    dd = YearViewCategory(year, request, category_id)
+    dd.year_calculation()
+    dd.year_budget_calculation()
+    dd.year_figures_days()
+    dd.year_figures_budget()
     another = "/category/{}/{}/".format(category_id, (int(year) + 1))
     back = "/category/{}/{}/".format(category_id, (int(year) + 1))
-
-    return render(request, 'core_sm/costs/category/category_year_detail.html', {'category_title': category_title,
-                                                                                'category_id': category_id,
-                                                                                'year': year,
-                                                                                'script': mark_safe(script),
-                                                                                'div': mark_safe(div),
-                                                                                'all_data': all_data,
-                                                                                'year_sum': year_sum,
-                                                                                'year_budget_data': year_budget_data,
+    return render(request, 'core_sm/costs/category/category_year_detail.html', {'year': year,
+                                                                                'category_title': dd.category_title,
+                                                                                'script': mark_safe(dd.script),
+                                                                                'div': mark_safe(dd.div),
+                                                                                'script_2': mark_safe(dd.script_2),
+                                                                                'div_2': mark_safe(dd.div_2),
+                                                                                'year_sum': dd.year_sum,
+                                                                                'year_avg': sum(dd.month_data)/len(dd.month_data),
                                                                                 'another': another,
                                                                                 'back': back,
-                                                                                'script1': mark_safe(script1),
-                                                                                'div1': mark_safe(div1)})
+                                                                                'year_data_zip': dd.year_data_zip,
+                                                                                'year_budget_data_zip': dd.year_budget_data_zip,
+                                                                                })
 
 @login_required
 def category_detail(request, category_id):

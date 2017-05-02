@@ -410,7 +410,6 @@ class YearView(object):
             val = 100 * float(item / (sum(self.month_data)))
             self.month_percent.append(int(val))
 
-
     def year_category_calculation(self):
         for item in Category.objects.values('title', 'id'):
             val = Cost.objects.filter(publish__year=self.year, user_id=self.request.user.id,
@@ -459,6 +458,69 @@ class YearView(object):
             data = {
                 'money': self.category_percent,
                 'label': self.categories_titles
+            }
+
+            p = Donut(data, values='money', label='label', plot_width=390, plot_height=400, responsive=True)
+            p.logo = None
+            p.toolbar_location = None
+            self.script_2, self.div_2 = components(p, CDN)
+
+
+class YearViewCategory(YearView):
+    def __init__(self, year, request, category_id):
+        super().__init__(year, request)
+        self.category_id = category_id
+        self.category_title = Category.objects.get(id=category_id).title
+        self.year_sum = Cost.objects.filter(publish__year=self.year, user_id=self.request.user.id,
+                                            category_id=category_id).aggregate(Sum('value'))['value__sum']
+
+    def year_calculation(self):
+        for month in range(13)[1:]:
+            val = Cost.objects.filter(publish__year=self.year,
+                                      publish__month=month, category_id=self.category_id,
+                                      user=self.request.user).aggregate(Sum('value'))['value__sum']
+            if val is not None:
+                self.month_data.append(float(val))
+            else:
+                self.month_data.append(0)
+
+        for item in self.month_data:
+            val = 100 * float(item / (sum(self.month_data)))
+            self.month_percent.append(int(val))
+
+    def year_budget_calculation(self):
+        for item in Budget.objects.values('title', 'id'):
+            val = Cost.objects.filter(publish__year=self.year, user_id=self.request.user.id, category_id=self.category_id,
+                                      budget_id=item['id']).aggregate(Sum('value'))['value__sum']
+            if val is not None:
+                self.budget_titles.append(item['title'])
+                self.budget_id.append(item['id'])
+                self.budget_values.append(val)
+            else:
+                pass
+
+        for item in self.budget_values:
+            val = 100 * float(item / (sum(self.budget_values)))
+            self.budget_percent.append(int(val))
+
+    def year_figures_days(self):
+        data = {
+            'Miesiące': self.months,
+            'Zł': [float(x) for x in self.month_data]
+        }
+        p = Line(data, ylabel='Zł', xlabel='Dni', plot_width=390, plot_height=400, legend=None, responsive=True)
+        p.logo = None
+        p.toolbar_location = None
+        self.script, self.div = components(p, CDN)
+
+    def year_figures_budget(self):
+        if not self.budget_titles:
+            self.script_2 = "<h2>Aby wykres się pojawił, musisz dodać wydatek oraz kategorie</h2>"
+            self.div_2 = "<h1>Brak wydatków!</h1>"
+        else:
+            data = {
+                'money': self.budget_percent,
+                'label': self.budget_titles
             }
 
             p = Donut(data, values='money', label='label', plot_width=390, plot_height=400, responsive=True)

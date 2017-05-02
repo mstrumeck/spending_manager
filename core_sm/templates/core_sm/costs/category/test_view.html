@@ -23,12 +23,6 @@
     {{ script }}
 </div>
 
-
-<div class="col-sm-6">
-    {{ div_2 }}
-    {{ script_2 }}
-</div>
-
 <table class="col-sm-6">
     <thead>
     <tr>
@@ -58,25 +52,6 @@
     </tfoot>
 </table>
 
-<table class="col-sm-6">
-    <thead>
-    <tr>
-        <th>Kategoria</th>
-        <th>Zł</th>
-        <th>Procent</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for title, value, id, percent in year_categories_data_zip %}
-    <tr>
-        <td scope="row"><a href="/category/{{ id }}/{{ year }}/">{{ title }}</a></td>
-        <td>{{ value }}</td>
-        <td>{{ percent }}%</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-
 <table class="table">
     <thead>
     <tr>
@@ -95,6 +70,5 @@
     {% endfor %}
     </tbody>
 </table>
-
 
 {% endblock %}
