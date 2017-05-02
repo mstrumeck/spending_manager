@@ -212,10 +212,10 @@ class MonthView(object):
         self.request = request
         self.monthrange = calendar.monthrange(int(self.year), int(self.month))
         self.days_in_month = [str(x).zfill(2) for x in range(self.monthrange[1]+1)][1:]
-        self.month_sum = Cost.objects.filter(publish__year=self.year, publish__month=self.month,
-                                             user=self.request.user).aggregate(Sum('value'))['value__sum']
+        self.month_sum = Cost.objects.filter(publish__year=year, publish__month=month,
+                                             user_id=request.user.id).aggregate(Sum('value'))['value__sum']
         self.month_avg = Cost.objects.filter(publish__year=self.year, publish__month=self.month,
-                                             user=self.request.user).aggregate(Avg('value'))['value__avg']
+                                             user_id=self.request.user.id).aggregate(Avg('value'))['value__avg']
         self.days_sums, self.days_avgs = [], []
         self.categories_titles, self.categories_id, self.categories_values, self.category_percent = [], [], [], []
         self.budget_titles, self.budget_id, self.budget_values, self.budget_percent = [], [], [], []
@@ -227,9 +227,9 @@ class MonthView(object):
     def month_calculation(self):
         for item in self.days_in_month:
             val_sum = Cost.objects.filter(publish__year=self.year, publish__month=self.month,
-                                          publish__day=item, user=self.request.user).aggregate(Sum('value'))['value__sum']
+                                          publish__day=item, user_id=self.request.user.id).aggregate(Sum('value'))['value__sum']
             val_avg = Cost.objects.filter(publish__year=self.year, publish__month=self.month,
-                                          publish__day=item, user=self.request.user).aggregate(Avg('value'))['value__avg']
+                                          publish__day=item, user_id=self.request.user.id).aggregate(Avg('value'))['value__avg']
             if val_sum and val_avg is not None:
                 self.days_sums.append(val_sum)
                 self.days_avgs.append("%.2f" % val_avg)
@@ -239,7 +239,7 @@ class MonthView(object):
 
     def month_category_calculation(self):
         for item in Category.objects.values('title', 'id'):
-            val = Cost.objects.filter(publish__year=self.year, publish__month=self.month, user=self.request.user,
+            val = Cost.objects.filter(publish__year=self.year, publish__month=self.month, user_id=self.request.user.id,
                                       category_id=item['id']).aggregate(Sum('value'))['value__sum']
             if val is not None:
                 self.categories_titles.append(item['title'])
@@ -254,7 +254,7 @@ class MonthView(object):
 
     def month_budget_calculation(self):
         for item in Budget.objects.values('title', 'id'):
-            val = Cost.objects.filter(publish__year=self.year, publish__month=self.month, user=self.request.user,
+            val = Cost.objects.filter(publish__year=self.year, publish__month=self.month, user_id=self.request.user.id,
                                       budget_id=item['id']).aggregate(Sum('value'))['value__sum']
             if val is not None:
                 self.budget_titles.append(item['title'])
@@ -295,23 +295,23 @@ class MonthView(object):
 
 class MonthViewCategory(MonthView):
 
-    def __init__(self, request, year, month , category_id):
+    def __init__(self, request, year, month, category_id):
         super().__init__(year, month, request)
         self.category_id = category_id
         self.category_title = Category.objects.get(id=category_id).title
         self.month_sum = Cost.objects.filter(publish__year=self.year, publish__month=self.month,
-                                             category_id = self.category_id,
-                                             user=self.request.user).aggregate(Sum('value'))['value__sum']
+                                             category_id=self.category_id,
+                                             user_id=self.request.user.id).aggregate(Sum('value'))['value__sum']
         self.month_avg = Cost.objects.filter(publish__year=self.year, publish__month=self.month,
-                                             category_id = self.category_id,
-                                             user=self.request.user).aggregate(Avg('value'))['value__avg']
+                                             category_id=self.category_id,
+                                             user_id=self.request.user.id).aggregate(Avg('value'))['value__avg']
 
     def month_calculation(self):
         for item in self.days_in_month:
             val_sum = Cost.objects.filter(publish__year=self.year, publish__month=self.month, category_id=self.category_id,
-                                          publish__day=item, user=self.request.user).aggregate(Sum('value'))['value__sum']
+                                          publish__day=item, user_id=self.request.user.id).aggregate(Sum('value'))['value__sum']
             val_avg = Cost.objects.filter(publish__year=self.year, publish__month=self.month, category_id=self.category_id,
-                                          publish__day=item, user=self.request.user).aggregate(Avg('value'))['value__avg']
+                                          publish__day=item, user_id=self.request.user.id).aggregate(Avg('value'))['value__avg']
             if val_sum and val_avg is not None:
                 self.days_sums.append(val_sum)
                 self.days_avgs.append("%.2f" % val_avg)
@@ -321,8 +321,8 @@ class MonthViewCategory(MonthView):
 
     def month_budget_calculation(self):
         for item in Budget.objects.values('title', 'id'):
-            val = Cost.objects.filter(publish__year=self.year, publish__month=self.month, user=self.request.user,
-                                      category_id = self.category_id, budget_id=item['id']).aggregate(Sum('value'))['value__sum']
+            val = Cost.objects.filter(publish__year=self.year, publish__month=self.month, user_id=self.request.user.id,
+                                      category_id=self.category_id, budget_id=item['id']).aggregate(Sum('value'))['value__sum']
             if val is not None:
                 self.budget_titles.append(item['title'])
                 self.budget_id.append(item['id'])
