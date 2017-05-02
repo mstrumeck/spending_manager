@@ -1,4 +1,5 @@
-from core_sm.classes import DayView, DayViewCategory, DayViewBudget, MonthView, MonthViewCategory
+from core_sm.classes import DayView, DayViewCategory, DayViewBudget, MonthView, MonthViewCategory, MonthViewBudget, \
+    YearView
 from django.shortcuts import HttpResponseRedirect
 from .models import Cost, Budget, Category
 from django.db.models import Avg, Max, Min, Sum
@@ -320,77 +321,25 @@ def budget_day_stats_detail(request, budget_id, year, month, day):
 
 
 @login_required
-def budget_month_stats_detail(request, id, year, month):
-    budget_owner = User.objects.get(id=Budget.objects.get(id=id).user_id).username
-    budget_month_title = Budget.objects.get(id=id).title
-    total = Cost.objects.filter(budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
-    budget = Budget.objects.get(id=id).value
-
-    try:
-        total_budget = budget - total
-    except TypeError:
-        total_budget = 0
-
-    mr = calendar.monthrange(int(year), int(month))
-    day_numbers = [str(x).zfill(2) for x in range(mr[1] + 1)][1:]
-    day_sum = []
-    day_min = []
-    day_max = []
-    day_avg = []
-    budget_month_day_calculations(day_numbers, year, month, day_sum, day_min, day_max, day_avg, id, request)
-    day_data = zip(day_numbers, day_sum, day_max, day_min, day_avg)
-    sum_cost = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
-    min_cost = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id, user=request.user).aggregate(Min('value'))['value__min']
-    max_cost = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id, user=request.user).aggregate(Max('value'))['value__max']
-    avg_cost = Cost.objects.filter(publish__year=year, publish__month=month, budget_id=id, user=request.user).aggregate(Avg('value'))['value__avg']
-    data = {
-        'Dni': day_numbers,
-        'ZŁ': [float(x) for x in day_sum]
-    }
-    p = Bar(data, values='ZŁ', plot_width=1050, plot_height=300, legend=False, color='blue')
-    script, div = components(p, CDN)
-    max_month_value = (max(day_max))
-    max_month_day = day_numbers[day_max.index(max(day_max))]
-    min_month_value = (min(day_min))
-    min_month_day = day_numbers[day_min.index(min(day_min))]
-    categories = []
-    category_id =[]
-
-    for item in Category.objects.values('title', 'id'):
-        categories.append(item['title'])
-        category_id.append(item['id'])
-
-    categories_data = []
-    budget_month_category_calculation(year, month, id, category_id, categories_data, request)
-    data1 = {
-        'money': [float(x) for x in categories_data],
-        'labels': categories
-    }
-    p1 = Bar(data1, values='money', label='labels', plot_width=920, plot_height=300, legend=False, color='blue')
-    script1, div1 = components(p1, CDN)
-    categories_res = zip(categories, categories_data, category_id)
-    return render(request, 'core_sm/costs/budget/budget_month_detail.html', {'day_data': day_data,
-                                                                             'sum_cost': sum_cost,
-                                                                             'min_cost': min_cost,
-                                                                             'max_cost': max_cost,
-                                                                             'avg_cost': avg_cost,
-                                                                             'day_numbers': day_numbers,
-                                                                             'max_month_value': max_month_value,
-                                                                             'max_month_day': max_month_day,
-                                                                             'min_month_value': min_month_value,
-                                                                             'min_month_day': min_month_day,
-                                                                             'script': mark_safe(script),
-                                                                             'div': mark_safe(div),
-                                                                             'script1': mark_safe(script1),
-                                                                             'div1': mark_safe(div1),
-                                                                             'categories_res': categories_res,
-                                                                             'day_sum': day_avg,
-                                                                             'year': year,
-                                                                             'month': month,
-                                                                             'id': id,
-                                                                             'total_budget': total_budget,
-                                                                             'budget_month_title': budget_month_title,
-                                                                             'budget_owner': budget_owner})
+def budget_month_stats_detail(request, budget_id, year, month):
+    dd = MonthViewBudget(request, year, month, budget_id)
+    dd.month_calculation()
+    dd.month_category_calculation()
+    dd.month_figures_days()
+    dd.month_figures_category()
+    return render(request, 'core_sm/costs/budget/budget_month_detail.html', {'year': dd.year,
+                                                                     'month': dd.month,
+                                                                     'day_data': dd.day_data,
+                                                                     'div': mark_safe(dd.div),
+                                                                     'script': mark_safe(dd.script),
+                                                                     'div_2': mark_safe(dd.div_2),
+                                                                     'script_2': mark_safe(dd.script_2),
+                                                                     'total_budget': dd.total_budget,
+                                                                     'budget_owner': dd.budget_owner,
+                                                                     'category_zip': dd.category_zip,
+                                                                     'month_sum': dd.month_sum,
+                                                                     'month_avg': dd.month_avg,
+                                                                     'budget_title': dd.budget_title})
 
 @login_required
 def budget_year_stats_detail(request, id, year):
@@ -686,71 +635,26 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
 
 @login_required
 def year_stats_detail(request, year):
-    Months = []
-    Months_data = []
-    Months_url = [str(x).zfill(2) for x in range(13)[1:]]
-    year_month_calculation(Months)
-    year_data_calculation(Months_data, year, request)
-    data = {
-        'Miesiące': Months_url,
-        'ZŁ': Months_data
-    }
-    p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=710, plot_height=350, color='blue')
-    script, div = components(p, CDN)
-    p_line = Line(data, xlabel='Miesiące', legend=False, plot_width=710, plot_height=350, color='blue')
-    script_line, div_line = components(p_line, CDN)
-    all_data = zip(Months, Months_data, Months_url)
-    year_sum = Cost.objects.filter(publish__year=year, user_id=request.user.id).aggregate(Sum('value'))['value__sum']
-    categories = []
-    categories_id = []
-
-    for item in Category.objects.filter(user_id=request.user.id).values('title', 'id'):
-        categories.append(item['title'])
-        categories_id.append(item['id'])
-
-    categories_data = []
-    year_categories_calculation(year, categories_id, categories_data, request)
-    data1 = {
-        'money': [float(x) for x in categories_data],
-        'labels': categories
-    }
-    p1 = Bar(data1, values='money', label='labels', plot_width=710, plot_height=300, legend=False, color='blue')
-    script1, div1 = components(p1, CDN)
-
-    year_budget_title = []
-    year_budget_spends = []
-    year_budget_id = []
-
-    for item in Budget.objects.filter(user_id=request.user.id).values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], publish__year=year, user_id=request.user.id).aggregate(Sum('value'))['value__sum']
-        if val is not None:
-            year_budget_title.append(item['title'])
-            year_budget_spends.append(val)
-            year_budget_id.append(item['id'])
-        else:
-            pass
-
-    year_budget_data = zip(year_budget_title, year_budget_spends, year_budget_id)
-    categories_res = zip(categories, categories_data, categories_id)
-
+    dd = YearView(year, request)
+    dd.year_calculation()
+    dd.year_category_calculation()
+    dd.year_budget_calculation()
+    dd.year_figures_days()
+    dd.year_figures_category()
     another = "/costs/{}/".format(int(year)+1)
     back = "/costs/{}".format(int(year)-1)
-    return render(request, 'core_sm/costs/year_stats_detail.html', {'year': year,
-                                                                    'Months': Months,
-                                                                    'Months_data': Months_data,
-                                                                    'script': mark_safe(script),
-                                                                    'div': mark_safe(div),
-                                                                    'all_data': all_data,
-                                                                    'year_sum': year_sum,
-                                                                    'script1': mark_safe(script1),
-                                                                    'div1': mark_safe(div1),
-                                                                    'categories_res': categories_res,
-                                                                    'year_budget_data': year_budget_data,
-                                                                    'another': another,
-                                                                    'back': back,
-                                                                    'categories': categories,
-                                                                    'script_line': mark_safe(script_line),
-                                                                    'div_line': mark_safe(div_line)})
+    return render(request, 'core_sm/costs/year_stats_detail.html', {'year': dd.year,
+                                                                     'div': mark_safe(dd.div),
+                                                                     'script': mark_safe(dd.script),
+                                                                     'div_2': mark_safe(dd.div_2),
+                                                                     'script_2': mark_safe(dd.script_2),
+                                                                     'year_data_zip': dd.year_data_zip,
+                                                                     'year_sum': dd.year_sum,
+                                                                     'year_avg': sum(dd.month_data)/len(dd.month_data),
+                                                                     'year_budget_data_zip': dd.year_budget_data_zip,
+                                                                     'year_categories_data_zip': dd.year_categories_data_zip,
+                                                                     'back': back,
+                                                                    'another': another})
 
 
 @login_required
@@ -843,37 +747,24 @@ def user_login(request):
     return render(request, 'account/login.html', {'form': form})
 
 
-def test_view(request, category_id, year, month):
-    dd = MonthViewCategory(request, year, month, category_id)
-    dd.month_calculation()
-    dd.month_category_calculation()
-    dd.month_budget_calculation()
-    dd.month_figures_days()
-
-    next_month = int(month)+1
-    next_year = int(year)
-
-    if next_month > 12:
-        next_month = str(1).zfill(2)
-        next_year = int(year)+1
-    another = "/costs/{}/{}/".format(next_year, next_month)
-
-    back_month = int(month)-1
-    back_year = int(year)
-
-    if back_month < 1:
-        back_month = 12
-        back_year = int(year)-1
-    back = "/costs/{}/{}/".format(back_year, back_month)
-
+def test_view(request, year):
+    dd = YearView(year, request)
+    dd.year_calculation()
+    dd.year_category_calculation()
+    dd.year_budget_calculation()
+    dd.year_figures_days()
+    dd.year_figures_category()
+    another = "/costs/{}/".format(int(year)+1)
+    back = "/costs/{}".format(int(year)-1)
     return render(request, 'core_sm/costs/category/test_view.html', {'year': dd.year,
-                                                                     'month': dd.month,
-                                                                     'day_data': dd.day_data,
                                                                      'div': mark_safe(dd.div),
                                                                      'script': mark_safe(dd.script),
-                                                                     'budget_zip': dd.budget_zip,
-                                                                     'month_sum': dd.month_sum,
-                                                                     'month_avg': dd.month_avg,
-                                                                     'category_title': dd.category_title,
-                                                                     'back': back,
-                                                                     'another': another})
+                                                                     'div_2': mark_safe(dd.div_2),
+                                                                     'script_2': mark_safe(dd.script_2),
+                                                                     'year_data_zip': dd.year_data_zip,
+                                                                     'year_sum': dd.year_sum,
+                                                                     'year_avg': sum(dd.month_data)/len(dd.month_data),
+                                                                     'year_budget_data_zip': dd.year_budget_data_zip,
+                                                                     'year_categories_data_zip': dd.year_categories_data_zip,
+                                                                     'another': another,
+                                                                     'back': back})
