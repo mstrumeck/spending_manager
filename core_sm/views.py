@@ -1,5 +1,5 @@
 from core_sm.classes import DayView, DayViewCategory, DayViewBudget, MonthView, MonthViewCategory, MonthViewBudget, \
-    YearView, YearViewCategory
+    YearView, YearViewCategory, YearViewBudget
 from django.shortcuts import HttpResponseRedirect
 from .models import Cost, Budget, Category
 from django.db.models import Avg, Max, Min, Sum
@@ -11,7 +11,6 @@ from bokeh.embed import components
 from django.utils.safestring import mark_safe
 from bokeh.resources import CDN
 from bokeh.charts import Bar, Line
-import calendar
 from django.forms import modelformset_factory
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -293,58 +292,27 @@ def budget_month_stats_detail(request, budget_id, year, month):
                                                                      'budget_title': dd.budget_title})
 
 @login_required
-def budget_year_stats_detail(request, id, year):
-    budget_owner = User.objects.get(id=Budget.objects.get(id=id).user_id).username
-    budget_year_title = Budget.objects.get(id=id).title
-    total = Cost.objects.filter(budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
-    budget = Budget.objects.get(id=id).value
-
-    try:
-        total_budget = budget - total
-    except TypeError:
-        total_budget = 0
-
-    Months = []
-    Months_data = []
-    Months_url = [str(x).zfill(2) for x in range(13)[1:]]
-    year_month_calculation(Months)
-    year_budget_calculation(Months_data, year, id, request)
-    data = {
-        'Miesiące': Months_url,
-        'ZŁ': Months_data
-    }
-    p = Bar(data, values='ZŁ', label='Miesiące', legend=False, plot_width=910, plot_height=350, color='blue')
-    script, div = components(p, CDN)
-    all_data = zip(Months, Months_data, Months_url)
-    year_sum = Cost.objects.filter(publish__year=year, budget_id=id, user=request.user).aggregate(Sum('value'))['value__sum']
-    categories = []
-    category_id = []
-
-    for item in Category.objects.values('title', 'id'):
-        categories.append(item['title'])
-        category_id.append(item['id'])
-
-    categories_data = []
-    year_budget_categories_calculation(year, category_id, categories_data, id, request)
-    data1 = {
-        'money': [float(x) for x in categories_data],
-        'labels': categories
-    }
-    p1 = Bar(data1, values='money', label='labels', legend=False, plot_width=920, plot_height=350, color='blue')
-    script1, div1 = components(p1, CDN)
-    categories_res = zip(categories, categories_data, category_id)
-    return render(request, 'core_sm/costs/budget/budget_year_detail.html', {'year_sum': year_sum,
-                                                                            'script': mark_safe(script),
-                                                                            'div': mark_safe(div),
-                                                                            'all_data': all_data,
-                                                                            'script1': mark_safe(script1),
-                                                                            'div1': mark_safe(div1),
-                                                                            'categories_res': categories_res,
-                                                                            'id': id,
-                                                                            'year': year,
-                                                                            'total_budget': total_budget,
-                                                                            'budget_year_title' : budget_year_title,
-                                                                            'budget_owner': budget_owner})
+def budget_year_stats_detail(request, budget_id, year):
+    dd = YearViewBudget(year, request, budget_id)
+    dd.year_calculation()
+    dd.year_category_calculation()
+    dd.year_figures_days()
+    dd.year_figures_category()
+    another = "/costs/{}/".format(int(year) + 1)
+    back = "/costs/{}".format(int(year) - 1)
+    return render(request, 'core_sm/costs/budget/budget_year_detail.html', {'year': dd.year,
+                                                                            'budget_title': dd.budget_title,
+                                                                            'budget_owner': dd.budget_owner,
+                                                                     'div': mark_safe(dd.div),
+                                                                     'script': mark_safe(dd.script),
+                                                                     'div_2': mark_safe(dd.div_2),
+                                                                     'script_2': mark_safe(dd.script_2),
+                                                                     'year_data_zip': dd.year_data_zip,
+                                                                     'year_sum': dd.year_sum,
+                                                                     'year_avg': sum(dd.month_data)/len(dd.month_data),
+                                                                     'year_categories_data_zip': dd.year_categories_data_zip,
+                                                                     'back': back,
+                                                                    'another': another})
 
 
 @login_required
@@ -405,7 +373,7 @@ def budget_detail(request, budget_id):
 
 @login_required
 def budget_setup(request):
-    add =False
+    add = False
     if request.method == 'POST':
         form = BudgetForm(request.POST)
         if form.is_valid():
