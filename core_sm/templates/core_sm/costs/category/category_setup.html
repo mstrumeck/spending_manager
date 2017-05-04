@@ -2,37 +2,46 @@
 {% load staticfiles %}
 
 {% block title %}Edycja kategorii{% endblock %}
-
+{% block script %}
+    <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
+    <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
+{% endblock %}
 {% block content %}
      {% if add %}
         <h3>Budżet dodany! Odswież aby uzyskać zaktualizowany podgląd!</h3>
     {% endif %}
-<table>
+<div class="form-container">
+    <form method="POST" class="form-inline">
+        <div class="form-group">
+        {{ form }}
+        {% csrf_token %}
+        </div>
+        <input type="submit" value="Dodaj">
+    </form>
+</div>
+
+<table class="table">
     <thead>
-        <tr>
-            <th>Kategorie</th>
-            <th>Wydana suma</th>
-            <th>Data dodania</th>
-        </tr>
+    <tr>
+        <th>Kategorie</th>
+        <th>Wydana suma</th>
+        <th>Data dodania</th>
+    </tr>
     </thead>
     <tbody>
     {% for item, total, url in data %}
-        <tr>
-            <td class="button-setup"><a href="/category/{{ item.id }}/">{{ item.title }}</a></td>
-            <td>{{ total }}</td>
-            <td>{{ url }}</td>
-            <td class="button-setup"><a href="/category_edit/{{ item.id }}/">Edycja</a></td>
-            <td class="button-setup">
-                <a href="/category_delete/{{ item.id }}/"
+    <tr>
+        <td><a href="/category/{{ item.id }}/">{{ item.title }}</a></td>
+        <td>{{ total }}</td>
+        <td>{{ url }}</td>
+        <td><a href="/category_edit/{{ item.id }}/">Edycja</a></td>
+        <td>
+            <a href="/category_delete/{{ item.id }}/"
                    onclick="return confirm('Uwaga! To spowoduje również usunięcie wszystkich wydatków powiązanych!');">Usuń</a></td>
-        </tr>
+    </tr>
     {% endfor %}
     </tbody>
 </table>
 
-    <form method="POST" class="multi-form">
-        {{ form }}
-        {% csrf_token %}
-        <input type="submit" value="Dodaj">
-    </form>
+
 {% endblock %}

@@ -1,43 +1,50 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
 
-{% block title %}Budżet{% endblock %}
-
+{% block title %}Ustawienia budżetów{% endblock %}
+{% block script %}
+    <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
+    <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
+{% endblock %}
 {% block content %}
 
-    <table>
-        <thead>
-        <tr>
-            <th scope="col">Nazwa budżetu</th>
-            <th scope="col">Kwota</th>
-            <th scope="col">Saldo</th>
-            <th scope="col">Data dodania</th>
-        </tr>
-        </thead>
-        <tbody>
-            {% for title, value, balance, id, date in all_data %}
-            <tr>
-                <td class="button-setup"><a href="/budget/{{ id }}/">{{ title }}</a></td>
-                <td>{{ value }}</td>
-                <td>{{ balance }}</td>
-                <td>{{ date }}</td>
-                <td class="button-setup"><a href="/budget_edit/{{ id }}/">Edytuj</a></td>
-                <td class="button-setup">
-                    <a href="/budget_delete/{{ id }}/"
-                       onclick="return confirm('Uwaga! To spowoduje również usunięcie wszystkich wydatków powiązanych!');">Usuń</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    {% if add %}
-        <h3>Budżet dodany</h3>
-    {% endif %}
-    <form method="POST">
-        {{ form.as_p }}
+{% if add %}
+    <h3>Budżet dodany</h3>
+{% endif %}
+<div class="form-container">
+    <form method="POST" class="form-inline">
+        <div class="form-group">
+        {{ form }}
         {% csrf_token %}
+        </div>
         <input type="submit" value="Dodaj">
     </form>
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Nazwa budżetu</th>
+        <th scope="col">Kwota</th>
+        <th scope="col">Saldo</th>
+        <th scope="col">Data dodania</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for title, value, balance, id, date in all_data %}
+    <tr>
+        <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
+        <td>{{ value }}</td>
+        <td>{{ balance }}</td>
+        <td>{{ date }}</td>
+        <td><a href="/budget_edit/{{ id }}/">Edytuj</a></td>
+        <td>
+            <a href="/budget_delete/{{ id }}/"
+               onclick="return confirm('Uwaga! To spowoduje również usunięcie wszystkich wydatków powiązanych!');">Usuń</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 {% endblock %}

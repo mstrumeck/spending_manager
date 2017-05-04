@@ -5,117 +5,114 @@
 {% block script %}
     <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
+    <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
 {% endblock %}
 
 {% block content%}
+<h3>Zestawienie od {{ date_x }} do {{ date_y }}</h3>
 
-    <h3>Zestawienie od {{ date_x }} do {{ date_y }}</h3>
-
-<div>
-<form action="" method="POST" class="multi-form">
-    {{ form.as_p }}
+<div class="form-container">
+<form action="" method="POST" class="form-inline">
+    <div class="form-group">
+    {{ form }}
     {% csrf_token %}
+    </div>
     <input type="submit" value="Porównaj">
 </form>
 </div>
 
-<div>
-    <div class="table">
 {{ div }}
 {{ script }}
-    </div>
-    <div class="table">
-        <table>
-            <thead>
-                <tr>
-                    <th>Nazwa budżetu</th>
-                    <th>Wydana kwota</th>
-                </tr>
-            </thead>
-                <tbody>
-                {% for title, spends, id in comp_budget_data %}
-                <tr>
-                    <td class="button-setup"><a href="/budget/{{ id }}/">{{ title }}</a></td>
-                    <td>{{ spends }}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td><b>Suma budżetów</b></td>
-                        <td>{{ budgets_sum }}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Suma wydatków</b></td>
-                        <td>{{ total_cost_per_budget }}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Saldo</b></td>
-                        <td><b>{{ total_budget }}</b></td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    <div class="table">
-        <table>
-            <thead>
-                <tr>
-                    <th></th>
-                    <th scope="row">Suma</th>
-        </tr>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Nazwa budżetu</th>
+        <th>Wydana kwota</th>
+    </tr>
     </thead>
     <tbody>
-        {% for cat, cat_data in categories_res %}
-        <tr>
-            <th>{{ cat }}</th>
-            <th>{{ cat_data }}</th>
-        </tr>
-        {% endfor %}
+    {% for title, spends, id in comp_budget_data %}
+    <tr>
+        <td><a href="/budget/{{ id }}/">{{ title }}</a></td>
+        <td>{{ spends }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+        <td><b>Suma budżetów</b></td>
+        <td>{{ budgets_sum }}</td>
+    </tr>
+    <tr>
+        <td><b>Suma wydatków</b></td>
+        <td>{{ total_cost_per_budget }}</td>
+    </tr>
+    <tr>
+        <td><b>Saldo</b></td>
+        <td><b>{{ total_budget }}</b></td>
+    </tr>
+    </tfoot>
+</table>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th></th>
+        <th scope="row">Suma</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cat, cat_data in categories_res %}
+    <tr>
+        <th>{{ cat }}</th>
+        <th>{{ cat_data }}</th>
+    </tr>
+    {% endfor %}
     </tbody>
 </table>
-        </div>
-</div>
 
-<table class="table-month">
-        <thead>
-            <tr>
-                <th scope="col">Nazwa</th>
-                <th scope="col">Cena</th>
-                <th scope="col">Data dodania</th>
-                <th scope="col">Kategoria</th>
-                <th scope="col">Budżet</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item, budget_title, dates, url in data %}
-            <tr>
-                <td>{{ item.title }}</td>
-                <td>{{ item.value }}</td>
-                <td class="button-setup"><a href="/costs/{{ url }}/">{{ dates }}</a></td>
-                <td>{{ item.category }}</td>
-                <td class="button-setup"><a href="/budget/{{ item.budget_id }}/">{{ budget_title }}</a></td>
-                <td class="button-setup"><a href="/delete/{{ item.id }}/">Usuń</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td scope="col"><b>Suma</b></td>
-                <td><b>{{ data_sum }}</b></td>
-            </tr>
-            <tr>
-                <td><b>Średnia</b></td>
-                <td><b>{{ data_avg }}</b></td>
-            </tr>
-            <tr>
-                <td><b>Min</b></td>
-                <td><b>{{ data_min }}</b></td>
-            </tr>
-            <tr>
-                <td><b>Max</b></td>
-                <td><b>{{ data_max }}</b></td>
-            </tr>
-        </tfoot>
-    </table>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Nazwa</th>
+        <th scope="col">Cena</th>
+        <th scope="col">Data dodania</th>
+        <th scope="col">Kategoria</th>
+        <th scope="col">Budżet</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item, budget_title, dates, url in data %}
+    <tr>
+        <td>{{ item.title }}</td>
+        <td>{{ item.value }}</td>
+        <td><a href="/costs/{{ url }}/">{{ dates }}</a></td>
+        <td>{{ item.category }}</td>
+        <td><a href="/budget/{{ item.budget_id }}/">{{ budget_title }}</a></td>
+        <td><a href="/delete/{{ item.id }}/">Usuń</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+        <td scope="col"><b>Suma</b></td>
+        <td><b>{{ data_sum }}</b></td>
+    </tr>
+    <tr>
+        <td><b>Średnia</b></td>
+        <td><b>{{ data_avg }}</b></td>
+    </tr>
+    <tr>
+        <td><b>Min</b></td>
+        <td><b>{{ data_min }}</b></td>
+    </tr>
+    <tr>
+        <td><b>Max</b></td>
+        <td><b>{{ data_max }}</b></td>
+    </tr>
+    </tfoot>
+</table>
 
 {% endblock %}

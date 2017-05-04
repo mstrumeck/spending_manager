@@ -117,7 +117,6 @@ main {
     background: white;}
 
 #quick-add {
-
     background: white;
     text-align: center;
     width: 180px;
@@ -204,6 +203,29 @@ tr:nth-child(even) {
     border: none;
     border-radius: 10px;
     box-shadow: 0 5px #777777;}
+
+.form-container {
+    margin: 1%;
+    padding: 1%;
+    }
+
+.form-container input[type=submit] {
+    margin: 0.7%;
+    padding: 0.7%;
+    background: #969EBE;
+    display: inline;
+    font-family: 'Muli', sans-serif;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px #777777;
+}
+
+.form-container input[type=submit]:hover {
+    background-color: #435083;
+    color: white;
+}
 
 .multi-form {
     margin: 2px;
