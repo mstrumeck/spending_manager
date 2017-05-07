@@ -1,31 +1,36 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
-
-{% load bootstrap3 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
-
+{% block script %}
+    <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
+    <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
+{% endblock %}
 {% block title %}
     Multi dodawanie
 {% endblock %}
 
 {% block content %}
-    {% if add %}
-        <h3>Wydatki zostały dodane!</h3>
-    {% endif %}
-    <h3>Multi dodawanie</h3>
+{% if add %}
+<h3>Wydatki zostały dodane!</h3>
+{% endif %}
+<h3>Multi dodawanie</h3>
 
-    <form method="POST" class="form-inline">
-        {% csrf_token %}
-        {{ generate_form }}
-        <input type="submit" name="no_line" value="Generuj">
-    </form>
+<div class="form-container">
+<form method="POST" class="form-inline">
+    <div class="form-group">
+    {% csrf_token %}
+    {{ generate_form }}
+    </div>
+    <input type="submit" name="no_line" value="Generuj">
+</form>
+</div>
 
-        <form method="POST" class="multi-form">
-            {{ formset }}
-            {% csrf_token %}
-            <input type="submit" name="form" value="Dodaj">
-        </form>
-
+<div class="form-container">
+<form method="POST" class="multi-form">
+    <div class="form-group">
+    {{ formset }}
+    {% csrf_token %}
+    </div>
+    <input type="submit" name="form" value="Dodaj">
+</form>
+</div>
 {% endblock %}

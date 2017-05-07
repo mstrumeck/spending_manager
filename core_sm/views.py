@@ -18,11 +18,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm
 from django.contrib.auth.decorators import login_required
-from core_sm.functions import month_day_calculations, month_category_calculation, \
-    day_day_calculation, day_category_calculation, year_data_calculation, year_month_calculation, \
-    year_categories_calculation, comp_categories_calculation, budget_categories_calculation, year_budget_calculation, \
-    year_budget_categories_calculation, budget_month_day_calculations, budget_month_category_calculation, \
-    budget_day_calculation, category_year_data_calculation, category_month_day_calculations, category_day_day_calculation
+from core_sm.functions import budget_categories_calculation
 
 
 @login_required
@@ -191,21 +187,21 @@ def category_detail(request, category_id):
     budgets_data = []
 
     for item in Budget.objects.filter(user=request.user).values('title', 'id'):
-        budgets.append(item['title'])
-        budgets_id.append(item['id'])
-
-    for item in budgets:
-        val = Cost.objects.filter(category_id=category_id, user=request.user, budget_id=Budget.objects.get(title='{}'.format(item)).id).aggregate(Sum('value'))['value__sum']
+        val = Cost.objects.filter(category_id=category_id,
+                                  user=request.user,
+                                  budget_id=Budget.objects.get(id=item['id']).id).aggregate(Sum('value'))['value__sum']
         if val is not None:
             budgets_data.append(val)
-        else:
-            budgets_data.append(0)
+            budgets.append(item['title'])
+            budgets_id.append(item['id'])
 
     table_data = {
         'money': [float(x) for x in budgets_data],
         'labels': budgets
     }
-    p1 = Bar(table_data, values='money', label='labels', legend=False, plot_width=810, plot_height=350, color='blue')
+    p1 = Donut(table_data, values='money', label='labels', plot_width=390, plot_height=400, legend=None, responsive=True)
+    p1.logo = None
+    p1.toolbar_location = None
     script, div = components(p1, CDN)
 
     category_budget_data = zip(category_budget_title, category_budget_spends, category_budget_id)
@@ -338,10 +334,12 @@ def budget_detail(request, budget_id):
     categories_data = []
 
     for item in Category.objects.values('title', 'id'):
-        categories_title.append(item['title'])
-        categories_title_id.append(item['id'])
-
-    budget_categories_calculation(budget_id, categories_title_id, categories_data, request)
+        val = Cost.objects.filter(budget_id=budget_id, user=request.user,
+                                  category_id=item['id']).aggregate(Sum('value'))['value__sum']
+        if val is not None:
+            categories_title.append(item['title'])
+            categories_title_id.append(item['id'])
+            categories_data.append(val)
 
     try:
         total_budget = budget - total
@@ -350,12 +348,13 @@ def budget_detail(request, budget_id):
 
     info = zip(base, date, date_url, categories, categories_id)
 
-
     data = {
         'money': [float(x) for x in categories_data],
         'labels': categories_title
     }
-    p1 = Bar(data, values='money', label='labels', legend=False, plot_width=920, plot_height=350, color='blue')
+    p1 = Donut(data, values='money', label='labels', plot_width=390, plot_height=400, legend=None, responsive=True)
+    p1.logo = None
+    p1.toolbar_location = None
     script, div = components(p1, CDN)
 
     cat_all = zip(categories_title, categories_data, categories_title_id)

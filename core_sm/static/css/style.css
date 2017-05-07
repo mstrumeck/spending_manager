@@ -228,23 +228,18 @@ tr:nth-child(even) {
 }
 
 .multi-form {
-    margin: 2px;
-    padding: 2px;
     max-width: 100%;
     display: inline-block;
-
 }
 
 .multi-form input {
-    margin: 2px;
-    padding: 2px;
     width : 11%;
     font-size: 120%;
 }
 
 .multi-form option {
-    margin: 2px;
-    padding: 2px;
+    margin: 2%;
+    padding: 2%;
 }
 
 .multi-form select {
@@ -253,16 +248,9 @@ tr:nth-child(even) {
 }
 
 .multi-form input[type=submit] {
-    margin: 2px;
-    padding: 2px;
-    background: #969EBE;
-    display: inline;
-    font-family: 'Muli', sans-serif;
-    cursor: pointer;
-    outline: none;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 5px #777777;
+    margin: 0.7%;
+    padding: 0.7%;
+    font-size: 100%;
 }
 
 .multi-form input[type=submit]:hover {

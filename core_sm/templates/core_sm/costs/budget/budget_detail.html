@@ -15,60 +15,58 @@
 {% endif %}
 
 
-<div class="table">
+<div class='col-sm-6'>
     {{ div }}
     {{ script }}
-    </div>
+</div>
 
-    <div class="table">
-        <table>
-            <thead>
-                <tr>
-                    <th>Kategoria</th>
-                    <th>ZŁ</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for cat, data, id in cat_all %}
-                <tr>
-                    <th scope="row" class="button-setup"><a href="/category/{{ id }}/">{{ cat }}</a></th>
-                    <td>{{ data }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        </div>
+<table class="col-sm-6">
+    <thead>
+    <tr>
+        <th>Kategoria</th>
+        <th>ZŁ</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for cat, data, id in cat_all %}
+    <tr>
+        <td scope="row"><a href="/category/{{ id }}/">{{ cat }}</a></td>
+        <td>{{ data }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
-    <table class="table-month">
-        <thead>
-            <tr>
-                <th scope="col">Nazwa</th>
-                <th scope="col">Cena</th>
-                <th scope="col">Data dodania</th>
-                <th scope="col">Kategoria</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item, date, date_url, category, category_id in info %}
-            <tr>
-                <td>{{ item.title }}</td>
-                <td>{{ item.value }}</td>
-                <td class="button-setup"><a href="/costs/{{ date_url }}/">{{ date }}</a></td>
-                <td class="button-setup"><a href="/category/{{ category_id }}/">{{ category }}</a></td>
-                <td class="button-setup"><a href="/budget_item_delete/{{ item.id }}/">Usuń</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <th>Suma wydatków</th>
-                <td>{{ total }}</td>
-            </tr>
-            <tr>
-                <th>Saldo</th>
-                <td>{{ total_budget }}</td>
-            </tr>
-        </tfoot>
-    </table>
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Nazwa</th>
+        <th scope="col">Cena</th>
+        <th scope="col">Data dodania</th>
+        <th scope="col">Kategoria</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item, date, date_url, category, category_id in info %}
+    <tr>
+        <td>{{ item.title }}</td>
+        <td>{{ item.value }}</td>
+        <td><a href="/costs/{{ date_url }}/">{{ date }}</a></td>
+        <td><a href="/category/{{ category_id }}/">{{ category }}</a></td>
+        <td><a href="/budget_item_delete/{{ item.id }}/">Usuń</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+    <tr>
+        <th>Suma wydatków</th>
+        <td>{{ total }}</td>
+    </tr>
+    <tr>
+        <th>Saldo</th>
+        <td>{{ total_budget }}</td>
+    </tr>
+    </tfoot>
+</table>
 
 {% endblock %}
