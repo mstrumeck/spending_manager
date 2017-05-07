@@ -18,7 +18,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm
 from django.contrib.auth.decorators import login_required
-from core_sm.functions import budget_categories_calculation
 
 
 @login_required
@@ -715,26 +714,3 @@ def user_login(request):
     else:
         form = LoginForm()
     return render(request, 'account/login.html', {'form': form})
-
-
-def test_view(request, year):
-    dd = YearView(year, request)
-    dd.year_calculation()
-    dd.year_category_calculation()
-    dd.year_budget_calculation()
-    dd.year_figures_days()
-    dd.year_figures_category()
-    another = "/costs/{}/".format(int(year)+1)
-    back = "/costs/{}".format(int(year)-1)
-    return render(request, 'core_sm/costs/category/test_view.html', {'year': dd.year,
-                                                                     'div': mark_safe(dd.div),
-                                                                     'script': mark_safe(dd.script),
-                                                                     'div_2': mark_safe(dd.div_2),
-                                                                     'script_2': mark_safe(dd.script_2),
-                                                                     'year_data_zip': dd.year_data_zip,
-                                                                     'year_sum': dd.year_sum,
-                                                                     'year_avg': sum(dd.month_data)/len(dd.month_data),
-                                                                     'year_budget_data_zip': dd.year_budget_data_zip,
-                                                                     'year_categories_data_zip': dd.year_categories_data_zip,
-                                                                     'another': another,
-                                                                     'back': back})

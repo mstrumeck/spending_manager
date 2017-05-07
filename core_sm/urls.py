@@ -46,5 +46,4 @@ urlpatterns = [
         name='password_reset_confirm'),
     url(r'^password-reset/complete/$', auth_views.password_reset_complete,
         name='password_reset_complete'),
-    url(r'test_view/(?P<year>\d+)/$', views.test_view, name='test_view'),
 ]
