@@ -22,8 +22,32 @@
 </form>
 </div>
 
+<div class="col-sm-6">
 {{ div }}
 {{ script }}
+</div>
+
+<table class="col-sm-6">
+    <thead>
+    <tr>
+        <th>Kategoria</th>
+        <th scope="row">Suma</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for title, value in categories_res %}
+    <tr>
+        <td>{{ title }}</td>
+        <td>{{ value }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<div class="col-sm-6">
+    {{ div_2 }}
+    {{ script_2 }}
+</div>
 
 <table class="table">
     <thead>
@@ -56,22 +80,6 @@
     </tfoot>
 </table>
 
-<table class="table">
-    <thead>
-    <tr>
-        <th></th>
-        <th scope="row">Suma</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for cat, cat_data in categories_res %}
-    <tr>
-        <th>{{ cat }}</th>
-        <th>{{ cat_data }}</th>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
 
 <table class="table">
     <thead>
@@ -84,7 +92,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for item, budget_title, dates, url in data %}
+    {% for item, budget_title, dates, url in cost_data %}
     <tr>
         <td>{{ item.title }}</td>
         <td>{{ item.value }}</td>
@@ -101,16 +109,8 @@
         <td><b>{{ data_sum }}</b></td>
     </tr>
     <tr>
-        <td><b>Średnia</b></td>
+        <td scope="col"><b>Średnia</b></td>
         <td><b>{{ data_avg }}</b></td>
-    </tr>
-    <tr>
-        <td><b>Min</b></td>
-        <td><b>{{ data_min }}</b></td>
-    </tr>
-    <tr>
-        <td><b>Max</b></td>
-        <td><b>{{ data_max }}</b></td>
     </tr>
     </tfoot>
 </table>

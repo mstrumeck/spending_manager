@@ -40,7 +40,7 @@
     <tbody>
     {% for title, id, value, percent in category_zip %}
     <tr>
-        <td scope="row" class="button-setup"><a href="/category/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
+        <td scope="row"><a href="/category/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
         <td>{{ value }}</td>
         <td>{{ percent }}%</td>
     </tr>
@@ -59,7 +59,7 @@
     <tbody>
     {% for title, id, value, percent in budget_zip %}
     <tr>
-        <td class="button-setup"><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
+        <td><a href="/budget/{{ id }}/{{ year }}/{{ month }}/">{{ title }}</a></td>
         <td>{{ value }}</td>
         <td>{{ percent }}%</td>
     </tr>

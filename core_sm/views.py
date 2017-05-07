@@ -10,7 +10,7 @@ import datetime
 from bokeh.embed import components
 from django.utils.safestring import mark_safe
 from bokeh.resources import CDN
-from bokeh.charts import Bar, Line
+from bokeh.charts import Bar, Line, Donut
 from django.forms import modelformset_factory
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -471,53 +471,77 @@ def current_detail(request):
 def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today()):
     start_date = date_x
     end_date = date_y
-    spends = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user)
-    stats = []
-    days = []
-    days_url = []
-    for item in spends:
-        stats.append(Budget.objects.get(id=item.budget_id).title)
+    stats_data = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user)
+    budget_title = []
+    publish_data = []
+    url = []
+    number_of_days = (datetime.datetime.strptime(date_y, '%Y-%m-%d') - datetime.datetime.strptime(date_x, '%Y-%m-%d')).days
+    cost_per_day = []
+    # for day in range(number_of_days):
+    #     val = Cost.objects.filter()
 
-    for item in spends.values('publish'):
-        days.append(str(item['publish']))
-        days_url.append(str(item['publish']).replace('-', '/'))
+    for item in stats_data.values('publish', 'budget_id'):
+        budget_title.append(Budget.objects.get(id=item['budget_id']).title)
+        publish_data.append(str(item['publish']))
+        url.append(str(item['publish']).replace('-', '/'))
 
-    data = zip(spends, stats, days, days_url)
+    cost_data = zip(stats_data, budget_title, publish_data, url)
 
-    categories = []
-    categories_id = []
-    for item in Category.objects.filter(user=request.user).values('title', 'id'):
-        categories.append(item['title'])
-        categories_id.append(item['id'])
-
+    categories_title = []
     categories_data = []
-    comp_categories_calculation(categories_id, categories_data, start_date, end_date, request)
-    vis_data = {
-        'money': [float(x) for x in categories_data],
-        'labels': categories
-    }
-    p = Bar(vis_data, values='money', label='labels', plot_width=685, plot_height=400, legend=False, color='blue')
-    script, div = components(p, CDN)
 
-    categories_res = zip(categories, categories_data)
-
-    data_sum = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Sum('value'))['value__sum']
-    data_avg = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Avg('value'))['value__avg']
-    data_min = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Min('value'))['value__min']
-    data_max = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Max('value'))['value__max']
-
-    comp_budget_title = []
-    comp_budget_spends = []
-    comp_budget_id = []
-    for item in Budget.objects.values('title', 'id'):
-        val = Cost.objects.filter(budget_id=item['id'], publish__range=(start_date, end_date), user=request.user).aggregate(Sum('value'))['value__sum']
+    for item in Category.objects.filter(user=request.user).values('title', 'id'):
+        val = Cost.objects.filter(publish__range=(start_date, end_date),
+                                  user=request.user,
+                                  category_id=item['id']).aggregate(Sum('value'))['value__sum']
         if val is not None:
-            comp_budget_title.append(item['title'])
-            comp_budget_spends.append(val)
-            comp_budget_id.append(item['id'])
-        else:
-            pass
-    comp_budget_data = zip(comp_budget_title, comp_budget_spends, comp_budget_id)
+            categories_data.append(val)
+            categories_title.append(item['title'])
+
+    if not categories_title:
+        script = "<h2>Aby wykres się pojawił, musisz dodać wydatek oraz kategorie</h2>"
+        div = "<h1>Brak wydatków!</h1>"
+    else:
+        cat_data = {
+            'money': [float(x) for x in categories_data],
+            'labels': categories_title}
+        p = Donut(cat_data, values='money', label='labels', plot_width=390, plot_height=400, legend=False, responsive=True)
+        p.logo = None
+        p.toolbar_location = None
+        script, div = components(p, CDN)
+
+    categories_res = zip(categories_title, categories_data)
+
+    data_sum = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Sum('value'))[
+        'value__sum']
+    data_avg = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Avg('value'))[
+        'value__avg']
+
+    budget_title = []
+    budget_values = []
+    budget_id = []
+    for item in Budget.objects.values('title', 'id'):
+        val = Cost.objects.filter(budget_id=item['id'],
+                                  publish__range=(start_date, end_date),
+                                  user=request.user).aggregate(Sum('value'))['value__sum']
+        if val is not None:
+            budget_title.append(item['title'])
+            budget_values.append(val)
+            budget_id.append(item['id'])
+
+    if not budget_title:
+        script_2 = "<h2>Aby wykres się pojawił, musisz dodać wydatek oraz kategorie</h2>"
+        div_2 = "<h1>Brak wydatków!</h1>"
+    else:
+        budget_data = {
+            'money': [float(x) for x in budget_values],
+            'labels': budget_title}
+        p = Donut(budget_data, values='money', label='labels', plot_width=390, plot_height=400, legend=False, responsive=True)
+        p.logo = None
+        p.toolbar_location = None
+        script_2, div_2 = components(p, CDN)
+
+    comp_budget_data = zip(budget_title, budget_values, budget_id)
 
     if request.method == 'POST':
         form = comp_form(request.POST)
@@ -527,21 +551,22 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
     else:
         form = comp_form()
 
-    budgets_sum = Budget.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Sum('value'))['value__sum']
-    total_cost_per_budget = sum(comp_budget_spends)
+    budgets_sum = Budget.objects.filter(publish__range=(start_date, end_date),
+                                        user=request.user).aggregate(Sum('value'))['value__sum']
+    total_cost_per_budget = sum(budget_values)
 
     try:
         total_budget = budgets_sum - total_cost_per_budget
     except TypeError:
         total_budget = 0
 
-    return render(request, 'core_sm/costs/stats_comp.html', {'data': data,
+    return render(request, 'core_sm/costs/stats_comp.html', {'cost_data': cost_data,
                                                              'data_sum': data_sum,
                                                              'data_avg': data_avg,
-                                                             'data_min': data_min,
-                                                             'data_max': data_max,
                                                              'script': mark_safe(script),
                                                              'div': mark_safe(div),
+                                                             'script_2': mark_safe(script_2),
+                                                             'div_2': mark_safe(div_2),
                                                              'categories_res': categories_res,
                                                              'form': form,
                                                              'date_x': date_x,
