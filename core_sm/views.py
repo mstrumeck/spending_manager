@@ -466,7 +466,8 @@ def current_detail(request):
 
 
 @login_required
-def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today()):
+def stats_comp(request, date_x=datetime.datetime.strftime(datetime.date.today(), '%Y-%m-%d'),
+               date_y=datetime.datetime.strftime(datetime.date.today() + datetime.timedelta(days=1), '%Y-%m-%d')):
     start_date = date_x
     end_date = date_y
     stats_data = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user)
@@ -474,15 +475,15 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
     publish_data = []
     url = []
     days = []
-    start_date_time_object = datetime.datetime.strptime(date_x, '%Y-%m-%d')
-    end_date_time_object = datetime.datetime.strptime(date_y, '%Y-%m-%d')
+    start_date_time_strp = datetime.datetime.strptime(date_x, '%Y-%m-%d')
+    end_date_time_strp = datetime.datetime.strptime(date_y, '%Y-%m-%d')
 
     def cost_per_day(start, end):
         while start < end:
             yield start
             start += datetime.timedelta(days=1)
 
-    for time in cost_per_day(start_date_time_object, end_date_time_object):
+    for time in cost_per_day(start_date_time_strp, end_date_time_strp):
         val = Cost.objects.filter(publish=time, user=request.user).aggregate(Sum('value'))['value__sum']
         if val is not None:
             days.append(float(val))
