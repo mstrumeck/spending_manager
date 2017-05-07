@@ -475,10 +475,34 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
     budget_title = []
     publish_data = []
     url = []
-    number_of_days = (datetime.datetime.strptime(date_y, '%Y-%m-%d') - datetime.datetime.strptime(date_x, '%Y-%m-%d')).days
-    cost_per_day = []
-    # for day in range(number_of_days):
-    #     val = Cost.objects.filter()
+    days = []
+    start_date_time_object = datetime.datetime.strptime(date_x, '%Y-%m-%d')
+    end_date_time_object = datetime.datetime.strptime(date_y, '%Y-%m-%d')
+
+    def cost_per_day(start, end):
+        while start < end:
+            yield start
+            start += datetime.timedelta(days=1)
+
+    for time in cost_per_day(start_date_time_object, end_date_time_object):
+        val = Cost.objects.filter(publish=time, user=request.user).aggregate(Sum('value'))['value__sum']
+        if val is not None:
+            days.append(float(val))
+        else:
+            days.append(0)
+
+    if not days:
+        script_3 = "<h2>Aby wykres się pojawił, musisz dodać wydatek oraz kategorie</h2>"
+        div_3 = "<h1>Brak wydatków!</h1>"
+    else:
+        cost_data = {
+            'Suma': days,
+            'Dni': [x for x in range(len(days))],
+        }
+        p = Line(cost_data, ylabel='Suma', xlabel='Dni', plot_width=1150, plot_height=300, legend=None)
+        p.logo = None
+        p.toolbar_location = None
+        script_3, div_3 = components(p, CDN)
 
     for item in stats_data.values('publish', 'budget_id'):
         budget_title.append(Budget.objects.get(id=item['budget_id']).title)
@@ -505,7 +529,7 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
         cat_data = {
             'money': [float(x) for x in categories_data],
             'labels': categories_title}
-        p = Donut(cat_data, values='money', label='labels', plot_width=390, plot_height=400, legend=False, responsive=True)
+        p = Donut(cat_data, values='money', label='labels', plot_width=390, plot_height=400, legend=None, responsive=True)
         p.logo = None
         p.toolbar_location = None
         script, div = components(p, CDN)
@@ -567,6 +591,8 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
                                                              'div': mark_safe(div),
                                                              'script_2': mark_safe(script_2),
                                                              'div_2': mark_safe(div_2),
+                                                             'script_3': mark_safe(script_3),
+                                                             'div_3': mark_safe(div_3),
                                                              'categories_res': categories_res,
                                                              'form': form,
                                                              'date_x': date_x,
@@ -574,7 +600,8 @@ def stats_comp(request, date_x=datetime.date.today(), date_y=datetime.date.today
                                                              'comp_budget_data': comp_budget_data,
                                                              'total_cost_per_budget': total_cost_per_budget,
                                                              'total_budget': total_budget,
-                                                             'budgets_sum': budgets_sum})
+                                                             'budgets_sum': budgets_sum
+                                                             })
 
 
 @login_required
