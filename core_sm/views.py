@@ -466,8 +466,8 @@ def current_detail(request):
 
 
 @login_required
-def stats_comp(request, date_x=datetime.datetime.strftime(datetime.date.today(), '%Y-%m-%d'),
-               date_y=datetime.datetime.strftime(datetime.date.today() + datetime.timedelta(days=1), '%Y-%m-%d')):
+def stats_comp(request, date_x=datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=1), '%Y-%m-%d'),
+               date_y=datetime.datetime.strftime(datetime.date.today(), '%Y-%m-%d')):
     start_date = date_x
     end_date = date_y
     stats_data = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user)
@@ -512,6 +512,7 @@ def stats_comp(request, date_x=datetime.datetime.strftime(datetime.date.today(),
 
     categories_title = []
     categories_data = []
+    category_percent = []
 
     for item in Category.objects.filter(user=request.user).values('title', 'id'):
         val = Cost.objects.filter(publish__range=(start_date, end_date),
@@ -521,10 +522,15 @@ def stats_comp(request, date_x=datetime.datetime.strftime(datetime.date.today(),
             categories_data.append(val)
             categories_title.append(item['title'])
 
+
+
     if not categories_title:
         script = "<h2>Aby wykres się pojawił, musisz dodać wydatek oraz kategorie</h2>"
         div = "<h1>Brak wydatków!</h1>"
     else:
+        for item in categories_data:
+            val = 100 * float(item / (sum(categories_data)))
+            category_percent.append(int(val))
         cat_data = {
             'money': [float(x) for x in categories_data],
             'labels': categories_title}
@@ -533,7 +539,7 @@ def stats_comp(request, date_x=datetime.datetime.strftime(datetime.date.today(),
         p.toolbar_location = None
         script, div = components(p, CDN)
 
-    categories_res = zip(categories_title, categories_data)
+    categories_res = zip(categories_title, categories_data, category_percent)
 
     data_sum = Cost.objects.filter(publish__range=(start_date, end_date), user=request.user).aggregate(Sum('value'))[
         'value__sum']
@@ -543,6 +549,7 @@ def stats_comp(request, date_x=datetime.datetime.strftime(datetime.date.today(),
     budget_title = []
     budget_values = []
     budget_id = []
+    budget_percent = []
     for item in Budget.objects.values('title', 'id'):
         val = Cost.objects.filter(budget_id=item['id'],
                                   publish__range=(start_date, end_date),
@@ -556,6 +563,9 @@ def stats_comp(request, date_x=datetime.datetime.strftime(datetime.date.today(),
         script_2 = "<h2>Aby wykres się pojawił, musisz dodać wydatek oraz kategorie</h2>"
         div_2 = "<h1>Brak wydatków!</h1>"
     else:
+        for item in budget_values:
+            val = 100 * float(item / (sum(budget_values)))
+            budget_percent.append(int(val))
         budget_data = {
             'money': [float(x) for x in budget_values],
             'labels': budget_title}
@@ -564,7 +574,7 @@ def stats_comp(request, date_x=datetime.datetime.strftime(datetime.date.today(),
         p.toolbar_location = None
         script_2, div_2 = components(p, CDN)
 
-    comp_budget_data = zip(budget_title, budget_values, budget_id)
+    comp_budget_data = zip(budget_title, budget_values, budget_id, budget_percent)
 
     if request.method == 'POST':
         form = comp_form(request.POST)
