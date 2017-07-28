@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+</head>
+<body>
+<table>
+    <tr>
+        <td>Abc</td>
+        <td>Abc</td>
+        <td><button class="hide">Button</button></td>
+    </tr>
+    <div class="show">
+        <tr>
+            <td><b>Cos</b></td>
+            <td><b>Cos</b></td>
+        </tr>
+    </div>
+</table>
+
+</body>
+<script>
+    $('.hide').click(function(){
+    $(this).find('.show').toggle();
+    });
+</script>
+</html>

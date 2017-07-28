@@ -213,6 +213,6 @@ tr:nth-child(even) {
     box-shadow: none;
 }
 
-.detail {
+.detail-button {
     float: right;
 }

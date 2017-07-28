@@ -56,7 +56,7 @@
     <tr>
         <th scope="row"><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Dzień {{ day }}</a>
         {% if day in dummy %}
-            <button>ABC</button>
+            <button class="detail-button">ABC</button>
             {% endif %}
         </th>
         <td>{{ sum }}</td>
@@ -64,18 +64,20 @@
     </tr>
     {% for keys, values in data.items %}
     {% if keys == day %}
-    <tr>
-        <th></th>
-        <th>Cena</th>
-        <th>Budżet</th>
-    </tr>
-        {% for item1, item2, item3 in values %}
+    <div class="detail">
         <tr>
-            <td>{{item1}}</td>
-            <td>{{item2}}</td>
-            <td>{{item3}}</td>
+            <th></th>
+            <th>Cena</th>
+            <th>Budżet</th>
         </tr>
-        {% endfor %}
+            {% for item1, item2, item3 in values %}
+            <tr>
+                <td>{{item1}}</td>
+                <td>{{item2}}</td>
+                <td>{{item3}}</td>
+            </tr>
+    </div>
+            {% endfor %}
     {% endif %}
     {% endfor %}
     {% endfor %}
@@ -90,12 +92,9 @@
 </table>
 <script>
 
-$(".detail").click(function(){
-    var closest = $(this).closest('.show');
-    closest.nextUntil('div.show').each(function(){
-        $(this).toggle();
+$('.detail-button').click(function(){
+    $(this).find('detail').toggle();
     });
-});
 
 </script>
 {% endblock %}
