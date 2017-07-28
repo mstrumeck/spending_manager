@@ -1,0 +1,218 @@
+@import url(http://fonts.googleapis.com/css?family=Muli);
+
+body {
+    margin: 0 auto;
+    padding: 0;
+    font-family: Arial, helvetica, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    width: 100%;
+    background: #efefef;
+}
+
+a {
+    text-decoration: none;}
+
+a:visited {
+    color: black;}
+
+a:hover {
+    color: red;}
+
+a:active {
+    color: black;}
+
+#logo {
+    font-family: 'Muli', sans-serif;
+    font-size: 24px;
+    float: left;
+}
+
+#start {
+    list-style-type: none;}
+
+nav {
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    background:#091E6A;
+    color:#fff;
+    overflow:auto;
+    font-family: 'Muli', sans-serif;
+    font-size: 110%;
+    }
+
+nav ul {
+    list-style-type: none;
+    color: #fff;
+    float: left;
+}
+
+nav ul li {
+    margin: 4px;
+    padding: 6px;
+    background: #969EBE;
+    display: inline;
+    font-family: 'Muli', sans-serif;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px #777777;
+    }
+
+nav ul li:hover {background-color: #435083}
+
+nav ul li:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);}
+
+nav ul li a:hover {
+    color: white;}
+
+.button {
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    color:#fff;
+    overflow:auto;
+    font-family: 'Muli', sans-serif;
+    font-size: 100%;
+    display: inline-block;
+}
+
+.button ul {
+    list-style-type: none;
+    color: #fff;
+    float: left;
+}
+
+.button ul li {
+    margin: 4px;
+    padding: 6px;
+    background: #969EBE;
+    display: inline;
+    font-family: 'Muli', sans-serif;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px #777777;
+    }
+
+.button ul li:hover {background-color: #435083}
+
+.button ul li:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);}
+
+.button ul li a:hover {
+    color: white;}
+
+main {
+    text-align: center;
+    width: 100%;
+    background: white;}
+
+.center {
+    display: inline-block;
+    margin: 3px;
+    padding: 3px;}
+
+th {
+    text-transform: uppercase;
+    border-bottom: 2px solid #111111;
+    border-top: 1px solid #999;
+    text-align: left;}
+
+tr:nth-child(even) {
+    background-color: #efefef;}
+
+.button-setup:hover {
+    background: #969EBE;
+    display: inline;
+    font-family: 'Muli', sans-serif;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px #777777;}
+
+.form-container {
+    margin: 1%;
+    padding: 1%;
+    }
+
+.form-container input[type=submit] {
+    margin: 0.7%;
+    padding: 0.7%;
+    background: #969EBE;
+    display: inline;
+    font-family: 'Muli', sans-serif;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px #777777;
+}
+
+.form-container input[type=submit]:hover {
+    background-color: #435083;
+    color: white;
+}
+
+.multi-form {
+    max-width: 100%;
+    display: inline-block;
+}
+
+.multi-form input {
+    width : 11%;
+    font-size: 120%;
+}
+
+.multi-form option {
+    margin: 2%;
+    padding: 2%;
+}
+
+.multi-form select {
+    width: 16%;
+    font-size: 100%;
+}
+
+.multi-form input[type=submit] {
+    margin: 0.7%;
+    padding: 0.7%;
+    font-size: 100%;
+}
+
+.multi-form input[type=submit]:hover {
+    background-color: #435083;
+    color: white;
+}
+
+.multi-form input[type=submit]:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.user {
+    background: #969EBE;
+    padding: 6px;
+    margin: 20px;
+    float: right;
+    border-radius: 10px;
+}
+
+#logon {
+    border-radius: none;
+    box-shadow: none;
+}
+
+.detail {
+
+}

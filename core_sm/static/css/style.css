@@ -116,70 +116,6 @@ main {
     width: 100%;
     background: white;}
 
-#quick-add {
-    background: white;
-    text-align: center;
-    width: 180px;
-    float: right;
-    font-size: 80%;
-}
-
-#quick-add option {
-    margin: 2px;
-    padding: 2px;
-    width: 80px;
-}
-
-#quick-add input {
-    margin: 2px;
-    padding: 2px;
-    width: 80px;
-}
-
-#quick-add input[type=submit] {
-    background: #969EBE;
-    display: inline;
-    font-family: 'Muli', sans-serif;
-    cursor: pointer;
-    outline: none;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 5px #777777;
-}
-
-#quick-add input[type=submit]:hover {
-    background-color: #435083;
-    color: white;
-}
-
-#quick-add input[type=submit]:active {
-  background-color: #3e8e41;
-  box-shadow: 0 5px #666;
-  transform: translateY(4px);
-}
-
-.table-month {
-    z-index: 10;
-    float: left;
-    margin: 2px;
-    width: 1050px;
-}
-
-.table-day-one {
-    font-size: 90%;
-    z-index: 10;
-    float: left;
-    margin: 2px;
-    width: 450px;}
-
-.table-day-two {
-    font-size: 90%;
-    z-index: 10;
-    float: left;
-    margin: 2px;
-    width: 595px;
-}
-
 .center {
     display: inline-block;
     margin: 3px;
@@ -277,3 +213,6 @@ tr:nth-child(even) {
     box-shadow: none;
 }
 
+.detail {
+    float: right;
+}

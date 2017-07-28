@@ -54,10 +54,30 @@
     <tbody>
     {% for day, sum, avg in day_data %}
     <tr>
-        <th scope="row"><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Dzień {{ day }}</a></th>
+        <th scope="row"><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Dzień {{ day }}</a>
+        {% if day in dummy %}
+            <button>ABC</button>
+            {% endif %}
+        </th>
         <td>{{ sum }}</td>
         <td>{{ avg }}</td>
     </tr>
+    {% for keys, values in data.items %}
+    {% if keys == day %}
+    <tr>
+        <th></th>
+        <th>Cena</th>
+        <th>Budżet</th>
+    </tr>
+        {% for item1, item2, item3 in values %}
+        <tr>
+            <td>{{item1}}</td>
+            <td>{{item2}}</td>
+            <td>{{item3}}</td>
+        </tr>
+        {% endfor %}
+    {% endif %}
+    {% endfor %}
     {% endfor %}
     </tbody>
     <tfoot>
@@ -68,4 +88,14 @@
     </tr>
     </tfoot>
 </table>
+<script>
+
+$(".detail").click(function(){
+    var closest = $(this).closest('.show');
+    closest.nextUntil('div.show').each(function(){
+        $(this).toggle();
+    });
+});
+
+</script>
 {% endblock %}

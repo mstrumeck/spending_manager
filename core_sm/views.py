@@ -89,6 +89,7 @@ def category_day_stats_detail(request, category_id, year, month, day):
 @login_required
 def category_month_stats_detail(request, category_id, year, month):
     dd = MonthViewCategory(request, year, month, category_id)
+    dd.month_cost_each_day_summ()
     dd.month_calculation()
     dd.month_category_calculation()
     dd.month_budget_calculation()
@@ -119,8 +120,11 @@ def category_month_stats_detail(request, category_id, year, month):
                                                                      'month_sum': dd.month_sum,
                                                                      'month_avg': dd.month_avg,
                                                                      'category_title': dd.category_title,
+                                                                     'data': dd.day_data_summ,
+                                                                     'dummy': dd.dummy_data,
                                                                      'back': back,
-                                                                     'another': another})
+                                                                     'another': another,
+                                                                     })
 
 
 @login_required
