@@ -64,19 +64,17 @@
     </tr>
     {% for keys, values in data.items %}
     {% if keys == day %}
-    <div class="detail">
-        <tr>
-            <th></th>
-            <th>Cena</th>
-            <th>Budżet</th>
-        </tr>
-            {% for item1, item2, item3 in values %}
-            <tr>
-                <td>{{item1}}</td>
-                <td>{{item2}}</td>
-                <td>{{item3}}</td>
-            </tr>
-    </div>
+    <tr>
+        <th></th>
+        <th>Cena</th>
+        <th>Budżet</th>
+    </tr>
+    {% for item1, item2, item3 in values %}
+    <tr>
+        <td>{{item1}}</td>
+        <td>{{item2}}</td>
+        <td>{{item3}}</td>
+    </tr>
             {% endfor %}
     {% endif %}
     {% endfor %}
@@ -90,11 +88,10 @@
     </tr>
     </tfoot>
 </table>
-<script>
-
+<script type="text/javascript">
 $('.detail-button').click(function(){
-    $(this).find('detail').toggle();
-    });
+    $(this).parent().parent().next().children().toggle();
 
+    });
 </script>
 {% endblock %}
