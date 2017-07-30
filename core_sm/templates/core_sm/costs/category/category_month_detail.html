@@ -64,20 +64,23 @@
     </tr>
     {% for keys, values in data.items %}
     {% if keys == day %}
+    <tbody>
     <tr>
         <th></th>
         <th>Cena</th>
         <th>Budżet</th>
     </tr>
-    {% for item1, item2, item3 in values %}
+    {% for title, value, budget in values %}
     <tr>
-        <td>{{item1}}</td>
-        <td>{{item2}}</td>
-        <td>{{item3}}</td>
+        <td>{{ title }}</td>
+        <td>{{ value }}</td>
+        <td>{{ budget }}</td>
     </tr>
+
             {% endfor %}
     {% endif %}
     {% endfor %}
+    </tbody>
     {% endfor %}
     </tbody>
     <tfoot>
@@ -90,7 +93,7 @@
 </table>
 <script type="text/javascript">
 $('.detail-button').click(function(){
-    $(this).parent().parent().next().children().toggle();
+    $(this).closest('tbody').next().toggle('slow');
 
     });
 </script>
