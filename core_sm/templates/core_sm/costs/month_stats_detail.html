@@ -5,6 +5,7 @@
 {% block script %}
     <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
+    <script src="{% static 'js/detail.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -70,7 +71,7 @@
 <table class="table">
     <thead>
     <tr>
-        <th></th>
+        <th colspan="2"></th>
         <th scope="col">Suma</th>
         <th scope="col">Średnia</th>
     </tr>
@@ -78,15 +79,39 @@
     <tbody>
     {% for day, sum, avg in day_data %}
     <tr>
-        <th scope="row"><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Dzień {{ day }}</a></th>
+        <th scope="row" colspan="2"><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Dzień {{ day }}</a>
+        {% if day in detail_day_data_keys %}
+            <button class="detail-button"><b>+</b></button>
+            {% endif %}
+        </th>
         <td>{{ sum }}</td>
         <td>{{ avg }}</td>
     </tr>
+    </tbody>
+    {% for keys, values in detail_day_data.items %}
+    {% if keys == day %}
+    <tbody class="detail">
+    <tr>
+        <th></th>
+        <th>Cena</th>
+        <th>Budżet</th>
+        <th>Kategoria</th>
+    </tr>
+    {% for title, value, budget, category in values %}
+    <tr>
+        <td><b>{{ title }}</b></td>
+        <td>{{ value }}</td>
+        <td>{{ budget }}</td>
+        <td>{{ category }}</td>
+    </tr>
+            {% endfor %}
+    {% endif %}
     {% endfor %}
     </tbody>
+    {% endfor %}
     <tfoot>
     <tr>
-        <th>Cały miesiąc</th>
+        <th colspan="2">Cały miesiąc</th>
         <td><b>{{ month_sum }}</b></td>
         <td><b>{{ month_avg }}</b></td>
     </tr>

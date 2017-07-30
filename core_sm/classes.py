@@ -220,9 +220,9 @@ class MonthView(object):
         self.categories_titles, self.categories_id, self.categories_values, self.category_percent = [], [], [], []
         self.budget_titles, self.budget_id, self.budget_values, self.budget_percent = [], [], [], []
         self.script, self.div, self.script_2, self.div_2 = None, None, None, None
-        self.day_data_summ = {}
+        self.detail_day_data_summ = {}
         self.day_data = zip(self.days_in_month, self.days_sums, self.days_avgs)
-        self.dummy_data = self.day_data_summ.keys()
+        self.detail_day_data_keys = self.detail_day_data_summ.keys()
         self.category_zip = zip(self.categories_titles, self.categories_id, self.categories_values, self.category_percent)
         self.budget_zip = zip(self.budget_titles, self.budget_id, self.budget_values, self.budget_percent)
 
@@ -294,6 +294,23 @@ class MonthView(object):
             p.toolbar_location = None
             self.script_2, self.div_2 = components(p, CDN)
 
+    def month_cost_each_day_summ(self):
+        for days in self.days_in_month:
+            title, value, budget_id, category_id = [], [], [], []
+            summ = Cost.objects.filter(publish__year=self.year,
+                                       publish__month=self.month,
+                                       publish__day=days,
+                                       user_id=self.request.user.id)
+            if not summ:
+                pass
+            else:
+                for item in summ.values('title', 'value', 'budget_id', 'category_id'):
+                    title.append(item['title'])
+                    value.append(item['value'])
+                    budget_id.append(Budget.objects.get(id=item['budget_id']).title)
+                    category_id.append(Category.objects.get(id=item['category_id']).title)
+                self.detail_day_data_summ[days] = zip(title, value, budget_id, category_id)
+
 
 class MonthViewCategory(MonthView):
 
@@ -336,7 +353,7 @@ class MonthViewCategory(MonthView):
                     title.append(item['title'])
                     value.append(item['value'])
                     budget_id.append(Budget.objects.get(id=item['budget_id']).title)
-                self.day_data_summ[days] = zip(title, value, budget_id)
+                self.detail_day_data_summ[days] = zip(title, value, budget_id)
 
     def month_budget_calculation(self):
         for item in Budget.objects.values('title', 'id'):
@@ -397,6 +414,23 @@ class MonthViewBudget(MonthView):
         for item in self.categories_values:
             val = 100 * float(item / (sum(self.categories_values)))
             self.category_percent.append(int(val))
+
+    def month_cost_each_day_summ(self):
+        for days in self.days_in_month:
+            title, value, category_id = [], [], []
+            summ = Cost.objects.filter(publish__year=self.year,
+                                       publish__month=self.month,
+                                       publish__day=days,
+                                       budget_id=self.budget_id,
+                                       user_id=self.request.user.id)
+            if not summ:
+                pass
+            else:
+                for item in summ.values('title', 'value','category_id'):
+                    title.append(item['title'])
+                    value.append(item['value'])
+                    category_id.append(Category.objects.get(id=item['category_id']).title)
+                self.detail_day_data_summ[days] = zip(title, value, category_id)
 
 
 class YearView(object):

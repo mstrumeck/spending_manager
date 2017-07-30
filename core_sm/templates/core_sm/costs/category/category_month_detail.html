@@ -5,6 +5,7 @@
 {% block script %}
     <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
+    <script src="{% static 'js/detail.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -55,16 +56,17 @@
     {% for day, sum, avg in day_data %}
     <tr>
         <th scope="row"><a href="/costs/{{ year }}/{{ month }}/{{ day }}/">Dzień {{ day }}</a>
-        {% if day in dummy %}
-            <button class="detail-button">ABC</button>
+        {% if day in detail_day_data_keys %}
+            <button class="detail-button"><b>+</b></button>
             {% endif %}
         </th>
         <td>{{ sum }}</td>
         <td>{{ avg }}</td>
     </tr>
-    {% for keys, values in data.items %}
+    </tbody>
+    {% for keys, values in detail_day_data.items %}
     {% if keys == day %}
-    <tbody>
+    <tbody class="detail">
     <tr>
         <th></th>
         <th>Cena</th>
@@ -72,7 +74,7 @@
     </tr>
     {% for title, value, budget in values %}
     <tr>
-        <td>{{ title }}</td>
+        <td><b>{{ title }}</b></td>
         <td>{{ value }}</td>
         <td>{{ budget }}</td>
     </tr>
@@ -82,7 +84,6 @@
     {% endfor %}
     </tbody>
     {% endfor %}
-    </tbody>
     <tfoot>
     <tr>
         <th>Cały miesiąc</th>
@@ -91,10 +92,4 @@
     </tr>
     </tfoot>
 </table>
-<script type="text/javascript">
-$('.detail-button').click(function(){
-    $(this).closest('tbody').next().toggle('slow');
-
-    });
-</script>
 {% endblock %}

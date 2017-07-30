@@ -214,6 +214,7 @@ tr:nth-child(even) {
 }
 
 .detail-button {
+    display: block;
     float: right;
-    background-color: red;
+
 }

@@ -120,8 +120,8 @@ def category_month_stats_detail(request, category_id, year, month):
                                                                      'month_sum': dd.month_sum,
                                                                      'month_avg': dd.month_avg,
                                                                      'category_title': dd.category_title,
-                                                                     'data': dd.day_data_summ,
-                                                                     'dummy': dd.dummy_data,
+                                                                     'detail_day_data': dd.detail_day_data_summ,
+                                                                     'detail_day_data_keys': dd.detail_day_data_keys,
                                                                      'back': back,
                                                                      'another': another,
                                                                      })
@@ -276,6 +276,7 @@ def budget_month_stats_detail(request, budget_id, year, month):
     dd.month_category_calculation()
     dd.month_figures_days()
     dd.month_figures_category()
+    dd.month_cost_each_day_summ()
     return render(request, 'core_sm/costs/budget/budget_month_detail.html', {'year': dd.year,
                                                                      'month': dd.month,
                                                                      'day_data': dd.day_data,
@@ -288,7 +289,11 @@ def budget_month_stats_detail(request, budget_id, year, month):
                                                                      'category_zip': dd.category_zip,
                                                                      'month_sum': dd.month_sum,
                                                                      'month_avg': dd.month_avg,
-                                                                     'budget_title': dd.budget_title})
+                                                                     'budget_title': dd.budget_title,
+                                                                     'detail_day_data': dd.detail_day_data_summ,
+                                                                     'detail_day_data_keys': dd.detail_day_data_keys,
+                                                                             })
+
 
 @login_required
 def budget_year_stats_detail(request, budget_id, year):
@@ -649,6 +654,7 @@ def month_stats_detail(request, year, month):
     dd.month_budget_calculation()
     dd.month_figures_days()
     dd.month_figures_category()
+    dd.month_cost_each_day_summ()
 
     next_month = int(month)+1
     next_year = int(year)
@@ -677,6 +683,8 @@ def month_stats_detail(request, year, month):
                                                                      'budget_zip': dd.budget_zip,
                                                                      'month_sum': dd.month_sum,
                                                                      'month_avg': dd.month_avg,
+                                                                     'detail_day_data': dd.detail_day_data_summ,
+                                                                     'detail_day_data_keys': dd.detail_day_data_keys,
                                                                      'back': back,
                                                                      'another': another})
 
