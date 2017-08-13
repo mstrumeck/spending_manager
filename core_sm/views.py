@@ -11,7 +11,7 @@ from bokeh.embed import components
 from django.utils.safestring import mark_safe
 from bokeh.resources import CDN
 from bokeh.charts import Bar, Line, Donut
-from django.forms import modelformset_factory
+from django.forms import modelformset_factory, inlineformset_factory
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.models import User
@@ -417,9 +417,9 @@ def budget_setup(request):
 def day_data_multiadd(request, no_of_lines=0):
     add = False
     no_of_lines = int(no_of_lines)
-    CostFormSet = modelformset_factory(model=Cost, form=DataAddForm, extra=no_of_lines)
+    cost_form_set = modelformset_factory(model=Cost, form=DataAddForm, extra=no_of_lines)
     if request.method == 'POST' and 'form' in request.POST:
-        formset = CostFormSet(request.POST, request.FILES)
+        formset = cost_form_set(request.POST, request.FILES)
         if formset.is_valid():
             for form in formset.forms:
                 add = True
@@ -427,10 +427,10 @@ def day_data_multiadd(request, no_of_lines=0):
                 f.user = request.user
                 f.save()
     else:
-        formset = CostFormSet(queryset=Cost.objects.none())
+        formset = cost_form_set(queryset=Cost.objects.none())
         for item in formset:
-            item.fields['category'].queryset=Category.objects.filter(user=request.user)
-            item.fields['budget'].queryset=Budget.objects.filter(user=request.user)
+            item.fields['category'].queryset = Category.objects.filter(user=request.user)
+            item.fields['budget'].queryset = Budget.objects.filter(user=request.user)
 
     if request.method == 'POST' and 'no_line' in request.POST:
         generate_form = MultiaddGenerateForm(request.POST)

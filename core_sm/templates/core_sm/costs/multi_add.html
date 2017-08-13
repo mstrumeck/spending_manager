@@ -1,5 +1,6 @@
 {% extends 'core_sm/base.html' %}
 {% load staticfiles %}
+
 {% block script %}
     <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.css" type="text/css" />
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.3.min.js"></script>
@@ -24,13 +25,14 @@
 </form>
 </div>
 
-<div class="form-container">
 <form method="POST" class="multi-form">
-    <div class="form-group">
-    {{ formset }}
-    {% csrf_token %}
+    {{ formset.management_form }}
+    {% for form in formset %}
+    <div>
+        {{ form }}
     </div>
+    {% endfor %}
+    {% csrf_token %}
     <input type="submit" name="form" value="Dodaj">
 </form>
-</div>
 {% endblock %}

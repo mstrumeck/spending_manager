@@ -140,10 +140,6 @@ tr:nth-child(even) {
     border-radius: 10px;
     box-shadow: 0 5px #777777;}
 
-.form-container {
-    margin: 1%;
-    padding: 1%;
-    }
 
 .form-container input[type=submit] {
     margin: 0.7%;
